@@ -1,0 +1,43 @@
+name: Demo QA
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: Demo URL to test
+        required: true
+        default: https://demo-engine.rudolfalhelou.workers.dev/lenb
+      scope:
+        description: template or prospect
+        required: true
+        type: choice
+        options:
+          - template
+          - prospect
+        default: template
+      template:
+        description: Template key
+        required: true
+        default: painter_v1
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm install
+      - run: npx playwright install --with-deps chromium
+      - name: Run responsive QA
+        run: npm run qa -- --url="${{ inputs.url }}" --scope="${{ inputs.scope }}" --template="${{ inputs.template }}"
+      - name: Upload QA report and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: demo-qa-${{ github.run_id }}
+          path: qa-results/
+          retention-days: 30
