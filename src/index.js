@@ -23,7 +23,7 @@ function html(body, status = 200) {
 }
 
 function getSupabaseKey(env) {
-  return env.SUPABASE_PUBLISHABLE_KEY || env.SUPABASE_ANON_KEY || "";
+  return env.SUPABASE_PUBLISHABLE_KEY || env.PUBLISHABLE_KEY || env.SUPABASE_ANON_KEY || "";
 }
 
 async function getPublishedDemo(env, slug) {
@@ -106,7 +106,6 @@ export default {
       }
     }
 
-    // Preserve explicitly requested static assets (images, icons, legacy files, etc.).
     if (/\.[a-z0-9]{2,8}$/i.test(url.pathname)) {
       return env.ASSETS.fetch(request);
     }
