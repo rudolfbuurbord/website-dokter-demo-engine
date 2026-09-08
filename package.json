@@ -3,8 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "qa": "node qa/runner.mjs",
-    "qa:painter": "node qa/runner.mjs --url=https://demo-engine.rudolfalhelou.workers.dev/lenb --scope=template --template=painter_v1"
+    "qa": "node qa/runner-certified.mjs",
+    "qa:painter": "node qa/runner-certified.mjs --url=https://demo-engine.rudolfalhelou.workers.dev/lenb --scope=template --template=painter_v1"
   },
   "devDependencies": {
     "playwright": "^1.55.0"
