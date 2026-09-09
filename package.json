@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "qa": "node qa/runner-certified.mjs",
-    "qa:painter": "node qa/runner-certified.mjs --url=https://demo-engine.rudolfalhelou.workers.dev/lenb --scope=template --template=painter_v1"
+    "qa:painter": "node qa/runner-certified.mjs --url=https://demo-engine.rudolfalhelou.workers.dev/lenb --scope=template --template=painter_v1",
+    "orchestrate": "node orchestrator/run.mjs"
   },
   "devDependencies": {
     "playwright": "^1.55.0"
