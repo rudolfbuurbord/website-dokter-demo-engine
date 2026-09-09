@@ -1,6 +1,14 @@
 name: Prospect Demo Orchestrator
 
 on:
+  push:
+    branches: [build/prospect-orchestrator-v1]
+    paths:
+      - 'orchestrator/**'
+      - 'qa/**'
+      - 'src/templates/**'
+      - 'package.json'
+      - '.github/workflows/prospect-orchestrator.yml'
   workflow_dispatch:
     inputs:
       prospect_json:
