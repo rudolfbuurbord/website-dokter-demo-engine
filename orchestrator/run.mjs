@@ -89,6 +89,33 @@ async function persistQa(db, demo, template, report, phase) {
   return run;
 }
 
+async function updateCrmSuccess(db, job, lead, demo, liveUrl) {
+  const opportunityId = job.input_json?.opportunity_id || null;
+  if (!opportunityId) return;
+  const phone = lead.facts?.contact?.phone || lead.contact?.phone || '';
+  const nextAction = phone ? 'CALL_HOT_LEAD_WITH_DEMO_READY' : 'SEND_DEMO_AND_MEETING_CTA';
+  await db.updateOpportunity(opportunityId, {
+    demo_job_id:job.id,
+    demo_id:demo.id,
+    demo_url:liveUrl,
+    next_action:nextAction,
+    next_action_at:now(),
+    updated_at:now()
+  });
+  await db.addActivity(opportunityId, 'DEMO_PUBLISHED', { demo_job_id:job.id, demo_id:demo.id, demo_url:liveUrl, qa_status:'PASS' });
+}
+
+async function updateCrmFailure(db, job, error) {
+  const opportunityId = job?.input_json?.opportunity_id || null;
+  if (!opportunityId) return;
+  await db.updateOpportunity(opportunityId, {
+    next_action:'HUMAN_REVIEW_DEMO_FAILURE',
+    next_action_at:now(),
+    updated_at:now()
+  });
+  await db.addActivity(opportunityId, 'DEMO_GENERATION_FAILED', { demo_job_id:job.id, error:String(error.message || error).slice(0,1000) });
+}
+
 async function main() {
   const db = new SupabaseService(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
   const { lead, job:queuedJob } = await readLead(db);
@@ -147,12 +174,14 @@ async function main() {
       completed_at:now(),
       output_json:{ stage: cleanedUp ? 'TEST_PUBLISHED_AND_ARCHIVED' : 'PUBLISHED', demo_id:demo.id, slug:demo.slug, demo_url:liveUrl, qa_status:'PASS', test_fixture:cleanedUp }
     });
+    if (!cleanedUp) await updateCrmSuccess(db, job, lead, demo, liveUrl);
     if (process.env.GITHUB_OUTPUT) await fs.appendFile(process.env.GITHUB_OUTPUT, `demo_url=${liveUrl}\njob_id=${done.id}\ndemo_id=${demo.id}\n`);
     console.log(JSON.stringify({ ok:true, job_id:done.id, demo_id:demo.id, demo_url:liveUrl, qa:'PASS', test_fixture_archived:cleanedUp }, null, 2));
   } catch (error) {
     if (!codeRed) {
       try { await db.updateJob(job.id, { status:'FAILED', completed_at:now(), error_message:String(error.message || error).slice(0,1000) }); } catch {}
     }
+    try { await updateCrmFailure(db, job, error); } catch {}
     throw error;
   }
 }

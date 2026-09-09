@@ -22,6 +22,22 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Sync Worker backend secrets
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SMARTLEAD_WEBHOOK_SECRET: ${{ secrets.SMARTLEAD_WEBHOOK_SECRET }}
+        run: |
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "SUPABASE_SERVICE_ROLE_KEY is required" >&2
+            exit 1
+          fi
+          printf '%s' "$SUPABASE_SERVICE_ROLE_KEY" | npx --yes wrangler@4.130.0 secret put SUPABASE_SERVICE_ROLE_KEY
+          if [ -n "$SMARTLEAD_WEBHOOK_SECRET" ]; then
+            printf '%s' "$SMARTLEAD_WEBHOOK_SECRET" | npx --yes wrangler@4.130.0 secret put SMARTLEAD_WEBHOOK_SECRET
+          else
+            echo "SMARTLEAD_WEBHOOK_SECRET not configured yet; webhook endpoint will remain safely disabled."
+          fi
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:

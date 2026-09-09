@@ -77,4 +77,24 @@ export class SupabaseService {
     if (!rows.length) return [];
     return this.request('demo_qa_checks', { method:'POST', body:rows, headers:{ Prefer:'return=minimal' } });
   }
+
+  async updateOpportunity(id, patch) {
+    if (!id) return null;
+    const rows = await this.request(`crm_opportunities?id=eq.${encodeURIComponent(id)}`, {
+      method:'PATCH',
+      body:patch,
+      headers:{ Prefer:'return=representation' }
+    });
+    return rows?.[0] || null;
+  }
+
+  async addActivity(opportunityId, eventType, payload={}) {
+    if (!opportunityId) return null;
+    const rows = await this.request('crm_activity_events', {
+      method:'POST',
+      body:[{ opportunity_id:opportunityId, event_type:eventType, payload }],
+      headers:{ Prefer:'return=representation' }
+    });
+    return rows?.[0] || null;
+  }
 }
