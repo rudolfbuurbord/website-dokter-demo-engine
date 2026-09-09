@@ -1,0 +1,37 @@
+name: HOT_LEAD Demo Queue
+
+on:
+  push:
+    branches: [build/hot-lead-queue-v1]
+    paths:
+      - 'orchestrator/**'
+      - 'package.json'
+      - '.github/workflows/hot-lead-queue.yml'
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hot-lead-demo-queue
+  cancel-in-progress: false
+
+jobs:
+  process-one:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npx playwright install --with-deps chromium
+      - name: Process oldest queued HOT_LEAD demo
+        env:
+          SUPABASE_URL: https://skdjbifmtleiogbkqwid.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          DEMO_BASE_URL: https://demo-engine.rudolfalhelou.workers.dev
+        run: npm run queue:once

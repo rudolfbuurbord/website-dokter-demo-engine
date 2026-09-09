@@ -34,6 +34,16 @@ export class SupabaseService {
     return rows?.[0] || null;
   }
 
+  async getJob(id) {
+    const rows = await this.request(`demo_generation_jobs?select=*&id=eq.${encodeURIComponent(id)}&limit=1`);
+    return rows?.[0] || null;
+  }
+
+  async getNextQueuedHotLeadJob() {
+    const rows = await this.request('demo_generation_jobs?select=*&job_type=eq.FULL_DEMO&status=eq.QUEUED&tool=eq.hot-lead-queue-v1&order=created_at.asc&limit=1');
+    return rows?.[0] || null;
+  }
+
   async createJob(input) {
     const rows = await this.request('demo_generation_jobs', { method:'POST', body:[input], headers:{ Prefer:'return=representation' } });
     return rows[0];

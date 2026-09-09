@@ -10,12 +10,24 @@ import { SupabaseService } from './supabase-client.mjs';
 const BASE = process.env.DEMO_BASE_URL || 'https://demo-engine.rudolfalhelou.workers.dev';
 const CATEGORY_MAP = { TECHNICAL_QA:'PERFORMANCE_QA', ASSET_QA:'DESIGN_QA' };
 const now = () => new Date().toISOString();
+const argValue = prefix => process.argv.find(v => v.startsWith(prefix))?.slice(prefix.length) || null;
 
-async function readLead() {
-  const arg = process.argv.find(v => v.startsWith('--input='));
-  if (arg) return JSON.parse(await fs.readFile(arg.slice(8), 'utf8'));
-  if (process.env.ORCHESTRATOR_PROSPECT_JSON) return JSON.parse(process.env.ORCHESTRATOR_PROSPECT_JSON);
-  throw new Error('Provide --input=<json file> or ORCHESTRATOR_PROSPECT_JSON');
+async function readLead(db) {
+  const queuedJobId = argValue('--job-id=');
+  if (queuedJobId) {
+    const job = await db.getJob(queuedJobId);
+    if (!job) throw new Error(`Queued job not found: ${queuedJobId}`);
+    if (job.job_type !== 'FULL_DEMO') throw new Error(`Job ${queuedJobId} is not FULL_DEMO`);
+    if (job.status !== 'QUEUED') throw new Error(`Job ${queuedJobId} is not QUEUED (status=${job.status})`);
+    if (job.tool !== 'hot-lead-queue-v1') throw new Error(`Job ${queuedJobId} is not owned by hot-lead-queue-v1`);
+    const payload = job.input_json?.prospect || job.input_json;
+    return { lead: normalizeHotLead(payload), job };
+  }
+
+  const input = argValue('--input=');
+  if (input) return { lead:normalizeHotLead(JSON.parse(await fs.readFile(input, 'utf8'))), job:null };
+  if (process.env.ORCHESTRATOR_PROSPECT_JSON) return { lead:normalizeHotLead(JSON.parse(process.env.ORCHESTRATOR_PROSPECT_JSON)), job:null };
+  throw new Error('Provide --input=<json file>, --job-id=<uuid>, or ORCHESTRATOR_PROSPECT_JSON');
 }
 
 async function runQa(url, templateKey, outDir) {
@@ -78,12 +90,12 @@ async function persistQa(db, demo, template, report, phase) {
 }
 
 async function main() {
-  const lead = normalizeHotLead(await readLead());
   const db = new SupabaseService(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+  const { lead, job:queuedJob } = await readLead(db);
   const template = await db.approvedPainterTemplate();
   if (!template) throw new Error('Approved painter_v1 template not found');
 
-  const job = await db.createJob({
+  const job = queuedJob || await db.createJob({
     job_type:'FULL_DEMO',
     status:'QUEUED',
     tool:'prospect-orchestrator-v1',
@@ -94,7 +106,7 @@ async function main() {
   let demo = null;
   let codeRed = false;
   try {
-    await db.updateJob(job.id, { status:'RESEARCHING', started_at:now() });
+    await db.updateJob(job.id, { status:'RESEARCHING', started_at:now(), error_message:null });
     const record = buildDemoRecord(lead, template);
     const existing = await db.getDemoBySlug(record.slug);
     if (existing && existing.company_name !== record.company_name) throw new Error(`Slug collision with another company: ${record.slug}`);
