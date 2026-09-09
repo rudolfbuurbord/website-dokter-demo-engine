@@ -88,7 +88,7 @@ async function main() {
     status:'QUEUED',
     tool:'prospect-orchestrator-v1',
     prompt_version:'facts-only-v1',
-    input_json:{ lead_status:lead.lead_status, company_name:lead.company_name, niche:lead.niche, source_ref:lead.source_ref || null }
+    input_json:{ lead_status:lead.lead_status, company_name:lead.company_name, niche:lead.niche, source_ref:lead.source_ref || null, test_fixture:lead.test_fixture === true }
   });
 
   let demo = null;
@@ -96,7 +96,17 @@ async function main() {
   try {
     await db.updateJob(job.id, { status:'RESEARCHING', started_at:now() });
     const record = buildDemoRecord(lead, template);
-    await db.updateJob(job.id, { status:'GENERATING', output_json:{ stage:'CONFIG_BUILT', slug:record.slug, template_key:record.template_key } });
+    const existing = await db.getDemoBySlug(record.slug);
+    if (existing && existing.company_name !== record.company_name) throw new Error(`Slug collision with another company: ${record.slug}`);
+
+    const assetAudit = {
+      logo: Boolean(record.config.brand?.logo_url) ? 'REAL_OR_VERIFIED_INPUT' : 'ABSENT',
+      projects: record.config.projects?.length || 0,
+      reviews: record.config.reviews?.length || 0,
+      stats: record.config.stats?.length || 0,
+      truth_mode: 'FACTS_ONLY'
+    };
+    await db.updateJob(job.id, { status:'GENERATING', output_json:{ stage:'CONFIG_BUILT', slug:record.slug, template_key:record.template_key, asset_audit:assetAudit } });
     demo = await db.upsertDemo(record);
     await db.updateJob(job.id, { demo_id:demo.id, status:'QA' });
 
@@ -118,13 +128,15 @@ async function main() {
       throw new Error(`Live QA failed: ${liveReport.summary.status}`);
     }
 
+    const cleanedUp = lead.test_fixture === true;
+    if (cleanedUp) demo = await db.updateDemo(demo.id, { status:'archived', updated_at:now() });
     const done = await db.updateJob(job.id, {
       status:'PUBLISHED',
       completed_at:now(),
-      output_json:{ stage:'PUBLISHED', demo_id:demo.id, slug:demo.slug, demo_url:liveUrl, qa_status:'PASS' }
+      output_json:{ stage: cleanedUp ? 'TEST_PUBLISHED_AND_ARCHIVED' : 'PUBLISHED', demo_id:demo.id, slug:demo.slug, demo_url:liveUrl, qa_status:'PASS', test_fixture:cleanedUp }
     });
     if (process.env.GITHUB_OUTPUT) await fs.appendFile(process.env.GITHUB_OUTPUT, `demo_url=${liveUrl}\njob_id=${done.id}\ndemo_id=${demo.id}\n`);
-    console.log(JSON.stringify({ ok:true, job_id:done.id, demo_id:demo.id, demo_url:liveUrl, qa:'PASS' }, null, 2));
+    console.log(JSON.stringify({ ok:true, job_id:done.id, demo_id:demo.id, demo_url:liveUrl, qa:'PASS', test_fixture_archived:cleanedUp }, null, 2));
   } catch (error) {
     if (!codeRed) {
       try { await db.updateJob(job.id, { status:'FAILED', completed_at:now(), error_message:String(error.message || error).slice(0,1000) }); } catch {}
