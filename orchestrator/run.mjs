@@ -55,13 +55,19 @@ function canonicalChecks(qaRunId, checks) {
   }));
 }
 
+function canonicalRunStatus(status) {
+  if (status === 'PASS') return 'PASS';
+  if (status === 'FAIL') return 'FAIL';
+  return 'HUMAN_REVIEW';
+}
+
 async function persistQa(db, demo, template, report, phase) {
   const run = await db.createQaRun({
     scope:'PROSPECT',
     template_id:template.id,
     template_version:template.current_version,
     demo_id:demo.id,
-    status:report.summary.status === 'PASS' ? 'PASS' : report.summary.status,
+    status:canonicalRunStatus(report.summary.status),
     viewport_set:{ viewports:report.summary.viewports },
     summary:{ ...report.summary, phase, source:'prospect-orchestrator-v1' },
     started_at:report.summary.generated_at,
@@ -86,6 +92,7 @@ async function main() {
   });
 
   let demo = null;
+  let codeRed = false;
   try {
     await db.updateJob(job.id, { status:'RESEARCHING', started_at:now() });
     const record = buildDemoRecord(lead, template);
@@ -105,8 +112,9 @@ async function main() {
     const liveReport = await runQa(liveUrl, template.template_key, liveDir);
     await persistQa(db, demo, template, liveReport, 'POST_PUBLISH_LIVE');
     if (liveReport.summary.status !== 'PASS' || liveReport.code !== 0) {
+      codeRed = true;
       await db.updateDemo(demo.id, { status:'draft', published_at:null, updated_at:now() });
-      await db.updateJob(job.id, { status:'CODE_RED', error_message:`Live QA failed: ${liveReport.summary.status}`, output_json:{ stage:'LIVE_QA_FAILED', live_url:liveUrl } });
+      await db.updateJob(job.id, { status:'CODE_RED', completed_at:now(), error_message:`Live QA failed: ${liveReport.summary.status}`, output_json:{ stage:'LIVE_QA_FAILED', live_url:liveUrl } });
       throw new Error(`Live QA failed: ${liveReport.summary.status}`);
     }
 
@@ -118,9 +126,9 @@ async function main() {
     if (process.env.GITHUB_OUTPUT) await fs.appendFile(process.env.GITHUB_OUTPUT, `demo_url=${liveUrl}\njob_id=${done.id}\ndemo_id=${demo.id}\n`);
     console.log(JSON.stringify({ ok:true, job_id:done.id, demo_id:demo.id, demo_url:liveUrl, qa:'PASS' }, null, 2));
   } catch (error) {
-    try {
-      await db.updateJob(job.id, { status:'FAILED', completed_at:now(), error_message:String(error.message || error).slice(0,1000) });
-    } catch {}
+    if (!codeRed) {
+      try { await db.updateJob(job.id, { status:'FAILED', completed_at:now(), error_message:String(error.message || error).slice(0,1000) }); } catch {}
+    }
     throw error;
   }
 }
