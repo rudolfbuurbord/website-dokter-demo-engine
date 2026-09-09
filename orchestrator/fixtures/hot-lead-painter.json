@@ -8,7 +8,7 @@
   "facts": {
     "services": ["Binnenschilderwerk", "Buitenschilderwerk", "Houtwerk"],
     "hero_title": "DWD QA Fixture Schilders",
-    "hero_subtitle": "Technische testdemo voor de geautomatiseerde Demo Engine. Geen echt klantbedrijf.",
+    "hero_subtitle": "Intern QA-project voor de geautomatiseerde Demo Engine. Geen echt klantbedrijf en geen klantclaim.",
     "hero_eyebrow": "QA fixture • geen klantclaim",
     "brand": {
       "background": "#f4f1ea",
