@@ -1,0 +1,56 @@
+name: Prospect Demo Orchestrator
+
+on:
+  push:
+    branches: [build/prospect-orchestrator-v1]
+    paths:
+      - 'orchestrator/**'
+      - 'qa/**'
+      - 'src/templates/**'
+      - 'package.json'
+      - '.github/workflows/prospect-orchestrator.yml'
+  workflow_dispatch:
+    inputs:
+      prospect_json:
+        description: HOT_LEAD JSON payload. Leave empty to run the safe QA fixture.
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  orchestrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npx playwright install --with-deps chromium
+      - name: Prepare HOT_LEAD payload
+        env:
+          INPUT_JSON: ${{ inputs.prospect_json }}
+        run: |
+          if [ -n "$INPUT_JSON" ]; then
+            printf '%s' "$INPUT_JSON" > /tmp/prospect.json
+          else
+            cp orchestrator/fixtures/hot-lead-painter.json /tmp/prospect.json
+          fi
+          node -e "JSON.parse(require('fs').readFileSync('/tmp/prospect.json','utf8')); console.log('HOT_LEAD payload JSON valid')"
+      - name: Run end-to-end prospect orchestration
+        id: orchestrate
+        env:
+          SUPABASE_URL: https://skdjbifmtleiogbkqwid.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          DEMO_BASE_URL: https://demo-engine.rudolfalhelou.workers.dev
+        run: npm run orchestrate -- --input=/tmp/prospect.json
+      - name: Summary
+        if: always()
+        run: |
+          echo "### Prospect Demo Orchestrator" >> "$GITHUB_STEP_SUMMARY"
+          echo "Demo URL: ${{ steps.orchestrate.outputs.demo_url }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Job ID: ${{ steps.orchestrate.outputs.job_id }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Demo ID: ${{ steps.orchestrate.outputs.demo_id }}" >> "$GITHUB_STEP_SUMMARY"

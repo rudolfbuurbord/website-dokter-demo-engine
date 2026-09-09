@@ -1,0 +1,23 @@
+{
+  "lead_status": "HOT_LEAD",
+  "company_name": "DWD QA Fixture Schilders",
+  "niche": "schildersbedrijf",
+  "slug": "dwd-qa-fixture-schilders",
+  "source_ref": "fixture://prospect-orchestrator-v1",
+  "test_fixture": true,
+  "facts": {
+    "services": ["Binnenschilderwerk", "Buitenschilderwerk", "Houtwerk"],
+    "hero_title": "DWD QA Fixture Schilders",
+    "hero_subtitle": "Intern QA-project voor de geautomatiseerde Demo Engine. Geen echt klantbedrijf en geen klantclaim.",
+    "hero_eyebrow": "QA fixture • geen klantclaim",
+    "brand": {
+      "background": "#f4f1ea",
+      "ink": "#1b1f1a",
+      "accent": "#606a58"
+    },
+    "contact": {},
+    "reviews": [],
+    "projects": [],
+    "stats": []
+  }
+}
