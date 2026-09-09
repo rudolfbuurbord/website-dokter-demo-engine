@@ -29,6 +29,11 @@ export class SupabaseService {
     return rows?.[0] || null;
   }
 
+  async getDemoBySlug(slug) {
+    const rows = await this.request(`demos?select=*&slug=eq.${encodeURIComponent(slug)}&limit=1`);
+    return rows?.[0] || null;
+  }
+
   async createJob(input) {
     const rows = await this.request('demo_generation_jobs', { method:'POST', body:[input], headers:{ Prefer:'return=representation' } });
     return rows[0];
