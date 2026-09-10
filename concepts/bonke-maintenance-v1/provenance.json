@@ -1,6 +1,6 @@
 {
   "candidate": "bonke-maintenance-v1",
-  "status": "DESIGN_REVIEW",
+  "status": "IMPLEMENTED_AWAITING_DESIGN_REVIEW",
   "bible_version": 2,
   "business_source": "https://www.bonke.nl/bonke-planmatig-onderhoud/planmatig-onderhoud-voor-particulieren/",
   "review": {
@@ -8,19 +8,10 @@
     "count": 12,
     "source": "https://trustusfix.com/vakmensen/3646",
     "direct_google_verified": false,
-    "display": "Attributed third-party aggregate, no invented quotes"
+    "display": "Attributed third-party aggregate, no invented quotes",
+    "verified_at": "2026-09-10"
   },
   "assets": [
-    {
-      "file": "public/images/hero.mp4",
-      "sha256": "9f29f55dd477e93602d616f5900c61e0224c9a6625a23f84f3dc60238424d43e",
-      "bytes": 325348,
-      "origin": "AI_GENERATED",
-      "proof_allowed": false,
-      "source": "higgsfield",
-      "image_job": "d83112d9-c801-49dc-a23d-2952c88c9a6d",
-      "video_job": "c9248db5-4ce1-46f9-bc63-f488cef9bc91"
-    },
     {
       "file": "public/images/groene-bogen.jpg",
       "sha256": "be9f64bdb9a1795a3af3485580616b5767dab571886f458d8b5661268e9cb081",
@@ -42,16 +33,6 @@
       "video_job": null
     },
     {
-      "file": "public/images/hero.webp",
-      "sha256": "3b6a9f7eb49d01ea066c1f16a99afc35f4d088928fa086c45d8bff62c32e02b9",
-      "bytes": 49450,
-      "origin": "AI_GENERATED",
-      "proof_allowed": false,
-      "source": "higgsfield",
-      "image_job": "d83112d9-c801-49dc-a23d-2952c88c9a6d",
-      "video_job": null
-    },
-    {
       "file": "public/images/loetje.jpg",
       "sha256": "10c006d924ed5019144d453d14d973f8999f94c5784d09723de9c39b7a02c37d",
       "bytes": 201269,
@@ -70,6 +51,25 @@
       "source": "https://www.bonke.nl/",
       "image_job": null,
       "video_job": null
+    },
+    {
+      "file": "public/images/orange-hero.webp",
+      "sha256": "4afc1529c924611c72c953142db297eb5f219012b6e11837c3365f9b1460c387",
+      "bytes": 89712,
+      "origin": "AI_GENERATED",
+      "proof_allowed": false,
+      "source": "imagegen",
+      "purpose": "Decorative concept artwork, not a completed Bonke project"
+    },
+    {
+      "file": "public/images/orange-materials.webp",
+      "sha256": "74bc3ee1f6f6e60ba7b3408a92c913613eda7da1a9582b7225847163405a205c",
+      "bytes": 92430,
+      "origin": "AI_GENERATED",
+      "proof_allowed": false,
+      "source": "imagegen",
+      "purpose": "Decorative concept artwork, not a completed Bonke project"
     }
-  ]
+  ],
+  "design_revision": "orange-centered-hero-2026-09-10"
 }
