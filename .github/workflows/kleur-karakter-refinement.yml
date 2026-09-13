@@ -1,0 +1,34 @@
+name: Kleur Karakter refinement QA
+on:
+  push:
+    branches: [fix/kleur-karakter-refinement]
+  pull_request:
+    paths: ['public/kleur-karakter/**', 'qa/kleur-karakter.mjs']
+permissions:
+  contents: read
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-save --package-lock=false playwright@1.55.0
+      - run: npx playwright install --with-deps chromium
+      - run: pip install Pillow==11.3.0
+      - run: python3 scripts/prepare-kk-assets.py
+      - name: Test original template regression logic
+        run: node --test test/*.mjs
+      - name: Test all four viewports
+        run: |
+          python3 -m http.server 4173 --directory public > /tmp/kk-server.log 2>&1 &
+          node qa/kleur-karakter.mjs
+      - name: Preserve test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kleur-karakter-qa
+          path: qa-results/kleur-karakter/
+          retention-days: 14
