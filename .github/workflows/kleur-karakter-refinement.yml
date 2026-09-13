@@ -30,3 +30,21 @@ jobs:
           name: kleur-karakter-qa
           path: qa-results/kleur-karakter/
           retention-days: 14
+  preview:
+    needs: qa
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: pip install Pillow==11.3.0
+      - run: python3 scripts/prepare-kk-assets.py
+      - name: Deploy isolated Kleur Karakter review
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          wranglerVersion: '4.130.0'
+          command: deploy --config wrangler.kk-preview.jsonc
