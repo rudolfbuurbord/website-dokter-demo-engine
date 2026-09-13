@@ -1,7 +1,5 @@
 name: Kleur Karakter refinement QA
 on:
-  push:
-    branches: [fix/kleur-karakter-refinement]
   pull_request:
     paths: ['public/kleur-karakter/**', 'qa/kleur-karakter.mjs']
 permissions:

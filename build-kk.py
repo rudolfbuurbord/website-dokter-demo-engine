@@ -8,7 +8,8 @@ s=s.replace('<main>','<main id="main">')
 s=s.replace('<nav aria-label="Hoofdnavigatie">','<nav id="site-menu" aria-label="Hoofdnavigatie">')
 s=s.replace('</header>','<button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu">Menu <span aria-hidden="true">＋</span></button></header>')
 s=s.replace('<div class="hero-copy reveal">','<div class="hero-copy">').replace('<div class="hero-bottom reveal">','<div class="hero-bottom">')
-s=s.replace('<div class="paint-stage"','<div class="hero-art"><div class="paint-stage"',1)
+s=s.replace('<canvas class="splash-canvas" aria-hidden="true"></canvas>','',1)
+s=s.replace('<div class="paint-stage"','<div class="hero-art"><canvas class="splash-canvas" aria-hidden="true"></canvas><div class="paint-stage"',1)
 s=s.replace('</span></div></div><div class="hero-bottom">','</span></div></div></div><div class="hero-bottom">',1)
 s=s.replace('Van strak binnenwerk tot duurzaam buitenwerk. Deze demo laat zien hoe vakmanschap, kleuradvies en een zorgvuldige planning samenkomen.','Binnen- en buitenschilderwerk, kleuradvies en aandacht voor de afwerking. Geef jouw huis meer karakter.')
 s=s.replace('aria-label="Offerte aanvragen"><svg','aria-label="Offerte aanvragen"><span>Vraag een offerte aan</span><svg',1)
@@ -38,13 +39,15 @@ s=s.replace('<strong>Eigenaar · naam nog in te vullen</strong>','''<strong>Eige
 # Make unsupported proof neutral, while retaining review composition.
 s=s.replace('“Vanaf het eerste contact duidelijk en prettig. Het eindresultaat voelt rustig en verzorgd.”','Hier krijgt een echte klantervaring de ruimte.').replace('“Er werd netjes gewerkt en goed meegedacht over de kleur. Precies de uitstraling die we zochten.”','Aandacht voor kleur, afwerking en het contact.').replace('“Heldere planning, fijne communicatie en een prachtig resultaat.”','Het verhaal achter een tevreden klant.')
 s=s.replace('Voorbeeldreview · geen echte klantclaim','Voorbeeldpositie · nog geen echte review')
-s=s.replace('<a href="tel:+31000000000">Bel direct <span>→</span></a><a href="mailto:demo@voorbeeld.nl?subject=Offerteaanvraag%20via%20demo">Vraag een offerte aan <span>→</span></a>','<button type="button" class="open-enquiry">Vraag een offerte aan <span>→</span></button><button type="button" class="contact-demo">Liever bellen? <span>↗</span></button>')
+s=s.replace('<a href="tel:+31000000000">Bel direct <span>→</span></a><a href="mailto:demo@voorbeeld.nl?subject=Offerteaanvraag%20via%20demo">Vraag een offerte aan <span>→</span></a>','<button type="button" class="open-enquiry" aria-label="Vraag een offerte aan">Vraag een offerte aan <span>→</span></button><button type="button" class="contact-demo">Liever bellen? <span>↗</span></button>')
 s=s.replace('</div></section>\n  </main>','</div><p class="contact-note">Vertel wat je wilt laten schilderen. Deze conceptdemo verstuurt geen aanvragen.</p></section>\n  </main>')
 s=s.replace('href="tel:+31000000000"','href="#contact"').replace('href="mailto:demo@voorbeeld.nl"','href="#contact"')
 s=s.replace('<div class="mobile-bar"><a href="#contact">Bel direct</a><a href="#contact">Offerte</a></div>','')
 # Preserve the existing hero motion source. Replace gallery logic which scrolls ancestor containers.
 script=re.search(r'<script>(.*?)</script>',s,re.S).group(1)
 script=script[:script.index('  const cards=')]+'})()'
+# Correct WebGL compositing only; preserve the existing time/motion functions.
+script=script.replace('gl_FragColor=vec4(col,mask);','gl_FragColor=vec4(col*mask,mask);')
 s=re.sub(r'<script>.*?</script>','<script src="/kleur-karakter/hero-motion.js" defer></script><script src="/kleur-karakter/refinement.js" defer></script>',s,flags=re.S)
 dialog='''<dialog id="enquiry-dialog" aria-labelledby="enquiry-title"><button class="close-dialog" type="button" aria-label="Sluiten">×</button><p class="kicker">Een frisse blik op jouw plannen</p><h2 id="enquiry-title">Wat wil je laten <em>schilderen?</em></h2><p>Probeer de aanvraagstappen. Dit is een conceptdemo: er wordt niets verstuurd of opgeslagen.</p><form id="enquiry-form"><label>Je naam<input name="name" autocomplete="name" required maxlength="100"></label><label>E-mailadres<input name="email" type="email" autocomplete="email" required maxlength="254"></label><label>Wat wil je laten doen?<textarea name="message" rows="3" required maxlength="2000"></textarea></label><button type="submit" class="submit-enquiry">Bekijk je aanvraag <span>→</span></button><p class="form-feedback" role="status"></p></form></dialog>'''
 s=s.replace('</body>',dialog+'</body>')

@@ -41,10 +41,12 @@
   function setPosition(value){compare.style.setProperty('--position',value+'%');range.value=value;positions[scene]=Number(value);range.setAttribute('aria-valuetext',value+' procent van het voor-beeld zichtbaar')}
   range.addEventListener('input',()=>setPosition(range.value));setPosition(50);
   const cache=new Map();
+  const embedded=JSON.parse(document.querySelector('#inline-media')?.textContent||'{}');
+  const imageURL=name=>embedded[name]||'/kleur-karakter/media/'+name+'.webp';
   function getImage(src){if(!cache.has(src)){const image=new Image();image.src=src;cache.set(src,image.decode())}return cache.get(src)}
   async function selectScene(index){
     index=(index+scenes.length)%scenes.length;const ticket=++request,s=scenes[index];
-    const beforeSrc='/kleur-karakter/media/'+s.key+'-before.webp',afterSrc='/kleur-karakter/media/'+s.key+'-after.webp';
+    const beforeSrc=imageURL(s.key+'-before'),afterSrc=imageURL(s.key+'-after');
     status.textContent='';
     const loading=setTimeout(()=>{if(ticket===request)status.textContent='Vergelijking laden…'},200);
     try{await Promise.all([getImage(beforeSrc),getImage(afterSrc)]);if(ticket!==request)return;
