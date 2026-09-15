@@ -15,3 +15,5 @@ body.painter-page{overflow-x:clip}button,input,textarea{font:inherit}button{colo
 @media(max-height:650px) and (max-width:760px){.hero h1{font-size:62px}.hero{padding-top:80px}.hero .kicker{font-size:8px}.hero-bottom{gap:7px}.hero-bottom>p{font-size:11px}.hero-review small{font-size:8px}}
 
 .service-line{gap:36px 60px}.service-item{position:relative;padding:0 0 12px 52px}.service-item h3{font:500 17px/1.3 'DM Sans',sans-serif;margin:0 0 12px}.service-item p{font-size:14px;line-height:1.7;color:var(--small-ink);margin:0;max-width:400px}.painter-demo .service-item svg{position:absolute;left:0;top:0;width:30px;height:30px;color:var(--paint);transition:transform .5s}.service-item:hover svg{transform:rotate(-8deg) translateY(-3px)}@media(max-width:760px){.service-line{gap:28px}.service-item p{font-size:13px}.service-item h3{font-size:16px}}
+
+.ring-stage canvas{position:absolute;inset:0;width:100%;height:100%;min-height:0;max-height:100%;object-fit:contain}
