@@ -22,8 +22,8 @@
     requestDraw();
   }
   function keyVideo(){
-    if(video.readyState<2||video.currentTime===lastFrame)return;
-    lastFrame=video.currentTime;sc.drawImage(video,0,0,768,432);
+    if(video.readyState<2||Math.floor(video.currentTime*24)===lastFrame)return;
+    lastFrame=Math.floor(video.currentTime*24);sc.drawImage(video,0,0,768,432);
     const f=sc.getImageData(0,0,768,432),p=f.data;
     for(let y=0;y<432;y++)for(let x=0;x<768;x++){
       const i=(y*768+x)*4,c=p[i]-Math.max(p[i+1],p[i+2]);
@@ -59,15 +59,16 @@
     const intro=opening&&!reduce.matches?ease((now-started)/1450):1;
     if(intro>=1&&opening){opening=false;journey.classList.remove('opening')}
     hero.style.setProperty('--hero-copy-opacity',String(1-smooth(.05,.34,t)));
+    $('.hero-bottom').style.pointerEvents=t>.34?'none':'';
     // One source texture drives both the floating sphere and the paint transition.
     if(ready&&live&&!reduce.matches){
       keyVideo();ctx.clearRect(0,0,W,H);
-      const base=Math.min(artH/432,artW/650,W/680);
+      const base=Math.min(artH/432,artW/560,W/580);
       const initial=Math.min(1.65,(W*.93)/(560*base));
       const z=1+(initial-1)*(1-intro);
       const scale=base*z;
       const motion=1-smooth(0,.28,t);
-      const cy=artY+artH/2+sy*.60-60*(1-intro)+Math.sin(now*.00049)*3*motion;
+      const cy=artY+artH/2+sy*.60-(artH*.45+65)*(1-intro)+Math.sin(now*.00049)*3*motion;
       const cx=W/2+Math.sin(now*.00031)*2*motion;
       const spread=smooth(.30,.88,t),stretch=smooth(.02,.42,t)*(1-smooth(.56,.95,t));
       const flatten=smooth(.64,1,t);
@@ -91,15 +92,16 @@
         const widening=1+spread*fall*3.8;
         const width=dw*widening;
         const destY=top+y*scale+fall*stretch*dh*.56;
-        const stripH=2*scale*(1+lower*stretch*2.6)+.65;
+        const stripH=2*scale*(1+lower*stretch*2.66)+.12;
         ctx.drawImage(source,0,y,768,2,cx-width/2,destY,width,stripH);
       }
       ctx.restore();
-      if(t>.45&&t<.96){
-        const glow=ctx.createLinearGradient(0,cy+dh*.18,0,cy+dh*.6);
-        glow.addColorStop(0,'rgba(204,84,47,0)');glow.addColorStop(1,'rgba(204,84,47,'+smooth(.45,.82,t)+')');
+      if(t>.30&&t<.98){
+        ctx.save();ctx.globalCompositeOperation='source-atop';
+        const glow=ctx.createLinearGradient(0,cy-dh*.03,0,cy+dh*.5);
+        glow.addColorStop(0,'rgba(204,84,47,0)');glow.addColorStop(1,'rgba(204,84,47,'+smooth(.30,.70,t)+')');
         const radius=W*(.1+spread*.7);ctx.fillStyle=glow;
-        ctx.fillRect(cx-radius,cy+dh*.22,radius*2,H-cy);
+        ctx.fillRect(0,cy-dh*.03,W,H-cy+dh*.03);ctx.restore();
       }
     }
     // Reviews enter only once there is a stable orange reading surface.
