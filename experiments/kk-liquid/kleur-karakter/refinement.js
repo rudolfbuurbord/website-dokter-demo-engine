@@ -29,9 +29,9 @@
   requestAnimationFrame(()=>centerProject(1,true));
   new ResizeObserver(()=>centerProject(active,true)).observe(track);
   const scenes=[
-    {key:'room',eyebrow:'01 / De hele ruimte',title:'Van kaal<br>naar <em>karakter.</em>',description:'Van onbewerkt beton naar een rustige, geschilderde woonkamer. Dezelfde ruimte, hetzelfde licht — het verschil zit in het oppervlak.',before:'Illustratie: woonkamer met onbewerkt beton',after:'Illustratie: dezelfde woonkamer met geschilderde wanden'},
-    {key:'detail',eyebrow:'02 / Het zit in de details',title:'Een lijn.<br>Een groot <em>verschil.</em>',description:'Een rafelige aansluiting of een haarscherpe verflijn. Bekijk van dichtbij wat zorgvuldig afplakken en nauwkeurig afwerken kunnen betekenen.',before:'Illustratie: onregelmatige verfrand langs het plafond',after:'Illustratie: dezelfde aansluiting met een strakke verflijn'},
-    {key:'frame',eyebrow:'03 / Aandacht voor houtwerk',title:'Van verweerd<br>naar <em>verzorgd.</em>',description:'Afgebladderde verf maakt plaats voor een gladde laklaag. Een zorgvuldig voorbereid kozijn laat zien hoeveel verschil de afwerking maakt.',before:'Illustratie: kozijn met verweerde en afgebladderde verf',after:'Illustratie: hetzelfde kozijn met een gladde laklaag'}
+    {key:'room',eyebrow:'01 / De hele ruimte',title:'Van kaal<br>naar <em>karakter.</em>',description:'Bekijk het verschil dat schilderwerk maakt. Van onbewerkt beton naar een warme woonkamer.',before:'Illustratie: woonkamer met onbewerkt beton',after:'Illustratie: dezelfde woonkamer met geschilderde wanden'},
+    {key:'detail',eyebrow:'02 / Het zit in de details',title:'Een lijn.<br>Een groot <em>verschil.</em>',description:'Van een rafelige rand naar een haarscherpe verflijn. Het verschil zit in de afwerking.',before:'Illustratie: onregelmatige verfrand langs het plafond',after:'Illustratie: dezelfde aansluiting met een strakke verflijn'},
+    {key:'frame',eyebrow:'03 / Aandacht voor houtwerk',title:'Van verweerd<br>naar <em>verzorgd.</em>',description:'Van afgebladderde verf naar een gladde laklaag. Geef je kozijnen een verzorgde uitstraling.',before:'Illustratie: kozijn met verweerde en afgebladderde verf',after:'Illustratie: hetzelfde kozijn met een gladde laklaag'}
   ];
   const compare=document.querySelector('.compare'),range=compare.querySelector('input');
   const before=compare.querySelector('.compare-before img'),after=compare.querySelector('.compare-after-image');
