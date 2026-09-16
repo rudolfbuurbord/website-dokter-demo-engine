@@ -63,8 +63,8 @@
     // One source texture drives both the floating sphere and the paint transition.
     if(ready&&live&&!reduce.matches){
       keyVideo();ctx.clearRect(0,0,W,H);
-      const base=Math.min(artH/432,artW/560,W/580);
-      const initial=Math.min(1.65,(W*.93)/(560*base));
+      const base=Math.min(artH/432,artW/560,(W-24)/734);
+      const initial=Math.min(1.65,(W*.97)/(734*base));
       const z=1+(initial-1)*(1-intro);
       const scale=base*z;
       const motion=1-smooth(0,.28,t);
