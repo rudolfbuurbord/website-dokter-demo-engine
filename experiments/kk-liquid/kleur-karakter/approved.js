@@ -129,6 +129,7 @@
   $('.close-review').addEventListener('click',()=>$('#review-dialog').close());
   // A single set of service cards powers the desktop gallery and mobile sample fan.
   const swatches=$$('.service-swatch'),deck=$('.swatch-deck');let current=0,pointer=null;
+  $$('.service-swatch img').forEach(img=>img.draggable=false);
   function selectService(i){
     current=(i+swatches.length)%swatches.length;
     swatches.forEach((card,j)=>{const d=(j-current+swatches.length)%swatches.length;card.classList.toggle('active',d===0);card.classList.toggle('behind-one',d===1);card.classList.toggle('behind-two',d===2);card.inert=d!==0;card.style.removeProperty('--drag-x');card.style.removeProperty('--drag-r');if(d!==0){card.querySelector('.swatch-details').hidden=true;card.querySelector('.expand-service').setAttribute('aria-expanded','false');card.querySelector('.expand-service span').textContent='＋'}});
