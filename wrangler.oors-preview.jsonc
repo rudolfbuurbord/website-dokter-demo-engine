@@ -1,0 +1,9 @@
+{
+  "name": "demo-engine-oors-review",
+  "compatibility_date": "2026-09-02",
+  "workers_dev": true,
+  "assets": {
+    "directory": "./experiments/oors-preview",
+    "not_found_handling": "single-page-application"
+  }
+}
