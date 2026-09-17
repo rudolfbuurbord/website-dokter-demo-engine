@@ -1,0 +1,8 @@
+[Unit]
+Description=Run next research job after previous task finishes
+[Timer]
+OnBootSec=2min
+OnUnitInactiveSec=10s
+Unit=dwd-research.service
+[Install]
+WantedBy=timers.target
