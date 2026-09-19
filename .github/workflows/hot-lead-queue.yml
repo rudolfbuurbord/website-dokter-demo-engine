@@ -1,14 +1,7 @@
 name: HOT_LEAD Demo Queue
 
+# Automatic triggers paused at owner's request.
 on:
-  push:
-    branches: [build/hot-lead-queue-v1]
-    paths:
-      - 'orchestrator/**'
-      - 'package.json'
-      - '.github/workflows/hot-lead-queue.yml'
-  schedule:
-    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 permissions:
