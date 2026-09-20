@@ -31,7 +31,7 @@ assert cnt=1,'seed must be idempotent';
  result:=public.le_research('finish',jsonb_build_object('start_receipt_id',receipt,'task_id',task->>'id','lease_token',task->>'lease_token','output',jsonb_build_object('source_url','https://example.org','status','REVIEW_REQUIRED')));
  again:=public.le_research('finish',jsonb_build_object('start_receipt_id',receipt,'task_id',task->>'id','lease_token',task->>'lease_token','output',jsonb_build_object('source_url','https://example.org','status','REVIEW_REQUIRED')));
  assert result=again,'finish replay must be stable';
- select count(*) into cnt from lead_engine.observations where value->>'research_task_id'=task->>'id';
+ select count(*) into cnt from lead_engine.observations where value->>'research_task_id'=task->>'id' and field='website_research_proposal';
  assert cnt=1,'single proposal observation';
  assert not has_function_privilege('anon','public.le_research(text,jsonb)','execute'),'anonymous access blocked';
  assert not has_function_privilege('authenticated','public.le_research(text,jsonb)','execute'),'user access blocked';
