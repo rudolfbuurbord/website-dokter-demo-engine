@@ -13,3 +13,29 @@ test('public DNS check blocks mixed/private addresses',async()=>{for(const ip of
 test('non-web schemes, credentials, unexpected ports blocked',()=>{for(const u of ['file:///etc/passwd','http://user:pass@example.org','https://example.org:8080'])assert.throws(()=>webURL(u));});
 test('invalid image reference and broken-site diagnosis rejected',()=>{const r={status:'ELIGIBLE',reason_code:'BROKEN_WEBSITE',holistic_impression:'x',reason:'x',evidence:[],strengths:[],unknowns:[]};assert.throws(()=>validateReview(r,[{}]));r.reason_code='OUTDATED_WEBSITE';r.reference_comparison='ref';r.evidence=[{finding:'x',screenshot_index:9}];assert.throws(()=>validateReview(r,[{}]));});
 test('reservation conservatively exceeds example measured spend',()=>{assert.ok(reservation(requestBody(session,captured))>actualCost({prompt_tokens:2500,completion_tokens:500}));});
+
+// Regression: pilot returned INELIGIBLE with OUTDATED_WEBSITE and dated-design evidence.
+const contradictoryReview={status:'INELIGIBLE',reason_code:'OUTDATED_WEBSITE',holistic_impression:'Verouderd ontwerp',reason:'Zware schaduw in het logo en zwakke visuele hiërarchie.',reference_comparison:'Vergelijkbaar met de goedgekeurde slechte Alferink-referentie.',evidence:[{finding:'Zware logoschaduw',screenshot_index:0}],strengths:['Contactgegevens zichtbaar'],unknowns:['Mobiele weergave niet getest']};
+test('contradictory pilot verdict is rejected without silently approving it',()=>{
+ assert.throws(()=>validateReview(contradictoryReview,[{}]),/CONTRADICTORY_REVIEW/);
+ assert.equal(contradictoryReview.status,'INELIGIBLE');
+ for(const status of ['INELIGIBLE','REVIEW_REQUIRED'])for(const reason_code of ['OUTDATED_WEBSITE','POOR_VISUAL_QUALITY'])assert.throws(()=>validateReview({...contradictoryReview,status,reason_code},[{}]),/CONTRADICTORY_REVIEW/);
+});
+test('consistent decisions pass; ineligibility without evidence is rejected',()=>{
+ for(const status of ['INELIGIBLE','REVIEW_REQUIRED'])assert.equal(validateReview({...contradictoryReview,status,reason_code:'NONE'},[{}]).status,status);
+ for(const reason_code of ['OUTDATED_WEBSITE','POOR_VISUAL_QUALITY'])assert.equal(validateReview({...contradictoryReview,status:'ELIGIBLE',reason_code},[{}]).status,'ELIGIBLE');
+ assert.throws(()=>validateReview({...contradictoryReview,status:'ELIGIBLE',reason_code:'NONE'},[{}]),/UNSUPPORTED_ELIGIBILITY/);
+ assert.throws(()=>validateReview({...contradictoryReview,reason_code:'NONE',evidence:[]},[{}]),/UNSUPPORTED_INELIGIBILITY/);
+ assert.throws(()=>validateReview({...contradictoryReview,reason_code:'NONE',reference_comparison:' '},[{}]),/UNSUPPORTED_INELIGIBILITY/);
+});
+test('contradiction becomes manual review, keeps evidence and settles cost once',async()=>{
+ const {db,calls}=setup();let attempts=0;
+ const r=await runOne({db,capture:async()=>captured,runId:'run',paid:true,apiKey:'test',fetcher:async()=>{attempts++;return {ok:true,json:async()=>({id:'regression-1',usage:{prompt_tokens:15839,completion_tokens:454},choices:[{finish_reason:'stop',message:{content:JSON.stringify(contradictoryReview)}}]})};}});
+ assert.equal(attempts,1);
+ assert.equal(r.error_code,'CONTRADICTORY_REVIEW');
+ assert.equal(r.output.status,'REVIEW_REQUIRED');
+ assert.deepEqual(r.output.evidence,[{path:'proof.jpg'}]);
+ assert.equal(r.output.proposal,undefined);
+ assert.deepEqual(calls.map(c=>c.a),['claim','reserve','settle','finish']);
+ assert.equal(calls.find(c=>c.a==='settle').p.actual_usd,0.007062);
+});
