@@ -1,0 +1,25 @@
+name: Kleur Karakter motion review
+on:
+  pull_request:
+    paths:
+      - 'experiments/kk-motion/**'
+      - 'wrangler.kk-motion.jsonc'
+      - '.github/workflows/kk-motion.yml'
+permissions:
+  contents: read
+jobs:
+  preview:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'feat/kk-scroll-motion'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --check experiments/kk-motion/motion.js
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          wranglerVersion: '4.130.0'
+          command: deploy --config wrangler.kk-motion.jsonc
