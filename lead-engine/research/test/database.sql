@@ -1,0 +1,43 @@
+begin;
+do $$
+<<database_test>>
+declare receipt text; run_id uuid; task jsonb; again jsonb; result jsonb; failed boolean; cnt int;
+begin
+ receipt:=public.le_command('start_work','{"actor":"research-test","task":"rollback-only queue contract tests"}'::jsonb)->>'start_receipt_id';
+ run_id:=(public.le_research('seed',jsonb_build_object('start_receipt_id',receipt,'list_id','2f1606b7-e479-4370-955c-3979687f0485','run_key','rollback-research-test','limit',1))->>'id')::uuid;
+ result:=public.le_research('claim',jsonb_build_object('start_receipt_id',receipt,'run_id',run_id));
+ assert result->>'status'='PAUSED','new runs must be paused';
+ perform public.le_research('seed',jsonb_build_object('start_receipt_id',receipt,'list_id','2f1606b7-e479-4370-955c-3979687f0485','run_key','rollback-research-test','limit',1));
+ select count(*) into cnt from lead_engine.research_tasks where research_tasks.run_id=database_test.run_id;
+assert cnt=1,'seed must be idempotent';
+ update lead_engine.research_runs set status='ACTIVE',budget_usd=0.01 where id=run_id;
+ task:=public.le_research('claim',jsonb_build_object('start_receipt_id',receipt,'run_id',run_id));
+ assert task->>'id' is not null,'claim should return a task';
+ again:=public.le_research('claim',jsonb_build_object('start_receipt_id',receipt,'run_id',run_id));
+ assert again->>'status'='IDLE','leased task cannot be double claimed';
+ failed:=false;
+ begin perform public.le_research('reserve',jsonb_build_object('start_receipt_id',receipt,'task_id',task->>'id','lease_token',task->>'lease_token','amount_usd',0.02));
+ exception when others then failed:=sqlerrm='BUDGET_EXHAUSTED';end;
+ assert failed,'over budget must fail';
+ perform public.le_research('reserve',jsonb_build_object('start_receipt_id',receipt,'task_id',task->>'id','lease_token',task->>'lease_token','amount_usd',0.005));
+ failed:=false;
+ begin perform public.le_research('reserve',jsonb_build_object('start_receipt_id',receipt,'task_id',task->>'id','lease_token',task->>'lease_token','amount_usd',0.005));
+ exception when others then failed:=sqlerrm='ALREADY_RESERVED_NO_RESUBMIT';end;
+ assert failed,'reservation replay cannot reauthorize spending';
+ failed:=false;
+ begin perform public.le_research('finish',jsonb_build_object('start_receipt_id',receipt,'task_id',task->>'id','lease_token',gen_random_uuid(),'output','{}'::jsonb));
+ exception when others then failed:=sqlerrm='LEASE_MISMATCH';end;
+ assert failed,'wrong lease must fail';
+ result:=public.le_research('finish',jsonb_build_object('start_receipt_id',receipt,'task_id',task->>'id','lease_token',task->>'lease_token','output',jsonb_build_object('source_url','https://example.org','status','REVIEW_REQUIRED')));
+ again:=public.le_research('finish',jsonb_build_object('start_receipt_id',receipt,'task_id',task->>'id','lease_token',task->>'lease_token','output',jsonb_build_object('source_url','https://example.org','status','REVIEW_REQUIRED')));
+ assert result=again,'finish replay must be stable';
+ select count(*) into cnt from lead_engine.observations where value->>'research_task_id'=task->>'id' and field='website_research_proposal';
+ assert cnt=1,'single proposal observation';
+ assert not has_function_privilege('anon','public.le_research(text,jsonb)','execute'),'anonymous access blocked';
+ assert not has_function_privilege('authenticated','public.le_research(text,jsonb)','execute'),'user access blocked';
+ failed:=false;
+ begin perform public.le_research('seed',jsonb_build_object('start_receipt_id','invalid'));
+ exception when others then failed:=sqlerrm like 'CURRENT_BIBLE_START_REQUIRED%';end;
+ assert failed,'missing policy must block';
+end $$;
+rollback;
