@@ -1,0 +1,16 @@
+[Unit]
+Description=DWD bounded research test (requires prepared manifest and reviewed cost quotes)
+After=docker.service network-online.target
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/flock -n /var/lib/dwd-budget-test/worker.lock /usr/bin/docker run --rm --name dwd-budget-test --init --shm-size=256m --security-opt seccomp=/opt/dwd-seccomp.json --env-file /etc/dwd-budget-test.env --mount type=bind,src=/var/lib/dwd-budget-test,dst=/state dwd-research:budget-test node batch-cli.mjs
+TimeoutStartSec=65min
+TimeoutStopSec=30s
+ExecStop=-/usr/bin/docker stop --time 20 dwd-budget-test
+UMask=0077
+StandardOutput=journal
+StandardError=journal
+
+# Deliberately no timer or automatic restart. An uncertain paid attempt is never retried.

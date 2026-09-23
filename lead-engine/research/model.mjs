@@ -6,7 +6,7 @@ export function reservation(body){
  // (conservative GPT-4.1 mini 6,144 patch cap * 1.62). Reject oversized prompts instead of surprise cost.
  const text=JSON.stringify(body.messages.map(m=>({role:m.role,content:typeof m.content==='string'?m.content:m.content.filter(c=>c.type==='text')})));
  const images=body.messages.flatMap(m=>Array.isArray(m.content)?m.content:[]).filter(c=>c.type==='image_url').length;
- const input=Buffer.byteLength(text)+images*10000+2048;
+ const input=Buffer.byteLength(text)+Buffer.byteLength(JSON.stringify(body.response_format||{}))+images*10000+2048;
  if(input>150000)throw new Error('PROMPT_TOO_LARGE');
  return Math.ceil((input*0.4+MAX_OUTPUT*1.6)*1.2)/1e6;
 }
