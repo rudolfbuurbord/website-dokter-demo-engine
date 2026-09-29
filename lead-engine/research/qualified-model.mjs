@@ -11,6 +11,23 @@ const str={type:'string'},bool={type:'boolean'};
 const quote={type:'object',additionalProperties:false,properties:{text:str,page_index:{type:'integer'}},required:['text','page_index']};
 const properties={status:{type:'string',enum:['ELIGIBLE','INELIGIBLE','SKIP']},reason_code:{type:'string',enum:['OUTDATED_WEBSITE','POOR_VISUAL_QUALITY','NONE']},reason:str,company_name:str,company_match:bool,services_present:bool,nl_confirmed:bool,closure_indication:bool,email_belongs:bool,email:str,name_quote:quote,services_quote:quote,location_quote:quote,evidence:{type:'array',items:{type:'object',additionalProperties:false,properties:{finding:str,screenshot_index:{type:'integer'}},required:['finding','screenshot_index']}}};
 export function body(c){return {model:MODEL,max_completion_tokens:MAX_OUTPUT,temperature:0,response_format:{type:'json_schema',json_schema:{name:'qualified_review',strict:true,schema:{type:'object',additionalProperties:false,properties,required:Object.keys(properties)}}},messages:[{role:'system',content:PROMPT},{role:'user',content:[{type:'text',text:JSON.stringify({pages:c.pages.map(p=>({url:p.url,text:p.text})),contacts:c.contacts,limitations:c.limitations})},...c.images.flatMap((im,i)=>[{type:'text',text:`Screenshot ${i}: ${im.url} ${im.label}`},{type:'image_url',image_url:{url:'data:image/jpeg;base64,'+im.bytes.toString('base64'),detail:'high'}}])]}]};}
+
+// Formatting tolerance only: preserve letters/digits and whole-name boundaries.
+// Source quotes must still occur literally on a captured page.
+export function normalizeCompanyName(value) {
+ return String(value ?? '').normalize('NFKC').toLowerCase()
+  .replace(/[.'’ʼ]/gu,'')
+  .replace(/[^\p{L}\p{N}]+/gu,' ')
+  .trim().replace(/\s+/gu,' ')
+  .replace(/\bb\s+v\b/gu,'bv').replace(/\bn\s+v\b/gu,'nv')
+  .replace(/\bv\s+o\s+f\b/gu,'vof');
+}
+export function companyNameIsSourced(name,quote) {
+ if(typeof name!=='string'||typeof quote!=='string')return false;
+ const n=normalizeCompanyName(name),q=normalizeCompanyName(quote);
+ return n.replace(/\s/g,'').length>=3 && (' '+q+' ').includes(' '+n+' ');
+}
+
 export function validate(r,c,{benchmark=false}={}){
  if(!r||!['ELIGIBLE','INELIGIBLE','SKIP'].includes(r.status)||typeof r.reason!=='string'||r.reason.length<15)throw Error('INVALID_REVIEW');
  if(r.status==='SKIP')throw Error('INSUFFICIENT_EVIDENCE:'+r.reason.slice(0,100));
@@ -21,7 +38,7 @@ export function validate(r,c,{benchmark=false}={}){
  for(const name of ['name_quote','services_quote','location_quote']){
   const q=r[name];if(!q||!Number.isInteger(q.page_index)||typeof q.text!=='string'||q.text.length<4||!c.pages[q.page_index]?.text.includes(q.text))throw Error('FACT_QUOTE_NOT_FOUND:'+name);
  }
- if(typeof r.company_name!=='string'||r.company_name.length<3||!r.name_quote.text.toLowerCase().includes(r.company_name.toLowerCase()))throw Error('NAME_NOT_SOURCED');
+ if(!companyNameIsSourced(r.company_name,r.name_quote.text))throw Error('NAME_NOT_SOURCED');
  if(!c.contacts.some(x=>x.kind==='EMAIL'&&x.value.toLowerCase()===r.email.toLowerCase()))throw Error('EMAIL_NOT_PUBLISHED');
  return r;
 }
