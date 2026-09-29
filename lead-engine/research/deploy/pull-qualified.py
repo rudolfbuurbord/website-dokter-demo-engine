@@ -41,13 +41,17 @@ def unit_text(image):
 Description=DWD bounded 100-lead test (existing cumulative EUR1 budget)
 After=docker.service network-online.target
 Requires=docker.service
+StartLimitIntervalSec=1800
+StartLimitBurst=3
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/flock -n {DATA}/run.lock /usr/bin/docker run --rm --name dwd-qualified-test --init --shm-size=256m --security-opt seccomp=/opt/dwd-seccomp.json --env-file /etc/dwd-research.env --mount type=bind,src={DATA},dst=/state {image} node qualified-cli.mjs
+Environment=DWD_RELEASE={image}
+ExecStart=/usr/bin/flock -n {DATA}/run.lock /usr/bin/docker run --rm --name dwd-qualified-test --init --shm-size=256m --security-opt seccomp=/opt/dwd-seccomp.json --env-file /etc/dwd-research.env --env DWD_RELEASE={image} --mount type=bind,src={DATA},dst=/state {image} node qualified-cli.mjs
 ExecStop=-/usr/bin/docker stop --time 20 dwd-qualified-test
 TimeoutStartSec=6h
 TimeoutStopSec=30s
-Restart=no
+Restart=on-failure
+RestartSec=60s
 UMask=0077
 StandardOutput=journal
 StandardError=journal
@@ -66,8 +70,8 @@ def deploy():
             report('HELD', commit=target)
             return
         run('git', '-C', str(REPO), 'merge-base', '--is-ancestor', target, 'FETCH_HEAD')
-        # A released version gets ONE launch attempt, even after process/server crash.
-        # A failed run requires a new reviewed commit, not a blind repeated paid retry.
+        # One deployment per commit. Runtime gets at most three bounded restarts;
+        # the database reservation prevents any duplicate paid inference.
         marker = STATE / ('attempted-' + target)
         if marker.exists():
             return
@@ -87,7 +91,7 @@ def deploy():
         stage = 'tests'
         # No network, secrets, host state, docker socket or paid API access in tests.
         run('docker', 'run', '--rm', '--network=none', '--cap-drop=ALL', '--security-opt=no-new-privileges',
-            image, 'node', '--test', 'four-criteria.test.mjs', 'replay.test.mjs', 'company-name.test.mjs')
+            image, 'node', '--test', 'four-criteria.test.mjs', 'replay.test.mjs', 'company-name.test.mjs', 'test/proof.test.mjs', 'test/qualified-model.test.mjs')
         if busy():
             report('WAITING_FOR_IDLE', commit=target)
             return
@@ -131,3 +135,4 @@ if __name__ == '__main__':
         except BlockingIOError:
             raise SystemExit(0)
         deploy()
+

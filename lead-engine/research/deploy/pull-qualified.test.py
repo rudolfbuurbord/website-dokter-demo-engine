@@ -47,7 +47,8 @@ class DeploymentTests(unittest.TestCase):
         tests = next(c for c in self.calls if '--test' in c)
         self.assertIn('--network=none', tests)
         self.assertFalse(any('--env-file' in c for c in self.calls))
-        self.assertIn('Restart=no', m.UNIT.read_text())
+        self.assertIn('Restart=on-failure', m.UNIT.read_text())
+        self.assertIn('StartLimitBurst=3', m.UNIT.read_text())
 
     def test_active_worker_is_not_interrupted(self):
         self.active = 'activating'; m.deploy()
@@ -74,3 +75,4 @@ class DeploymentTests(unittest.TestCase):
         self.assertFalse(self.launches())
 
 if __name__ == '__main__': unittest.main()
+
