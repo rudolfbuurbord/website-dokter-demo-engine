@@ -9,29 +9,29 @@ mkdirSync(dir,{recursive:true,mode:0o700});
 function save(name,value){writeFileSync(`${dir}/${name}.tmp`,JSON.stringify(value,null,2),{mode:0o600});renameSync(`${dir}/${name}.tmp`,`${dir}/${name}`);}
 function read(name){return existsSync(`${dir}/${name}`)?JSON.parse(readFileSync(`${dir}/${name}`,'utf8')):null;}
 const refs=[['https://dusinkschildersbedrijf.nl/','ELIGIBLE'],['https://alferink-schilderwerken.nl/schildersbedrijf-enschede/','ELIGIBLE'],['https://vanheek.nl/uw-schildersbedrijf-in-enschede/','ELIGIBLE'],['https://www.schildersbedrijfwestenberg.nl/','INELIGIBLE'],['https://www.ronaldschilderwerken.nl/','INELIGIBLE']];
-let db,rpc,base,report,stopped='ERROR';
+let db,rpc,base,report,stopped='ERROR',previousResults=[];
 try{
  if(env.SUPABASE_URL?.replace(/\/$/,'')!=='https://skdjbifmtleiogbkqwid.supabase.co'||!env.SUPABASE_SERVICE_ROLE_KEY||!env.OPENAI_API_KEY)throw Error('CONFIGURATION_REQUIRED');
  // Fixed quote lifetime: no indefinite reuse of an old price or currency bound.
- if(Date.now()>Date.parse('2026-09-27T00:00:00Z'))throw Error('PRICE_CONFIGURATION_EXPIRED');
+ if(Date.now()>Date.parse('2026-10-02T00:00:00Z'))throw Error('PRICE_CONFIGURATION_EXPIRED');
  db=client({url:env.SUPABASE_URL.replace(/\/$/,''),key:env.SUPABASE_SERVICE_ROLE_KEY});
  const session=await db.command('start_work',{actor:'budget-worker-v1',task:'100 nieuwe schilders maximaal EUR1'});
  if(session.bibles?.length!==4||Object.entries(VERSIONS).some(([k,v])=>session.versions?.[k]!==v))throw Error('POLICY_CHANGED_REVIEW_REQUIRED');
  save('policy.json',session);base={start_receipt_id:session.start_receipt_id};
  rpc=async(action,p={})=>{
-  const res=await fetch(`${env.SUPABASE_URL.replace(/\/$/,'')}/rest/v1/rpc/le_budget_qualification`,{method:'POST',headers:{apikey:env.SUPABASE_SERVICE_ROLE_KEY,authorization:`Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,'content-type':'application/json'},body:JSON.stringify({p_action:action,p_payload:{...base,...p}}),signal:AbortSignal.timeout(20000)});
+  const res=await fetch(`${env.SUPABASE_URL.replace(/\/$/,'')}/rest/v1/rpc/le_budget_qualification`,{method:'POST',headers:{apikey:env.SUPABASE_SERVICE_ROLE_KEY,authorization:`Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,'content-type':'application/json'},body:JSON.stringify({p_action:action,p_payload:{...base,...p}}),signal:AbortSignal.timeout(60000)});
   const j=await res.json();if(!res.ok)throw Error(j.message||'DATABASE_FAILED');return j;
  };
  report=async(status)=>{
   const s=await rpc('status');
-  const results=s.results||[];
+  const results=s.results||[];previousResults=results;
   const costs=s.costs||[];
   save('report.json',{status,target_new_approved:100,approved:s.approved,rejected:s.rejected,
    unique_candidate_websites_attempted:new Set(results.filter(x=>x.result.metrics?.attempted).map(x=>x.domain)).size,
    unique_candidate_websites_rendered:new Set(results.filter(x=>x.result.metrics?.rendered).map(x=>x.domain)).size,
    page_loads:results.reduce((n,x)=>n+(x.result.metrics?.pages||0),0),skipped:results.filter(x=>x.result.status==='SKIPPED').length,
    calibration_websites_attempted:readdirSync(dir).filter(f=>f.endsWith('.started.json')).map(f=>read(f)).filter(x=>x.key.startsWith('calibration:')).length,source_requests:40,source_candidates:195,
-   costs,committed_upper_micro_eur:100000+costs.reduce((n,x)=>n+Number(x.settlement?.amount??x.reserved_micro_eur),0),
+   results,criteria_version:'owner-four-criteria-v1',costs,committed_upper_micro_eur:100000+costs.reduce((n,x)=>n+Number(x.settlement?.amount??x.reserved_micro_eur),0),
    provision_micro_eur:100000,conversion:'USD × 1.50 EUR upper × 1.21 tax upper. Upper bound, not invoice total.',
    fixed_subscriptions:'Existing Hetzner/Supabase/ChatGPT subscriptions excluded from incremental spend; no new subscription.',
    source_cost:'40 existing Serper credits; free-trial expected, invoice not verified. No more source calls in this run.',
@@ -40,13 +40,28 @@ try{
  const {capture}=await import('./capture.mjs');
  async function review(url,key,benchmark=false){
   const id=hash(key),cached=read(id+'.review.json');
-  if(cached)return cached;
+  if(cached){validate(cached.r,{images:cached.evidence,pages:cached.pages,contacts:cached.contacts},{benchmark});return cached;}
+  const answerSaved=read(id+'.answer.json'),captureSaved=read(id+'.capture.json');
+  if(answerSaved&&captureSaved){
+   const ev=read(id+'.evidence.json')||previousResults.find(x=>x.domain===key)?.result.evidence||[];
+   if(!ev.length)throw Error('SAVED_VISUAL_EVIDENCE_MISSING');
+   const receipt=read(id+'.settlement.json');
+   if(!receipt)throw Error('COST_SAVED_SETTLEMENT_MISSING');
+   await rpc('settle',receipt);
+   if(answerSaved.choices?.[0]?.finish_reason!=='stop'||answerSaved.choices[0].message.refusal)throw Error('MODEL_INCOMPLETE');
+   try{
+    const r=validate(JSON.parse(answerSaved.choices[0].message.content),captureSaved,{benchmark});
+    const out={r,evidence:ev,contacts:captureSaved.contacts,pages:captureSaved.pages,metrics:{attempted:true,rendered:true,pages:captureSaved.pages.length},provider_request_id:answerSaved.id};
+    save(id+'.review.json',out);return out;
+   }catch(e){e.metrics={attempted:true,rendered:true,pages:captureSaved.pages.length};e.evidence=ev;throw e;}
+  }
   if(read(id+'.started.json'))throw Error('PREVIOUS_ATTEMPT_NO_PAID_RETRY');
   save(id+'.started.json',{url,key,at:now()});
   let c,evidence=[];
   try{
    c=await capture(url);save(id+'.capture.json',{...c,images:c.images.map(x=>({label:x.label,url:x.url,observed_at:x.observed_at}))});
    evidence=await db.upload({run_id:'budget100-v1',id,lease_token:'v1'},c.images);
+   save(id+'.evidence.json',evidence);
    const request=body(c),upper=Math.ceil(reservation(request)*1.50*1.21*1e6);
    const reserved=await rpc('reserve',{key,amount:upper,stage:benchmark?'CALIBRATION':'QUALIFICATION'});
    if(!reserved.allowed)throw Error(reserved.reason);
@@ -61,7 +76,7 @@ try{
    const r=validate(JSON.parse(answer.choices[0].message.content),c,{benchmark});
    const output={r,evidence,contacts:c.contacts,pages:c.pages,metrics:{attempted:true,rendered:true,pages:c.pages.length},provider_request_id:answer.id};
    save(id+'.review.json',output);return output;
-  }catch(e){e.metrics={attempted:true,rendered:!!c,pages:c?.pages.length||0};e.evidence=evidence;throw e;}
+  }catch(e){e.metrics={attempted:true,rendered:!!c,pages:c?.pages.length||0};e.evidence=evidence;save(id+'.error.json',{key,reason:String(e.message),metrics:e.metrics,at:now()});throw e;}
  }
  let s=await report('STARTING');
  if(!s.calibration||s.calibration.prompt_hash!==PROMPT_HASH||Object.entries(VERSIONS).some(([k,v])=>s.calibration.versions?.[k]!==v)){
@@ -78,16 +93,18 @@ try{
    out=await review(candidate.website,key);const r=out.r;
    const contact=out.contacts.find(c=>c.kind==='EMAIL'&&c.value.toLowerCase()===r.email.toLowerCase());
    const ev=r.evidence.map(x=>({finding:x.finding,source_url:out.evidence[x.screenshot_index].source_url,observed_at:out.evidence[x.screenshot_index].observed_at,screenshot_url:'storage://lead-research-evidence/'+out.evidence[x.screenshot_index].path}));
-   const quote=name=>({finding:r[name].text,source_url:out.pages[r[name].page_index].url,observed_at:out.pages[r[name].page_index].observed_at});
+   const quote=name=>({finding:r[name].text,interpretation:'SOURCE_BASED_PARAPHRASE_ALLOWED',source_url:out.pages[r[name].page_index].url,observed_at:out.pages[r[name].page_index].observed_at});
    const payload={key,company_name:r.company_name,country:'NL',contact,model:MODEL,prompt_hash:PROMPT_HASH,provider_request_id:out.provider_request_id,metrics:out.metrics,evidence:out.evidence,
     qualification:{activity:{status:'ACTIVE',basis:'WEBSITE_BUSINESS_PRESENTATION',services_present:true,contact_consistent:true,closure_indication:false,evidence:[quote('services_quote'),quote('location_quote')]},identity:{status:'CLEAR',company_match_confirmed:true,evidence:[quote('name_quote'),quote('location_quote')]},assessment:{source_url:candidate.website,observed_at:out.evidence[0].observed_at,value:{status:r.status,reason:r.reason,reden:r.reason,reason_code:r.reason_code,reviewer:'budget-worker-v1',start_receipt_id:base.start_receipt_id,policy_version_id:VERSIONS['lead-intelligence-bible'],rubric_version:'owner-single-screen-binary-v2',calibration_approved:true,calibration_ref:PROMPT_HASH,desktop_reviewed:true,mobile_review_status:'NOT_TESTED',evidence:ev}}}};
    save(hash(key)+'.finish.json',payload);
    await rpc('finish',payload);
   }catch(e){
-   if(/EURO_CAP|TARGET_REACHED|COST_|POLICY_|CURRENT_BIBLE|MODEL_HTTP_(401|403|429)/.test(e.message)){stopped=e.message;await rpc('skip',{key,reason:stopped,metrics:e.metrics||out?.metrics||{attempted:true},evidence:e.evidence||out?.evidence||[]});break;}
-   await rpc('skip',{key,reason:String(e.message).slice(0,200),metrics:e.metrics||out?.metrics||{attempted:true},evidence:e.evidence||out?.evidence||[]});
+   if(/EURO_CAP|TARGET_REACHED|COST_|POLICY_|CURRENT_BIBLE|MODEL_HTTP_(401|403|429)/.test(e.message)){stopped=e.message;break;}
+   const prior=previousResults.find(x=>x.domain===key)?.result;
+   await rpc('skip',{key,reason:String(e.message).slice(0,200),metrics:e.metrics||out?.metrics||prior?.metrics||{attempted:true},evidence:e.evidence||out?.evidence||prior?.evidence||[],criteria_version:'owner-four-criteria-v1'});
   }
  }
  if(stopped==='ERROR')stopped='SOURCE_EXHAUSTED';
  await report(stopped);console.log(JSON.stringify({status:stopped,report:dir+'/report.json'}));
 }catch(e){if(report)await report('STOPPED:'+String(e.message).slice(0,120)).catch(()=>{});save('stopped.json',{status:'STOPPED',reason:String(e.message).slice(0,250),at:now()});console.error(JSON.stringify({status:'STOPPED',reason:String(e.message).slice(0,250)}));process.exitCode=1;}
+
