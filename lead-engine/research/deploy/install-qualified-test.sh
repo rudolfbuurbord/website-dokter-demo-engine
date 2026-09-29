@@ -3,10 +3,14 @@ set -euo pipefail
 [[ $(id -u) == 0 ]] || { echo 'Run on the Hetzner server as root.'; exit 1; }
 for f in /etc/dwd-research.env /opt/dwd-seccomp.json; do [[ -s $f ]] || { echo "Missing $f"; exit 1; }; done
 if systemctl is-active --quiet dwd-research-docker.timer; then echo 'Old timer is active; stop it first.'; exit 1; fi
-if systemctl is-active --quiet dwd-qualified-test.service; then echo 'Test already running.'; exit 0; fi
+if docker inspect dwd-qualified-test >/dev/null 2>&1 || systemctl is-active --quiet dwd-qualified-test.service; then echo 'Test already running.'; exit 0; fi
 release=$(cd "$(dirname "$0")/../.." && pwd)
 docker build -t dwd-research:qualified-test -f "$release/research/Dockerfile" "$release"
-install -d -m 700 -o 1000 -g 1000 /var/lib/dwd-qualified-test
+worker_uid=$(docker run --rm --entrypoint id dwd-research:qualified-test -u)
+worker_gid=$(docker run --rm --entrypoint id dwd-research:qualified-test -g)
+mkdir -p /var/lib/dwd-qualified-test
+chown "$worker_uid:$worker_gid" /var/lib/dwd-qualified-test
+chmod 700 /var/lib/dwd-qualified-test
 cat > /etc/systemd/system/dwd-qualified-test.service <<'UNIT'
 [Unit]
 Description=DWD 100 new painter leads, EUR1 incremental cap
@@ -27,8 +31,10 @@ StandardOutput=journal
 StandardError=journal
 UNIT
 systemctl daemon-reload
+systemctl reset-failed dwd-qualified-test.service 2>/dev/null || true
 systemctl start --no-block dwd-qualified-test.service
 echo 'Test service submitted. It continues if SSH disconnects.'
 echo 'Status: systemctl status dwd-qualified-test.service --no-pager'
 echo 'Report: cat /var/lib/dwd-qualified-test/report.json'
 echo 'On stop: cat /var/lib/dwd-qualified-test/stopped.json'
+
