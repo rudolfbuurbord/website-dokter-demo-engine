@@ -6,17 +6,17 @@ import {reservation,actualCost} from './model.mjs';
 import {businessExclusion,candidateMode,PROTOCOL} from './proof.mjs';
 import {rpcRequest,costTotals} from './runtime.mjs';
 const env=process.env,dir=env.DWD_STATE_DIR||'/state',now=()=>new Date().toISOString();
+// This release only replays previously paid evidence, even if DB control says RUN.
+const RELEASE_REPLAY_ONLY=true;
 const hash=s=>createHash('sha256').update(s).digest('hex');
 mkdirSync(dir,{recursive:true,mode:0o700});
 function save(name,value){writeFileSync(`${dir}/${name}.tmp`,JSON.stringify(value,null,2),{mode:0o600});renameSync(`${dir}/${name}.tmp`,`${dir}/${name}`);}
 function read(name){return existsSync(`${dir}/${name}`)?JSON.parse(readFileSync(`${dir}/${name}`,'utf8')):null;}
 let db,rpc,base,report,stopped='ERROR',previousResults=[];
 try{
- if(env.SUPABASE_URL?.replace(/\/$/,'')!=='https://skdjbifmtleiogbkqwid.supabase.co'||!env.SUPABASE_SERVICE_ROLE_KEY||!env.OPENAI_API_KEY)throw Error('CONFIGURATION_REQUIRED');
- // Fixed quote lifetime: no indefinite reuse of an old price or currency bound.
- if(Date.now()>Date.parse('2026-10-02T00:00:00Z'))throw Error('PRICE_CONFIGURATION_EXPIRED');
+ if(env.SUPABASE_URL?.replace(/\/$/,'')!=='https://skdjbifmtleiogbkqwid.supabase.co'||!env.SUPABASE_SERVICE_ROLE_KEY)throw Error('CONFIGURATION_REQUIRED');
  db=client({url:env.SUPABASE_URL.replace(/\/$/,''),key:env.SUPABASE_SERVICE_ROLE_KEY});
- const session=await db.command('start_work',{actor:'budget-worker-v1',task:'100 nieuwe schilders maximaal EUR1'});
+ const session=await db.command('start_work',{actor:'budget-worker-v1',task:'Replay saved qualification evidence only; no new paid calls; preserve cumulative EUR1 budget'});
  if(session.bibles?.length!==4||Object.entries(VERSIONS).some(([k,v])=>session.versions?.[k]!==v))throw Error('POLICY_CHANGED_REVIEW_REQUIRED');
  save('policy.json',session);base={start_receipt_id:session.start_receipt_id,protocol_version:PROTOCOL};
  rpc=(action,p={})=>rpcRequest(`${env.SUPABASE_URL.replace(/\/$/,'')}/rest/v1/rpc/le_budget_qualification`,{apikey:env.SUPABASE_SERVICE_ROLE_KEY,authorization:`Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,'content-type':'application/json'},action,{...base,...p});
@@ -35,7 +35,6 @@ try{
    source_cost:'40 existing Serper credits; free-trial expected, invoice not verified. No more source calls in this run.',
    model:MODEL,prompt_hash:PROMPT_HASH,protocol_version:PROTOCOL,updated_at:now()});await rpc('heartbeat',{key:'worker',status,protocol_version:PROTOCOL,release:env.DWD_RELEASE||'unidentified',summary:{approved:s.approved,rejected:s.rejected,...costTotals(costs)}});return s;
  };
- const {capture}=await import('./capture.mjs');
  let replayOnly=true;
  async function review(url,key,benchmark=false){
  const id=hash(key);
@@ -71,6 +70,11 @@ try{
   const current=await rpc('status');
   const mode=candidateMode({started,reserved:current.costs.some(x=>x.key===key),replayOnly});
   if(!['NEW','FREE_CAPTURE_RECOVERY'].includes(mode))throw Error(mode);
+  // Expiry protects NEW spend, not recovery of already-paid responses.
+  if(RELEASE_REPLAY_ONLY||replayOnly)throw Error('REPLAY_ONLY');
+  if(Date.now()>Date.parse('2026-10-02T00:00:00Z'))throw Error('PRICE_CONFIGURATION_EXPIRED');
+  if(!env.OPENAI_API_KEY)throw Error('CONFIGURATION_REQUIRED');
+  const {capture}=await import('./capture.mjs');
   save(id+'.started.json',{url,key,at:now(),capture_recovery_used:mode==='FREE_CAPTURE_RECOVERY'});
   let c,evidence=[];
   try{
@@ -102,7 +106,7 @@ try{
  // Reuse ONLY the exact calibrated inference prompt. A new prompt requires new,
  // genuinely matching calibration evidence; cached answers never certify a new prompt.
  if(!s.calibration||s.calibration.prompt_hash!==PROMPT_HASH||Object.entries(VERSIONS).some(([k,v])=>s.calibration.versions?.[k]!==v))throw Error('POLICY_CALIBRATION_MISMATCH_NO_PAID_RETRY');
- replayOnly=s.control?.mode!=='RUN';
+ replayOnly=RELEASE_REPLAY_ONLY||s.control?.mode!=='RUN';
  // Revalidate every already-finished cached candidate as well; do not overwrite a
  // historical approval automatically when evidence is merely missing.
  for(const previous of s.results.filter(x=>x.result.member_id)){
