@@ -48,7 +48,7 @@ test('saved paid response is recovered without browser or paid API; original bud
  const evidence=[{source_url:'https://example.nl',observed_at:new Date().toISOString(),path:'saved.jpg'}];
  const put=(suffix,x)=>writeFileSync(join(dir,id+suffix),JSON.stringify(x));
  put('.started.json',{key});put('.answer.json',{id:'already-paid',choices:[{finish_reason:'stop',message:{content:JSON.stringify(review)}}]});put('.settlement.json',{key,amount:1000,provider_request_id:'already-paid'});put('.capture.json',{pages:[{url:'https://example.nl',observed_at:new Date().toISOString(),text:'Voorbeeld b.v\nSchilderwerk in Nederland'}],contacts:[{kind:'EMAIL',value:'info@example.nl',source_url:'https://example.nl'}],images:[{}]});
- const state={approved:0,rejected:0,results:[{domain:key,result:{status:'SKIPPED',reason:'NAME_NOT_SOURCED',evidence}}],costs:[{key,settlement:{amount:1000},reserved_micro_eur:9999}],calibration:{prompt_hash:PROMPT_HASH,versions:VERSIONS}};
+ const state={approved:0,rejected:0,control:{mode:'REPLAY_ONLY',cohort_id:'pilot50-2026-10-03',keys:[key,...Array.from({length:49},(_,i)=>'other'+i+'.nl')]},results:[{domain:key,result:{status:'SKIPPED',reason:'DOSSIER_INCOMPLETE',evidence}}],costs:[{key,settlement:{amount:1000},reserved_micro_eur:9999}],calibration:{prompt_hash:PROMPT_HASH,versions:VERSIONS}};
  let finished=0,settled=0;
  globalThis.fetch=async(url,opts)=>{
  const b=JSON.parse(opts.body);let result;
