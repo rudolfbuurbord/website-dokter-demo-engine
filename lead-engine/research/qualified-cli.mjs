@@ -119,7 +119,7 @@ try{
   catch(e){await rpc('audit',{key,status:e.business_rejection?'BUSINESS_REJECTED':'REVIEW_REQUIRED',reason:e.message,business_rejection:e.business_rejection||null});}
  }
  const rawCandidates=await rpc('candidates');
- const completed=new Set(s.results.filter(x=>['APPROVED','REJECTED','SKIPPED'].includes(x.result.status)&&!(x.result.status==='SKIPPED'&&String(x.result.reason).startsWith('DOSSIER_INCOMPLETE')&&(read(hash(x.domain)+'.review.json')||s.recoverable_keys?.includes(x.domain)))).map(x=>x.domain));
+ const completed=new Set(s.results.filter(x=>['APPROVED','REJECTED','SKIPPED'].includes(x.result.status)&&!(x.result.status==='SKIPPED'&&String(x.result.reason).startsWith('DOSSIER_INCOMPLETE')&&(read(hash(x.domain)+'.review.json')||read(hash(x.domain)+'.answer.json')||s.recoverable_keys?.includes(x.domain)))).map(x=>x.domain));
  const candidates=[...new Map(rawCandidates.map(x=>[x.domain,x])).values()]
  .filter(x=>!cohortKeys.length||(cohortKeys.includes(x.domain)&&!completed.has(x.domain)));
  for(const candidate of candidates){
