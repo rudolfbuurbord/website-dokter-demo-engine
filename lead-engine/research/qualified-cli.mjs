@@ -6,8 +6,10 @@ import {reservation,actualCost} from './model.mjs';
 import {businessExclusion,candidateMode,PROTOCOL} from './proof.mjs';
 import {rpcRequest,costTotals} from './runtime.mjs';
 const env=process.env,dir=env.DWD_STATE_DIR||'/state',now=()=>new Date().toISOString();
-// This release only replays previously paid evidence, even if DB control says RUN.
-const RELEASE_REPLAY_ONLY=true;
+// Paid work requires the exact 50-company cohort in both worker and database.
+const COHORT_ID='pilot50-2026-10-03';
+let cohortKeys=[];
+const RELEASE_REPLAY_ONLY=false;
 const hash=s=>createHash('sha256').update(s).digest('hex');
 mkdirSync(dir,{recursive:true,mode:0o700});
 function save(name,value){writeFileSync(`${dir}/${name}.tmp`,JSON.stringify(value,null,2),{mode:0o600});renameSync(`${dir}/${name}.tmp`,`${dir}/${name}`);}
@@ -16,9 +18,9 @@ let db,rpc,base,report,stopped='ERROR',previousResults=[];
 try{
  if(env.SUPABASE_URL?.replace(/\/$/,'')!=='https://skdjbifmtleiogbkqwid.supabase.co'||!env.SUPABASE_SERVICE_ROLE_KEY)throw Error('CONFIGURATION_REQUIRED');
  db=client({url:env.SUPABASE_URL.replace(/\/$/,''),key:env.SUPABASE_SERVICE_ROLE_KEY});
- const session=await db.command('start_work',{actor:'budget-worker-v1',task:'Replay saved qualification evidence only; no new paid calls; preserve cumulative EUR1 budget'});
+ const session=await db.command('start_work',{actor:'budget-worker-v1',task:'Process authorized pilot50 cohort; preserve cumulative EUR1 budget; no outreach'});
  if(session.bibles?.length!==4||Object.entries(VERSIONS).some(([k,v])=>session.versions?.[k]!==v))throw Error('POLICY_CHANGED_REVIEW_REQUIRED');
- save('policy.json',session);base={start_receipt_id:session.start_receipt_id,protocol_version:PROTOCOL};
+ save('policy.json',session);base={start_receipt_id:session.start_receipt_id,protocol_version:PROTOCOL,cohort_id:COHORT_ID};
  rpc=(action,p={})=>rpcRequest(`${env.SUPABASE_URL.replace(/\/$/,'')}/rest/v1/rpc/le_budget_qualification`,{apikey:env.SUPABASE_SERVICE_ROLE_KEY,authorization:`Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,'content-type':'application/json'},action,{...base,...p});
  report=async(status)=>{
   const s=await rpc('status');
@@ -33,7 +35,7 @@ try{
    provision_micro_eur:100000,conversion:'USD × 1.50 EUR upper × 1.21 tax upper. Upper bound, not invoice total.',
    fixed_subscriptions:'Existing Hetzner/Supabase/ChatGPT subscriptions excluded from incremental spend; no new subscription.',
    source_cost:'40 existing Serper credits; free-trial expected, invoice not verified. No more source calls in this run.',
-   model:MODEL,prompt_hash:PROMPT_HASH,protocol_version:PROTOCOL,updated_at:now()});await rpc('heartbeat',{key:'worker',status,protocol_version:PROTOCOL,release:env.DWD_RELEASE||'unidentified',summary:{approved:s.approved,rejected:s.rejected,...costTotals(costs)}});return s;
+   model:MODEL,prompt_hash:PROMPT_HASH,protocol_version:PROTOCOL,updated_at:now()});await rpc('heartbeat',{key:'worker',status,protocol_version:PROTOCOL,release:env.DWD_RELEASE||'unidentified',summary:{approved:s.approved,rejected:s.rejected,cohort_id:cohortKeys.length?COHORT_ID:null,cohort_total:cohortKeys.length,cohort_processed:results.filter(x=>cohortKeys.includes(x.domain)).length,...costTotals(costs)}});return s;
  };
  let replayOnly=true;
  async function review(url,key,benchmark=false){
@@ -72,7 +74,8 @@ try{
   if(!['NEW','FREE_CAPTURE_RECOVERY'].includes(mode))throw Error(mode);
   // Expiry protects NEW spend, not recovery of already-paid responses.
   if(RELEASE_REPLAY_ONLY||replayOnly)throw Error('REPLAY_ONLY');
-  if(Date.now()>Date.parse('2026-10-02T00:00:00Z'))throw Error('PRICE_CONFIGURATION_EXPIRED');
+  // Pricing verified 2026-10-03: developers.openai.com/api/docs/models/gpt-4.1-mini ($0.40/$1.60 per 1M).
+  if(Date.now()>Date.parse('2026-10-04T00:00:00Z'))throw Error('PRICE_CONFIGURATION_EXPIRED');
   if(!env.OPENAI_API_KEY)throw Error('CONFIGURATION_REQUIRED');
   const {capture}=await import('./capture.mjs');
   save(id+'.started.json',{url,key,at:now(),capture_recovery_used:mode==='FREE_CAPTURE_RECOVERY'});
@@ -106,15 +109,19 @@ try{
  // Reuse ONLY the exact calibrated inference prompt. A new prompt requires new,
  // genuinely matching calibration evidence; cached answers never certify a new prompt.
  if(!s.calibration||s.calibration.prompt_hash!==PROMPT_HASH||Object.entries(VERSIONS).some(([k,v])=>s.calibration.versions?.[k]!==v))throw Error('POLICY_CALIBRATION_MISMATCH_NO_PAID_RETRY');
- replayOnly=RELEASE_REPLAY_ONLY||s.control?.mode!=='RUN';
+ cohortKeys=s.control?.cohort_id===COHORT_ID&&Array.isArray(s.control.keys)&&new Set(s.control.keys).size===50?s.control.keys:[];
+ replayOnly=RELEASE_REPLAY_ONLY||s.control?.mode!=='RUN'||cohortKeys.length!==50;
  // Revalidate every already-finished cached candidate as well; do not overwrite a
  // historical approval automatically when evidence is merely missing.
- for(const previous of s.results.filter(x=>x.result.member_id)){
+ for(const previous of s.results.filter(x=>x.result.member_id&&(!cohortKeys.length||cohortKeys.includes(x.domain)))){
   const key=previous.domain;
   try{const out=await review('https://'+key+'/',key);await rpc('audit',{key,status:'VALIDATED',reason:'Saved evidence passed repaired four-criteria validator',provider_request_id:out.provider_request_id});}
   catch(e){await rpc('audit',{key,status:e.business_rejection?'BUSINESS_REJECTED':'REVIEW_REQUIRED',reason:e.message,business_rejection:e.business_rejection||null});}
  }
- const candidates=await rpc('candidates');
+ const rawCandidates=await rpc('candidates');
+ const completed=new Set(s.results.filter(x=>['APPROVED','REJECTED','SKIPPED'].includes(x.result.status)).map(x=>x.domain));
+ const candidates=[...new Map(rawCandidates.map(x=>[x.domain,x])).values()]
+ .filter(x=>!cohortKeys.length||(cohortKeys.includes(x.domain)&&!completed.has(x.domain)));
  for(const candidate of candidates){
   const key=candidate.domain;
   if(replayOnly&&!read(hash(key)+'.answer.json')&&!read(hash(key)+'.review.json')&&!s.recoverable_keys?.includes(key))continue;
@@ -136,7 +143,7 @@ try{
    await rpc('skip',{key,reason:String(e.message).slice(0,200),metrics:e.metrics||out?.metrics||prior?.metrics||{attempted:true},evidence:e.evidence||out?.evidence||prior?.evidence||[],criteria_version:PROTOCOL});
   }
  }
- if(stopped==='ERROR')stopped=replayOnly?'REPLAY_COMPLETE':'SOURCE_EXHAUSTED';
+ if(stopped==='ERROR')stopped=replayOnly?'REPLAY_COMPLETE':'COHORT_COMPLETE';
  await report(stopped);console.log(JSON.stringify({status:stopped,report:dir+'/report.json'}));
 }catch(e){if(report)await report('STOPPED:'+String(e.message).slice(0,120)).catch(()=>{});save('stopped.json',{status:'STOPPED',reason:String(e.message).slice(0,250),at:now()});console.error(JSON.stringify({status:'STOPPED',reason:String(e.message).slice(0,250)}));process.exitCode=1;}
 
