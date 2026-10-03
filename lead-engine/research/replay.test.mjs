@@ -6,6 +6,38 @@ import {join} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {createHash} from 'node:crypto';
 import {VERSIONS,PROMPT_HASH} from './qualified-model.mjs';
+
+test('authorized cohort processes at most 50 distinct companies and never retries terminal candidates',async()=>{
+ const dir=mkdtempSync(join(tmpdir(),'dwd-cohort-')),oldFetch=globalThis.fetch,oldEnv={...process.env};
+ try{
+  for(const f of ['qualified-cli.mjs','qualified-model.mjs','client.mjs','model.mjs','proof.mjs','runtime.mjs'])copyFileSync(new URL(f,import.meta.url),join(dir,f));
+  globalThis.__pilotCaptured=[];
+  writeFileSync(join(dir,'capture.mjs'),"export async function capture(url){globalThis.__pilotCaptured.push(url);throw Error('TEST_CAPTURE_FAILURE');}");
+  const keys=Array.from({length:50},(_,i)=>'pilot'+i+'.nl');
+  const state={approved:0,rejected:0,results:[{domain:keys[0],result:{status:'SKIPPED'}}],costs:[],control:{mode:'RUN',cohort_id:'pilot50-2026-10-03',keys},calibration:{prompt_hash:PROMPT_HASH,versions:VERSIONS}};
+  globalThis.fetch=async(url,opts)=>{
+   assert.ok(String(url).startsWith('https://skdjbifmtleiogbkqwid.supabase.co/rest/v1/rpc/'));
+   const b=JSON.parse(opts.body);let result;
+   if(String(url).endsWith('/le_command'))result={bibles:[{},{},{},{}],versions:VERSIONS,start_receipt_id:'test'};
+   else if(b.p_action==='status')result=state;
+   else if(b.p_action==='heartbeat')result={saved:true};
+   else if(b.p_action==='restore')result={};
+   else if(b.p_action==='skip'){state.results.push({domain:b.p_payload.key,result:{status:'SKIPPED'}});result={saved:true};}
+   else if(b.p_action==='candidates')result=[...keys,keys[1],'outside.nl'].map(domain=>({domain,website:'https://'+domain}));
+   else throw Error('UNEXPECTED_REQUEST:'+b.p_action);
+   return {ok:true,json:async()=>structuredClone(result)};
+  };
+  Object.assign(process.env,{SUPABASE_URL:'https://skdjbifmtleiogbkqwid.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'test-not-secret',OPENAI_API_KEY:'test-not-secret',DWD_STATE_DIR:dir});
+  await import(pathToFileURL(join(dir,'qualified-cli.mjs')).href);
+  const report=JSON.parse(readFileSync(join(dir,'report.json')));
+  assert.equal(report.status,'COHORT_COMPLETE');
+  assert.equal(globalThis.__pilotCaptured.length,49);
+  assert.equal(new Set(globalThis.__pilotCaptured).size,49);
+  assert.ok(!globalThis.__pilotCaptured.includes('https://outside.nl'));
+  assert.equal(state.results.length,50);
+ }finally{delete globalThis.__pilotCaptured;globalThis.fetch=oldFetch;process.env=oldEnv;rmSync(dir,{recursive:true,force:true});}
+});
+
 test('saved paid response is recovered without browser or paid API; original budget ledger retained',async()=>{
  const dir=mkdtempSync(join(tmpdir(),'dwd-replay-')),oldFetch=globalThis.fetch,oldEnv={...process.env};
  try{
