@@ -1,0 +1,43 @@
+name: Configure Wessels demo domain
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/wessels-demo-domain.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  dns:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Configure only Wessels demo DNS records
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import os,json,urllib.request,urllib.parse,urllib.error
+          def api(path, data=None):
+              req=urllib.request.Request('https://api.cloudflare.com/client/v4/'+path, data=None if data is None else json.dumps(data).encode(), headers={'Authorization':'Bearer '+os.environ['CLOUDFLARE_API_TOKEN'],'Content-Type':'application/json'})
+              try:
+                  with urllib.request.urlopen(req) as r: out=json.load(r)
+              except urllib.error.HTTPError as e:
+                  out=json.load(e)
+              if not out.get('success'):
+                  raise RuntimeError(json.dumps(out.get('errors',[])))
+              return out['result']
+          zones=api('zones?name=dewebsitedokters.nl')
+          if len(zones)!=1: raise RuntimeError('Token cannot find dewebsitedokters.nl zone; DNS zone access is required.')
+          zone=zones[0]['id']
+          records=[{"type":"CNAME","name":"wessels-schilders-demo.dewebsitedokters.nl","content":"custom-domains.chatgpt.site","proxied":False,"ttl":1},{"type":"TXT","name":"_openai-site-verification.wessels-schilders-demo.dewebsitedokters.nl","content":"openai-site-verification=8p2w_MgXgju2kN_xinBUImc6BZ0XzUTETGgAFGTu624","ttl":1},{"type":"TXT","name":"_cf-custom-hostname.wessels-schilders-demo.dewebsitedokters.nl","content":"96a5e362-f28a-4e65-9984-a446c91a3ce4","ttl":1}]
+          for record in records:
+              path='zones/'+zone+'/dns_records'
+              old=api(path+'?name='+urllib.parse.quote(record['name']))
+              if old:
+                  if any(r['type']==record['type'] and r['content'].strip('"').rstrip('.')==record['content'].rstrip('.') for r in old):
+                      print('Already configured:',record['type'],record['name'])
+                      continue
+                  raise RuntimeError('Conflicting record; no overwrite performed: '+record['name'])
+              api(path,record)
+              print('Created:',record['type'],record['name'])
+          PY
