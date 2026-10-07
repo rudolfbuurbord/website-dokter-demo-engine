@@ -29,7 +29,7 @@ jobs:
           zones=api('zones?name=dewebsitedokters.nl')
           if len(zones)!=1: raise RuntimeError('Token cannot find dewebsitedokters.nl zone; DNS zone access is required.')
           zone=zones[0]['id']
-          records=[{"type":"CNAME","name":"fransen-schilders-demo.dewebsitedokters.nl","content":"custom-domains.chatgpt.site","proxied":false,"ttl":1},{"type":"TXT","name":"_openai-site-verification.fransen-schilders-demo.dewebsitedokters.nl","content":"openai-site-verification=Vk6i2fVez7n9HbJckStFybVBC0FPlmmWe5vLht_TFLo","ttl":1},{"type":"TXT","name":"_cf-custom-hostname.fransen-schilders-demo.dewebsitedokters.nl","content":"8565a0df-b634-4426-96b5-91cb7c904303","ttl":1}]
+          records=[{"type":"CNAME","name":"fransen-schilders-demo.dewebsitedokters.nl","content":"custom-domains.chatgpt.site","proxied":False,"ttl":1},{"type":"TXT","name":"_openai-site-verification.fransen-schilders-demo.dewebsitedokters.nl","content":"openai-site-verification=Vk6i2fVez7n9HbJckStFybVBC0FPlmmWe5vLht_TFLo","ttl":1},{"type":"TXT","name":"_cf-custom-hostname.fransen-schilders-demo.dewebsitedokters.nl","content":"8565a0df-b634-4426-96b5-91cb7c904303","ttl":1}]
           for record in records:
               path='zones/'+zone+'/dns_records'
               old=api(path+'?name='+urllib.parse.quote(record['name']))
