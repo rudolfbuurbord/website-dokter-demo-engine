@@ -1,0 +1,19 @@
+[Unit]
+Description=De Website Dokter research worker (one task)
+Wants=network-online.target
+After=network-online.target
+[Service]
+Type=oneshot
+User=dwd-research
+WorkingDirectory=/opt/dwd/lead-engine/research
+EnvironmentFile=/etc/dwd-research.env
+Environment=PLAYWRIGHT_BROWSERS_PATH=/opt/dwd-browsers
+ExecStart=/usr/bin/node cli.mjs once
+TimeoutStartSec=8min
+KillMode=control-group
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/dwd-research
+Environment=HOME=/var/lib/dwd-research
+UMask=0077

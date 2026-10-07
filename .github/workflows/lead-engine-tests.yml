@@ -17,3 +17,4 @@ jobs:
         with:
           node-version: 22
       - run: node --test lead-engine/tests/engine.test.mjs
+      - run: node --test lead-engine/research/test/*.test.mjs
