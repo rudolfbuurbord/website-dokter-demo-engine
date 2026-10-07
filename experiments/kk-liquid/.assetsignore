@@ -1,0 +1,6 @@
+node_modules
+hero.js
+package.json
+package-lock.json
+README.md
+paint.glb
