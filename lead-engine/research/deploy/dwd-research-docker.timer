@@ -1,0 +1,12 @@
+[Unit]
+Description=Poll DWD research queue after each finished task
+
+[Timer]
+OnBootSec=1min
+OnActiveSec=5s
+OnUnitInactiveSec=30s
+AccuracySec=1s
+Unit=dwd-research-docker.service
+
+[Install]
+WantedBy=timers.target
