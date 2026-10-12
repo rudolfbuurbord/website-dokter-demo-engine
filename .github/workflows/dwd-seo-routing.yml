@@ -1,0 +1,41 @@
+name: Inspect DWD SEO routing
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/dwd-seo-routing.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Read only DWD domain routing and redirect access
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.request, urllib.parse, urllib.error
+          def api(path):
+              req=urllib.request.Request('https://api.cloudflare.com/client/v4/'+path,headers={'Authorization':'Bearer '+os.environ['CLOUDFLARE_API_TOKEN'],'Content-Type':'application/json'})
+              try:
+                  with urllib.request.urlopen(req,timeout=30) as response:
+                      return response.status,json.load(response)
+              except urllib.error.HTTPError as error:
+                  return error.code,json.load(error)
+          status,data=api('zones?name=dewebsitedokters.nl')
+          if not data.get('success') or len(data.get('result',[]))!=1:
+              raise RuntimeError('DWD zone lookup failed; HTTP '+str(status))
+          zone=data['result'][0]
+          report={'zone_status':zone['status'],'dns':[]}
+          for hostname in ['dewebsitedokters.nl','www.dewebsitedokters.nl']:
+              status,data=api('zones/'+zone['id']+'/dns_records?name='+urllib.parse.quote(hostname))
+              report['dns'].append({'hostname':hostname,'http_status':status,'records':[{'type':r['type'],'proxied':r.get('proxied')} for r in data.get('result',[])]})
+          status,data=api('zones/'+zone['id']+'/rulesets/phases/http_request_dynamic_redirect/entrypoint')
+          report['redirect_api_http_status']=status
+          report['redirect_api_success']=data.get('success',False)
+          report['redirect_api_errors']=data.get('errors',[])
+          report['existing_redirect_rule_count']=len(data.get('result',{}).get('rules',[])) if isinstance(data.get('result'),dict) else None
+          print('DWD_ROUTING_AUDIT='+json.dumps(report))
+          PY
