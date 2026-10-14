@@ -29,7 +29,7 @@ jobs:
           zones=api('zones?name=dewebsitedokters.nl')
           if len(zones)!=1: raise RuntimeError('Token cannot find dewebsitedokters.nl zone; DNS zone access is required.')
           zone=zones[0]['id']
-          records=[{"type":"CNAME","name":"siemerink-schilderwerken-demo.dewebsitedokters.nl","content":"custom-domains.chatgpt.site","proxied":false,"ttl":1},{"type":"TXT","name":"_openai-site-verification.siemerink-schilderwerken-demo.dewebsitedokters.nl","content":"openai-site-verification=z9WBLXYsnGFgiagUhIVyy4O5vxUl2NfZx0Twfx5FDIU","ttl":1},{"type":"TXT","name":"_cf-custom-hostname.siemerink-schilderwerken-demo.dewebsitedokters.nl","content":"973670d0-5ea3-4a96-b71b-4b9675581902","ttl":1}]
+          records=[{"type":"CNAME","name":"siemerink-schilderwerken-demo.dewebsitedokters.nl","content":"custom-domains.chatgpt.site","proxied":False,"ttl":1},{"type":"TXT","name":"_openai-site-verification.siemerink-schilderwerken-demo.dewebsitedokters.nl","content":"openai-site-verification=z9WBLXYsnGFgiagUhIVyy4O5vxUl2NfZx0Twfx5FDIU","ttl":1},{"type":"TXT","name":"_cf-custom-hostname.siemerink-schilderwerken-demo.dewebsitedokters.nl","content":"973670d0-5ea3-4a96-b71b-4b9675581902","ttl":1}]
           for record in records:
               path='zones/'+zone+'/dns_records'
               old=api(path+'?name='+urllib.parse.quote(record['name']))
