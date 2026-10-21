@@ -1,0 +1,53 @@
+name: Configure A&M Techniek demo domain
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/aenmtechniek-demo-domain.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  dns:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Configure only A&M Techniek demo DNS records
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import os,json,urllib.request,urllib.parse,urllib.error
+          def api(path, data=None):
+              req=urllib.request.Request('https://api.cloudflare.com/client/v4/'+path, data=None if data is None else json.dumps(data).encode(), headers={'Authorization':'Bearer '+os.environ['CLOUDFLARE_API_TOKEN'],'Content-Type':'application/json'})
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as response: out=json.load(response)
+              except urllib.error.HTTPError as error:
+                  out=json.load(error)
+              if not out.get('success'):
+                  raise RuntimeError(json.dumps(out.get('errors',[])))
+              return out['result']
+          zones=api('zones?name=dewebsitedokters.nl')
+          if len(zones)!=1: raise RuntimeError('Token cannot find the exact DWD zone.')
+          zone=zones[0]['id']
+          records=json.loads("[{\"type\":\"CNAME\",\"name\":\"aenmtechniek-demo.dewebsitedokters.nl\",\"content\":\"custom-domains.chatgpt.site\",\"proxied\":false,\"ttl\":1},{\"type\":\"TXT\",\"name\":\"_openai-site-verification.aenmtechniek-demo.dewebsitedokters.nl\",\"content\":\"openai-site-verification=Bz15s-LSa8FCQQQ7-8RAjqF9_RTW_uATWF3uZnDwN7Y\",\"ttl\":1},{\"type\":\"TXT\",\"name\":\"_cf-custom-hostname.aenmtechniek-demo.dewebsitedokters.nl\",\"content\":\"31746916-249b-4658-a326-953a21002988\",\"ttl\":1}]")
+          def matches(old, record):
+              return old['type']==record['type'] and old['content'].strip('"').rstrip('.')==record['content'].rstrip('.') and (record['type']!='CNAME' or not old.get('proxied',False))
+          pending=[]
+          for record in records:
+              path='zones/'+zone+'/dns_records'
+              old=api(path+'?name='+urllib.parse.quote(record['name']))
+              if old:
+                  if not any(matches(item, record) for item in old):
+                      raise RuntimeError('Conflicting DNS record; no changes made: '+record['name'])
+                  print('Already configured:',record['type'],record['name'])
+              else:
+                  pending.append(record)
+          for record in pending:
+              api('zones/'+zone+'/dns_records',record)
+              print('Created:',record['type'],record['name'])
+          for record in records:
+              old=api('zones/'+zone+'/dns_records?name='+urllib.parse.quote(record['name']))
+              if not any(matches(item, record) for item in old):
+                  raise RuntimeError('Read-back verification failed: '+record['name'])
+              print('Verified:',record['type'],record['name'])
+          PY
