@@ -1,0 +1,31 @@
+name: Oors isolated review preview
+on:
+  pull_request:
+    paths: ['experiments/oors-preview/**', 'wrangler.oors-preview.jsonc', '.github/workflows/oors-preview.yml']
+permissions:
+  contents: read
+jobs:
+  preview:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'fix/oors-mobile-preview'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate preview script
+        run: |
+          node - <<'JS'
+          const fs = require('fs');
+          const vm = require('vm');
+          const html = fs.readFileSync('experiments/oors-preview/index.html', 'utf8');
+          new vm.Script(html.match(/<script>([\s\S]*?)<\/script>/)[1]);
+          if ((html.match(/<section /g)||[]).length !== 13) throw Error('Missing scenes');
+          JS
+      - name: Publish isolated review worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          wranglerVersion: '4.130.0'
+          command: deploy --config wrangler.oors-preview.jsonc
