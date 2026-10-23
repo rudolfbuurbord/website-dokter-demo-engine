@@ -1,0 +1,65 @@
+{
+  "purpose": "Explicitly labeled concept before/after illustrations; never proof of real work.",
+  "assets": [
+    {
+      "key": "room-after",
+      "job_id": "88c43271-ba16-482c-b3df-79f9a16fc657",
+      "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Ix7HDwkUTvTACTz1lrf4uCC23C/hf_20260913_153422_88c43271-ba16-482c-b3df-79f9a16fc657.png",
+      "sha256": "a33951640ff34ec3047e7c49b593ea06d3c83f3981713fea81081f70ac3dcc35",
+      "origin": "AI_DECORATIVE",
+      "claim_safe": false,
+      "width": 1024,
+      "height": 688
+    },
+    {
+      "key": "detail-after",
+      "job_id": "4ceb9bae-7a75-48bd-8b1f-0c11910b862b",
+      "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Ix7HDwkUTvTACTz1lrf4uCC23C/hf_20260913_153454_4ceb9bae-7a75-48bd-8b1f-0c11910b862b.png",
+      "sha256": "9b0b6c3736b99ca1c8d9dccbc05b1edb39c7cd86dcc909e040d052e184d6dbdc",
+      "origin": "AI_DECORATIVE",
+      "claim_safe": false,
+      "width": 1024,
+      "height": 688
+    },
+    {
+      "key": "frame-after",
+      "job_id": "b19b1c28-c92b-4f45-a5fc-e73745a39fe6",
+      "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Ix7HDwkUTvTACTz1lrf4uCC23C/hf_20260913_153455_b19b1c28-c92b-4f45-a5fc-e73745a39fe6.png",
+      "sha256": "b8e408e104693238c9d5281f9b6fe9aae696263d6ff07accb69121cc8379a452",
+      "origin": "AI_DECORATIVE",
+      "claim_safe": false,
+      "width": 1024,
+      "height": 688
+    },
+    {
+      "key": "room-before",
+      "job_id": "1da29da2-cb2c-4a73-897b-635b668b90b5",
+      "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Ix7HDwkUTvTACTz1lrf4uCC23C/hf_20260913_153631_1da29da2-cb2c-4a73-897b-635b668b90b5.png",
+      "sha256": "dfd80927d33e4880fef45764c55337e9b1a5a675f5d9b8e1455d79817eaae4c9",
+      "origin": "AI_DECORATIVE",
+      "claim_safe": false,
+      "width": 1024,
+      "height": 688
+    },
+    {
+      "key": "detail-before",
+      "job_id": "726cbbcc-409b-4b8f-9f83-8991519662da",
+      "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Ix7HDwkUTvTACTz1lrf4uCC23C/hf_20260913_153633_726cbbcc-409b-4b8f-9f83-8991519662da.png",
+      "sha256": "978485ed17c9084c066ed4bc80b9be20e42127b73d07babf6c00667533e9edad",
+      "origin": "AI_DECORATIVE",
+      "claim_safe": false,
+      "width": 1024,
+      "height": 688
+    },
+    {
+      "key": "frame-before",
+      "job_id": "302731dd-4a00-45be-b64d-ad6193d2fd80",
+      "source_url": "https://d8j0ntlcm91z4.cloudfront.net/user_3Ix7HDwkUTvTACTz1lrf4uCC23C/hf_20260913_153634_302731dd-4a00-45be-b64d-ad6193d2fd80.png",
+      "sha256": "de9ae2f44e6c435bff3c06b86d8d5c769fdfceb41368f0b71b01bd95925eb343",
+      "origin": "AI_DECORATIVE",
+      "claim_safe": false,
+      "width": 1024,
+      "height": 688
+    }
+  ]
+}
