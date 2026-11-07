@@ -1,19 +1,19 @@
-// November call-ready pilot: collect evidence for this exact run without model spend.
+// Paid November CALL review. Supabase reserves each request before provider traffic.
 if (process.env.DWD_RELEASE?.startsWith('dwd-research:release-')) {
- const {client}=await import('./client.mjs');
- const db=client({url:process.env.SUPABASE_URL.replace(/\/$/,''),key:process.env.SUPABASE_SERVICE_ROLE_KEY});
- const runId='2b00e3a2-0b86-4041-a99a-f88e50f3e236';
- const status=await db.research('status');
- const pilot=status.runs.find(run=>run.id===runId);
- if(!pilot||pilot.run_key!=='dwd-call-ready-20261107-pilot5'||pilot.tasks!==5||Number(pilot.budget_usd)!==0){
-  throw new Error('CALL_READY_PILOT_SCOPE_MISMATCH');
- }
+ const url=process.env.SUPABASE_URL?.replace(/\/$/,'');
+ const apiKey=process.env.OPENAI_API_KEY;
+ if(url!=='https://skdjbifmtleiogbkqwid.supabase.co'||!process.env.SUPABASE_SERVICE_ROLE_KEY||!apiKey)throw new Error('PAID_CONFIGURATION_REQUIRED');
+ const db=client({url,key:process.env.SUPABASE_SERVICE_ROLE_KEY});
+ const runId='8b9be84a-8e63-4779-9857-5c66e1f4cfed';
+ const {runs}=await db.research('status');
+ const paidRun=runs.find(run=>run.id===runId);
+ if(!paidRun||paidRun.run_key!=='dwd-call-ready-20261107-paid1'||paidRun.tasks!==20||Number(paidRun.budget_usd)!==0.50)throw new Error('PAID_RUN_SCOPE_MISMATCH');
  const {runOne}=await import('./worker.mjs');
  const {capture}=await import('./capture.mjs');
- for(let attempt=0;attempt<5;attempt++){
-  const result=await runOne({db,capture,runId,paid:false});
+ for(let attempt=0;attempt<20;attempt++){
+  const result=await runOne({db,capture,runId,paid:true,apiKey});
   console.log(JSON.stringify({run_id:runId,id:result.id,status:result.status,error_code:result.error_code}));
-  if(!result.id)break;
+  if(!result.id||/^(BUDGET_EXHAUSTED|MODEL_HTTP_|MODEL_USAGE_UNKNOWN|TimeoutError)/.test(result.error_code||''))break;
  }
  process.exit(0);
 }
