@@ -1,0 +1,15 @@
+[Unit]
+Description=DWD queued website research via Docker
+Wants=network-online.target
+After=network-online.target docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/docker run --rm --name dwd-research-worker --init --shm-size=256m --security-opt seccomp=/opt/dwd-seccomp.json --env-file /etc/dwd-research.env -e ALLOW_PAID=true dwd-research:pilot node cli.mjs once
+ExecStopPost=-/usr/bin/docker stop --time 20 dwd-research-worker
+TimeoutStartSec=8min
+TimeoutStopSec=30s
+UMask=0077
+StandardOutput=journal
+StandardError=journal

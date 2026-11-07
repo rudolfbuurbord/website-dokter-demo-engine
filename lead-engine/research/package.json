@@ -1,0 +1,1 @@
+{"name":"dwd-lead-research","private":true,"type":"module","scripts":{"test":"node --test test/*.test.mjs","once":"node cli.mjs once","status":"node cli.mjs status"},"dependencies":{"playwright":"1.55.0"}}
