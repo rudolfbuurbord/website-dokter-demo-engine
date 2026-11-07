@@ -7,7 +7,9 @@ import {pathToFileURL} from 'node:url';
 import {createHash} from 'node:crypto';
 import {VERSIONS,PROMPT_HASH} from './qualified-model.mjs';
 
-test('authorized cohort processes at most 50 distinct companies and never retries terminal candidates',async()=>{
+test('authorized cohort processes at most 50 distinct companies and never retries terminal candidates',async(t)=>{
+ // Use the historical authorization window without changing the production cutoff.
+ t.mock.method(Date,'now',()=>Date.parse('2026-10-03T14:00:00Z'));
  const dir=mkdtempSync(join(tmpdir(),'dwd-cohort-')),oldFetch=globalThis.fetch,oldEnv={...process.env};
  try{
   for(const f of ['qualified-cli.mjs','qualified-model.mjs','client.mjs','model.mjs','proof.mjs','runtime.mjs'])copyFileSync(new URL(f,import.meta.url),join(dir,f));
