@@ -3,13 +3,13 @@ if (process.env.DWD_RELEASE?.startsWith('dwd-research:release-')) {
  const url=process.env.SUPABASE_URL?.replace(/\/$/,'');
  if(url!=='https://skdjbifmtleiogbkqwid.supabase.co'||!process.env.SUPABASE_SERVICE_ROLE_KEY)throw new Error('CAPTURE_CONFIGURATION_REQUIRED');
  const db=client({url,key:process.env.SUPABASE_SERVICE_ROLE_KEY});
- const runId='bcf99391-989f-42f8-83d3-249623c0ee04';
+ const runId='c095b2ae-8c10-4edf-9a07-ee12e89c675d';
  const {runs}=await db.research('status');
  const captureRun=runs.find(run=>run.id===runId);
- if(!captureRun||captureRun.run_key!=='dwd-call-ready-20261107-free3'||captureRun.tasks!==48||Number(captureRun.budget_usd)!==0)throw new Error('CAPTURE_RUN_SCOPE_MISMATCH');
+ if(!captureRun||captureRun.run_key!=='dwd-call-ready-20261107-free4'||captureRun.tasks!==23||Number(captureRun.budget_usd)!==0)throw new Error('CAPTURE_RUN_SCOPE_MISMATCH');
  const {runOne}=await import('./worker.mjs');
  const {capture}=await import('./capture.mjs');
- for(let attempt=0;attempt<48;attempt++){
+ for(let attempt=0;attempt<23;attempt++){
   const result=await runOne({db,capture,runId,paid:false});
   console.log(JSON.stringify({run_id:runId,id:result.id,status:result.status,error_code:result.error_code}));
   if(!result.id)break;
