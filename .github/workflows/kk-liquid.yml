@@ -1,0 +1,27 @@
+name: Kleur Karakter interactive paint
+on:
+  pull_request:
+    paths:
+      - 'experiments/kk-liquid/**'
+      - 'wrangler.kk-liquid.jsonc'
+      - '.github/workflows/kk-liquid.yml'
+permissions:
+  contents: read
+jobs:
+  preview:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'feat/kk-interactive-paint'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --prefix experiments/kk-liquid --ignore-scripts
+      - run: npm run build --prefix experiments/kk-liquid
+      - run: node --check experiments/kk-liquid/app.js
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          wranglerVersion: '4.130.0'
+          command: deploy --config wrangler.kk-liquid.jsonc

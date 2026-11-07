@@ -1,0 +1,1 @@
+{"private":true,"type":"module","scripts":{"build":"esbuild hero.js --bundle --minify --format=esm --outfile=app.js"},"dependencies":{"three":"0.186.0"},"devDependencies":{"esbuild":"0.28.2"}}
