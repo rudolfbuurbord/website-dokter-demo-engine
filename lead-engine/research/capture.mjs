@@ -47,7 +47,7 @@ export async function capture(url){
    }
    return data;
   };
-  const home=/\\.wixsite\\.com$/.test(host(url))?url:new URL('/',url).href;
+  const home=/\.wixsite\.com$/.test(host(url))?url:new URL('/',url).href;
   let data=await visit(home,'homepage');
   if(new URL(url).pathname!=='/'&&canonicalHost===host(url))await visit(url,'supplied-page');
   const contact=data.links.find(l=>/contact/i.test(l.text+' '+l.url)&&/^https?:/.test(l.url)&&host(l.url)===canonicalHost);
