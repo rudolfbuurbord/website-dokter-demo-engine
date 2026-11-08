@@ -29,6 +29,7 @@ export async function capture(url){
     if(pages.length)throw new Error('CONTACT_REDIRECT_REVIEW_REQUIRED');
     limitations.push('Homepage redirected from '+url+' to '+page.url()+'. Identity and canonical-domain dedupe required.');canonicalHost=host(page.url());
    }
+   await page.waitForTimeout(1800);
    const status=response?.status()??null;
    const data=await page.evaluate(()=>({url:location.href,title:document.title,text:document.body.innerText.slice(0,12000),links:Array.from(document.querySelectorAll('a[href]'),a=>({url:a.href,text:a.innerText.slice(0,100)})).slice(0,300),forms:document.forms.length}));
 
@@ -37,7 +38,7 @@ export async function capture(url){
    if(visual){
     for(const [part,y] of [['top',0],['middle',900],['lower',1800]]){
      await page.evaluate(y=>window.scrollTo(0,y),y);
-     await page.waitForTimeout(350);
+     await page.waitForTimeout(1800);
      const bytes=await page.screenshot({type:'jpeg',quality:65,fullPage:false,timeout:10000});
      const digest=createHash('sha256').update(bytes).digest('hex');
      if(images.some(im=>im.sha256===digest))continue;
@@ -46,7 +47,7 @@ export async function capture(url){
    }
    return data;
   };
-  const home=new URL('/',url).href;
+  const home=/\\.wixsite\\.com$/.test(host(url))?url:new URL('/',url).href;
   let data=await visit(home,'homepage');
   if(new URL(url).pathname!=='/'&&canonicalHost===host(url))await visit(url,'supplied-page');
   const contact=data.links.find(l=>/contact/i.test(l.text+' '+l.url)&&/^https?:/.test(l.url)&&host(l.url)===canonicalHost);
