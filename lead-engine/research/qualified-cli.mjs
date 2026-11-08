@@ -1,22 +1,36 @@
-// Collect screenshots and contact evidence for the scoped CALL research run.
+// Persistent free evidence capture for the existing 300-lead CALL target.
 if (process.env.DWD_RELEASE?.startsWith('dwd-research:release-')) {
  const url=process.env.SUPABASE_URL?.replace(/\/$/,'');
  if(url!=='https://skdjbifmtleiogbkqwid.supabase.co'||!process.env.SUPABASE_SERVICE_ROLE_KEY)throw new Error('CAPTURE_CONFIGURATION_REQUIRED');
  const db=client({url,key:process.env.SUPABASE_SERVICE_ROLE_KEY});
- const runId='c095b2ae-8c10-4edf-9a07-ee12e89c675d';
- const {runs}=await db.research('status');
- const captureRun=runs.find(run=>run.id===runId);
- if(!captureRun||captureRun.run_key!=='dwd-call-ready-20261107-free4'||captureRun.tasks!==23||Number(captureRun.budget_usd)!==0)throw new Error('CAPTURE_RUN_SCOPE_MISMATCH');
  const {runOne}=await import('./worker.mjs');
  const {capture}=await import('./capture.mjs');
- for(let attempt=0;attempt<23;attempt++){
-  const result=await runOne({db,capture,runId,paid:false});
-  console.log(JSON.stringify({run_id:runId,id:result.id,status:result.status,error_code:result.error_code}));
-  if(!result.id)break;
+ const control=async(action,payload={})=>{
+  const r=await fetch(url+'/rest/v1/rpc/le_call_capture_control',{method:'POST',headers:{apikey:process.env.SUPABASE_SERVICE_ROLE_KEY,authorization:'Bearer '+process.env.SUPABASE_SERVICE_ROLE_KEY,'content-type':'application/json'},body:JSON.stringify({p_action:action,p_payload:payload}),signal:AbortSignal.timeout(30000)});
+  const out=await r.json();if(!r.ok)throw Error(out.message||'CONTROL_FAILED');return out;
+ };
+ let processed=0,failures=0;
+ for(;;){
+  try{
+   const state=await control('heartbeat',{status:'POLLING',release:process.env.DWD_RELEASE,processed});
+   if(state.target_list_id!=='ec2f3eb6-7de4-461a-83d4-90572c6717aa')throw Error('TARGET_SCOPE_MISMATCH');
+   if(state.approved>=300){await control('heartbeat',{status:'TARGET_REACHED',processed});break;}
+   let worked=false;
+   for(const run of state.runs){
+    const result=await runOne({db,capture,runId:run.id,paid:false,checkTask:async task=>{if(task.run_id!==run.id)throw Error('TASK_SCOPE_MISMATCH');}});
+    if(result.id){worked=true;processed++;await control('heartbeat',{status:'CAPTURE_SAVED',run_id:run.id,task_id:result.id,task_status:result.status,processed,release:process.env.DWD_RELEASE});}
+   }
+   failures=0;
+   if(!worked)await new Promise(resolve=>setTimeout(resolve,15000));
+  }catch(error){
+   failures++;
+   console.error(JSON.stringify({status:'CAPTURE_RETRY_WAIT',reason:String(error.message).slice(0,160),failures}));
+   if(failures>=5)throw error;
+   await new Promise(resolve=>setTimeout(resolve,15000));
+  }
  }
  process.exit(0);
 }
-
 import {readFileSync,writeFileSync,renameSync,mkdirSync,existsSync,readdirSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import {client} from './client.mjs';
