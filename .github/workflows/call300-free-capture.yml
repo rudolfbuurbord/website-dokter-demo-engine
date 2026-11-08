@@ -1,0 +1,40 @@
+name: CALL300 Free Evidence Capture
+on:
+  push:
+    branches: [lead-budget-test-v1]
+    paths:
+      - '.github/workflows/call300-free-capture.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: call300-free-capture
+  cancel-in-progress: false
+jobs:
+  capture:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        worker: [1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install locked research dependencies
+        working-directory: lead-engine/research
+        run: npm ci --ignore-scripts
+      - name: Install sandboxed browser
+        working-directory: lead-engine/research
+        run: npx playwright install --with-deps chromium
+      - name: Capture evidence into private Supabase storage
+        env:
+          SUPABASE_URL: https://skdjbifmtleiogbkqwid.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          DWD_RELEASE: dwd-research:release-github-free-${{ github.sha }}-${{ matrix.worker }}
+        run: node lead-engine/research/qualified-cli.mjs
