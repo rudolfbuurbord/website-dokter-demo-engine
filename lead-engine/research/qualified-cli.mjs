@@ -4,7 +4,20 @@ if (process.env.DWD_RELEASE?.startsWith('dwd-research:release-')) {
  if(url!=='https://skdjbifmtleiogbkqwid.supabase.co'||!process.env.SUPABASE_SERVICE_ROLE_KEY)throw new Error('CAPTURE_CONFIGURATION_REQUIRED');
  const db=client({url,key:process.env.SUPABASE_SERVICE_ROLE_KEY});
  const {runOne}=await import('./worker.mjs');
- const {capture}=await import('./capture.mjs');
+ const {spawn}=await import('node:child_process');
+ const captureModule=new URL('./capture.mjs',import.meta.url).href;
+ const capture=async target=>new Promise((resolve,reject)=>{
+  const code='import {capture} from '+JSON.stringify(captureModule)+';const c=await capture(process.env.DWD_CAPTURE_URL);process.stdout.write(JSON.stringify({...c,images:c.images.map(x=>({...x,bytes:x.bytes.toString("base64")}))}));';
+  const child=spawn(process.execPath,['--input-type=module','-e',code],{env:{...process.env,DWD_CAPTURE_URL:target},detached:true,stdio:['ignore','pipe','pipe']});
+  let output='',errors='',done=false;
+  const finish=(error,value)=>{if(done)return;done=true;clearTimeout(timer);if(error)reject(error);else resolve(value);};
+  const kill=()=>{try{process.kill(-child.pid,'SIGKILL');}catch{child.kill('SIGKILL');}};
+  const timer=setTimeout(()=>{kill();finish(Error('CAPTURE_DEADLINE_90S'));},90000);
+  child.stdout.on('data',b=>{output+=b.toString();if(output.length>16000000){kill();finish(Error('CAPTURE_OUTPUT_LIMIT'));}});
+  child.stderr.on('data',b=>{errors=(errors+b.toString()).slice(-2000);});
+  child.on('error',e=>finish(e));
+  child.on('close',code=>{if(done)return;if(code!==0)return finish(Error('CAPTURE_CHILD_FAILED: '+errors.split('\n').filter(x=>/Error:/.test(x)).join(' ').slice(0,120)));try{const c=JSON.parse(output);c.images=c.images.map(x=>({...x,bytes:Buffer.from(x.bytes,'base64')}));finish(null,c);}catch{finish(Error('CAPTURE_CHILD_INVALID_RESULT'));}});
+ });
  const control=async(action,payload={})=>{
   const r=await fetch(url+'/rest/v1/rpc/le_call_capture_control',{method:'POST',headers:{apikey:process.env.SUPABASE_SERVICE_ROLE_KEY,authorization:'Bearer '+process.env.SUPABASE_SERVICE_ROLE_KEY,'content-type':'application/json'},body:JSON.stringify({p_action:action,p_payload:payload}),signal:AbortSignal.timeout(30000)});
   const out=await r.json();if(!r.ok)throw Error(out.message||'CONTROL_FAILED');return out;
