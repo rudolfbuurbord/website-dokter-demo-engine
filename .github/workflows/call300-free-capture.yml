@@ -7,6 +7,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  id-token: write
 concurrency:
   group: call300-free-capture
   cancel-in-progress: false
@@ -33,8 +34,4 @@ jobs:
         working-directory: lead-engine/research
         run: npx playwright install --with-deps chromium
       - name: Capture evidence into private Supabase storage
-        env:
-          SUPABASE_URL: https://skdjbifmtleiogbkqwid.supabase.co
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          DWD_RELEASE: dwd-research:release-github-free-${{ github.sha }}-${{ matrix.worker }}
-        run: node lead-engine/research/qualified-cli.mjs
+        run: node lead-engine/research/ci-capture.mjs
