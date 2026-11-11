@@ -17,7 +17,8 @@ MAX = int(os.environ.get('DEMO_MAX_PER_RUN', '4'))
 
 
 def sb(method, path, body=None, prefer=None):
-    h = {'apikey': KEY, 'Authorization': f'Bearer {KEY}', 'Content-Type': 'application/json'}
+    h = {'apikey': KEY, 'Content-Type': 'application/json'}
+    if not KEY.startswith('sb_'): h['Authorization'] = f'Bearer {KEY}'  # nieuwe sb_secret-sleutels: alleen apikey
     if prefer: h['Prefer'] = prefer
     req = urllib.request.Request(f'{SB}/rest/v1/{path}', method=method, headers=h,
                                  data=None if body is None else json.dumps(body).encode())

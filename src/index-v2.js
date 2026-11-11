@@ -187,7 +187,9 @@ async function demoStatus(url, env) {
   q.searchParams.set('demo_status', 'not.is.null');
   q.searchParams.set('order', 'created_at.desc');
   q.searchParams.set('limit', '1');
-  const r = await fetch(q, { headers: { apikey: key, authorization: `Bearer ${key}` } });
+  const h = { apikey: key }; if (!key.startsWith('sb_')) h.authorization = `Bearer ${key}`;
+  const r = await fetch(q, { headers: h });
+  if (!r.ok) return new Response(JSON.stringify({ status: 'unknown', code: r.status }), { status: 502, headers: STATUS_CORS });
   const rows = r.ok ? await r.json() : [];
   const row = rows[0];
   const body = row ? { status: row.demo_status, url: row.demo_status === 'ready' ? row.demo_url : null } : { status: 'none' };

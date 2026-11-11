@@ -36,7 +36,7 @@ jobs:
         if: github.event_name == 'schedule'
         run: |
           n=$(curl -s "$SUPABASE_URL/rest/v1/dwd_funnel_leads?select=id&demo_status=in.(queued,building)&limit=1" \
-            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" | grep -c '"id"' || true)
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" | grep -c '"id"' || true)
           echo "work=$n" >> "$GITHUB_OUTPUT"
 
       - uses: actions/checkout@v4
