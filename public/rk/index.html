@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>R.K Schilderwerken · Demo-ontwerp</title>
+<meta name="description" content="Demo-redesign voor R.K Schilderwerken uit Vroomshoop, door De Website Dokters.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===== Systeem: 2 vlakken (papier / inkt), 1 accent (rood), 1 kopletter ===== */
+:root{
+  --paper:#F2EEE8; --card:#FFFFFF; --line:rgba(17,24,31,.11);
+  --ink:#11181F; --cardD:#1A232C; --lineD:rgba(242,238,232,.12);
+  --text:#11181F; --muted:#5B6570; --mutedD:rgba(242,238,232,.66);
+  --red:#BF2027; --redH:#A51A20;
+  --pick:#AF2B1E; --pickText:#F2EEE8;
+  --head:"Archivo",system-ui,sans-serif; --body:"Instrument Sans",system-ui,sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --r:24px; --pad:clamp(96px,11vw,150px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;scroll-padding-top:90px}
+body{font-family:var(--body);background:var(--paper);color:var(--text);font-size:17px;line-height:1.6;overflow-x:hidden}
+img{display:block;max-width:100%}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:3px solid var(--red);outline-offset:3px;border-radius:8px}
+.wrap{width:min(1240px,100% - 40px);margin-inline:auto}
+section{position:relative}
+.sec{padding:var(--pad) 0}
+.dark{background:var(--ink);color:var(--paper)}
+.dark .lead,.dark .muted{color:var(--mutedD)}
+
+/* typografie: één schaal */
+h1,h2,h3,.disp{font-family:var(--head);font-weight:850;font-stretch:112%;letter-spacing:-.03em;line-height:.95}
+.eyebrow{font-family:var(--head);font-weight:700;font-size:12.5px;letter-spacing:.18em;text-transform:uppercase;display:inline-flex;align-items:center;gap:10px;font-stretch:100%}
+.eyebrow::before{content:"";width:22px;height:2px;background:var(--red)}
+h2{font-size:clamp(40px,5.4vw,74px)}
+h3{font-size:clamp(24px,2vw,28px);letter-spacing:-.02em;line-height:1.05}
+.lead{font-size:clamp(17px,1.5vw,19px);color:var(--muted);max-width:520px}
+.muted{color:var(--muted)}
+.tag{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;opacity:.55}
+.shead{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:40px;align-items:end;margin-bottom:clamp(44px,5vw,64px)}
+.shead h2{margin-top:18px}
+.shead .lead{justify-self:end}
+@media (max-width:860px){.shead{grid-template-columns:minmax(0,1fr);gap:18px}.shead .lead{justify-self:start}}
+
+/* knoppen */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:54px;padding:0 26px;border-radius:999px;font-weight:600;font-size:16.5px;text-decoration:none;transition:transform .35s var(--ease),background .3s,color .3s,border-color .3s;white-space:nowrap}
+.btn svg{width:18px;height:18px;flex:none;transition:transform .35s var(--ease)}
+.btn:hover svg{transform:translateX(3px)}
+.btn-red{background:var(--red);color:#fff}
+.btn-red:hover{background:var(--redH)}
+.btn-ink{background:var(--ink);color:var(--paper)}
+.btn-ink:hover{background:#26323d}
+.btn-line{border:1.5px solid var(--line);color:var(--text)}
+.btn-line:hover{border-color:var(--text)}
+.dark .btn-line{border-color:var(--lineD);color:var(--paper)}
+.dark .btn-line:hover{border-color:var(--paper)}
+.btn-wa{background:#1FA855;color:#fff}
+
+
+/* ===== Merkkleuren (uit invulbestand) ===== */
+:root{
+  --paper:#F4F0E9; --card:#FFFFFF; --line:rgba(24,36,72,.12);
+  --ink:#182448; --cardD:#283355; --lineD:rgba(245,240,233,.12);
+  --text:#182448; --muted:#798095; --mutedD:rgba(245,240,233,.68);
+  --red:#D89C18; --redH:#DEAB3B; --onAccent:#182448;
+  --pick:#D89C18; --pickText:#182448;
+}
+.btn-red{color:var(--onAccent)!important}
+.msg.u{color:var(--onAccent)}
+.rcard.real .av,.done .ck{color:var(--onAccent)}
+.mbar .o{color:var(--onAccent)!important}
+.eyebrow::before{background:var(--red)}
+
+/* ===== NAVIGATIE ===== */
+.demobar{background:#111932;color:var(--mutedD);font-size:12px;text-align:center;padding:6px 14px}
+.demobar b{color:var(--paper);font-weight:600}
+.nav{position:sticky;top:0;z-index:50;background:var(--ink);color:var(--paper);transition:background .45s,color .45s,box-shadow .45s}
+.nav.scrolled{background:rgba(244,240,233,.92);color:var(--ink);backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3);box-shadow:0 1px 0 var(--line)}
+.nav-in{display:flex;align-items:center;justify-content:space-between;height:76px;gap:24px}
+.brand{display:flex;align-items:center}
+.brand img{height:42px;width:auto}
+.nav ul{display:flex;list-style:none;gap:36px}
+.nav ul a{text-decoration:none;font-weight:500;font-size:15px;position:relative;padding:6px 0;opacity:.82;transition:opacity .25s}
+.nav ul a:hover{opacity:1}
+.nav ul a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--red);transform:scaleX(0);transform-origin:right;transition:transform .4s var(--ease)}
+.nav ul a:hover::after{transform:scaleX(1);transform-origin:left}
+.nav-r{display:flex;align-items:center;gap:22px}
+.nav-tel{display:flex;align-items:center;gap:9px;text-decoration:none;font-weight:600;font-size:15px}
+.live{width:8px;height:8px;border-radius:50%;background:#2FB866;position:relative;flex:none}
+.live::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:1.5px solid #2FB866;animation:pulse 2s infinite}
+.live.o{background:#E9A23B}.live.o::after{border-color:#E9A23B}
+.live.r{background:#D95B4A}.live.r::after{border-color:#D95B4A}
+@keyframes pulse{0%{transform:scale(.6);opacity:.9}100%{transform:scale(1.8);opacity:0}}
+.nav-cta{min-height:44px;padding:0 20px;font-size:15px;border-radius:999px;display:inline-flex;align-items:center;font-weight:700;text-decoration:none;background:var(--red);color:var(--onAccent);transition:background .3s}
+.nav-cta:hover{background:var(--redH)}
+.ph-ic{display:none}
+@media (max-width:980px){.nav ul{display:none}}
+@media (max-width:620px){.nav-tel .n,.nav-cta{display:none}.nav-in{height:64px}.ph-ic{display:block}.nav-tel{width:44px;height:44px;justify-content:center;border:1.5px solid rgba(127,127,127,.35);border-radius:50%;position:relative}.nav-tel .live{position:absolute;top:2px;right:2px}.brand img{height:34px}}
+
+/* ===== HERO ===== */
+.hero{background:var(--ink);color:var(--paper);position:relative;overflow:hidden;text-align:center;padding:clamp(28px,4.5vh,56px) 0 0;isolation:isolate}
+.hero::before{content:"";position:absolute;left:50%;top:-30%;width:1100px;height:800px;transform:translateX(-50%);background:radial-gradient(closest-side,rgba(216,156,24,.22),transparent 72%);z-index:-1}
+.h-pill{display:inline-flex;align-items:center;gap:10px;padding:8px 16px 8px 12px;border-radius:999px;border:1px solid var(--lineD);font-size:14px;color:var(--mutedD)}
+.h-pill b{color:var(--paper);font-weight:600}
+.h1{font-family:var(--head);font-weight:900;font-stretch:115%;letter-spacing:-.045em;line-height:.88;font-size:clamp(54px,min(9vw,15vh),136px);margin:20px auto 0}
+.h1 .l1{display:block}
+.rollword{position:relative;display:inline-block;white-space:nowrap}
+.rollword .ghost{color:transparent;-webkit-text-stroke:1.6px rgba(245,240,233,.55)}
+.rollword .paint{position:absolute;inset:0 0 -.3em 0;padding-bottom:.3em;color:var(--red);clip-path:inset(-20% 100% -45% 0);animation:roll 1.9s cubic-bezier(.65,0,.35,1) .45s forwards;background:repeating-linear-gradient(90deg,rgba(255,255,255,0) 0 7px,rgba(255,255,255,.07) 7px 9px);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;background-color:var(--red)}
+.rollword .paint{background-image:linear-gradient(180deg,rgba(255,255,255,.12),rgba(0,0,0,.06)),repeating-linear-gradient(90deg,transparent 0 7px,rgba(0,0,0,.06) 7px 9px);background-color:var(--red)}
+@keyframes roll{to{clip-path:inset(-20% -2% -45% 0)}}
+.roller{position:absolute;top:-.06em;height:1.06em;left:0;width:.62em;transform:translateX(-35%);animation:rollx 1.9s cubic-bezier(.65,0,.35,1) .45s forwards, lift .6s var(--ease) 2.45s forwards;pointer-events:none;z-index:2}
+.roller svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 10px 18px rgba(0,0,0,.45))}
+@keyframes rollx{to{left:100%}}
+@keyframes lift{to{opacity:0;transform:translateX(-35%) translateY(-30%) rotate(8deg)}}
+.h-sub{font-family:var(--head);font-weight:700;font-stretch:104%;font-size:clamp(20px,2.2vw,30px);line-height:1.2;letter-spacing:-.02em;max-width:40ch;margin:30px auto 0;color:var(--paper)}
+.h-sub span{color:var(--mutedD)}
+.hero-ctas{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:26px}
+.hero-ctas .btn{min-height:60px;padding:0 30px;font-size:17px}
+.hero-ctas .btn-red{font-weight:700;box-shadow:0 14px 34px -12px rgba(216,156,24,.22)}
+.hero .btn-line{border-color:rgba(245,240,233,.28);color:var(--paper)}
+.hero .btn-line:hover{border-color:var(--paper)}
+.h-usp{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 26px;margin-top:22px;font-size:14px;color:var(--mutedD);list-style:none}
+.h-usp li{display:flex;align-items:center;gap:8px}
+.h-usp svg{width:16px;height:16px;color:var(--red)}
+/* filmstrip met echte panden */
+.strip-wrap{margin-top:clamp(28px,4.5vh,52px);overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.film{display:flex;gap:14px;width:max-content;animation:film 70s linear infinite;padding-bottom:0}
+.film figure{position:relative;width:clamp(200px,20vw,290px);aspect-ratio:4/5;border-radius:18px 18px 0 0;overflow:hidden;flex:none}
+.film figure:nth-child(even){aspect-ratio:4/4.4;margin-top:auto}
+.film img{width:100%;height:100%;object-fit:cover;transition:transform 1s var(--ease)}
+.film figure:hover img{transform:scale(1.05)}
+.film figcaption{position:absolute;left:12px;bottom:12px;font-size:12.5px;font-weight:600;background:rgba(24,36,72,.7);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);padding:5px 10px;border-radius:999px;color:#fff}
+.film-row{display:flex;align-items:flex-end;height:clamp(250px,24vw,360px)}
+@keyframes film{to{transform:translateX(-50%)}}
+.strip-wrap:hover .film{animation-play-state:paused}
+@media (max-width:620px){.hero{padding-top:36px}.h1{font-size:clamp(46px,14.6vw,80px);font-stretch:108%}.hero-ctas .btn{flex:1 1 100%}.h-pill{font-size:12.5px}.wrap.hero-in{width:calc(100% - 36px)}}
+
+/* ===== VOOR WIE ===== */
+.who-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.who-card{position:relative;border-radius:var(--r);overflow:hidden;min-height:460px;display:flex;flex-direction:column;justify-content:flex-end;color:#fff;text-decoration:none;isolation:isolate}
+.who-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform 1.1s var(--ease)}
+.who-card::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,rgba(24,36,72,.96) 18%,rgba(24,36,72,.55) 52%,rgba(24,36,72,.05) 80%)}
+.who-card:hover img{transform:scale(1.06)}
+.who-card .in{padding:28px}
+.who-card h3{font-size:clamp(28px,2.6vw,36px);margin-bottom:10px}
+.who-card p{color:rgba(255,255,255,.82);font-size:15.5px}
+.who-card .go{margin-top:18px;display:inline-flex;align-items:center;gap:8px;font-weight:700;color:var(--red)}
+.who-card .go svg{width:16px;height:16px;transition:transform .4s var(--ease)}
+.who-card:hover .go svg{transform:translateX(4px)}
+.who-card .no{position:absolute;top:22px;left:24px;font-family:var(--head);font-weight:800;font-size:13px;letter-spacing:.14em;background:rgba(24,36,72,.6);padding:6px 11px;border-radius:999px}
+@media (max-width:900px){.who-grid{grid-template-columns:minmax(0,1fr)}.who-card{min-height:360px}}
+
+/* houtrot drieluik in uitgelicht */
+.tri{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:6px}
+.tri figure{position:relative;border-radius:12px;overflow:hidden;aspect-ratio:1}
+.tri img{width:100%;height:100%;object-fit:cover}
+.tri figcaption{position:absolute;left:8px;bottom:8px;font-size:11.5px;font-weight:700;background:var(--red);color:var(--onAccent);padding:3px 8px;border-radius:999px}
+.feature .img img.main{object-position:50% 35%}
+.badge1935{position:absolute;right:20px;top:20px;width:108px;height:108px;border-radius:50%;background:var(--red);color:var(--onAccent);display:grid;place-items:center;text-align:center;font-family:var(--head);font-weight:900;line-height:.95;font-size:15px;letter-spacing:.02em;transform:rotate(-8deg);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.badge1935 b{display:block;font-size:30px;letter-spacing:-.02em}
+/* ===== SPREUK ===== */
+.quote{padding:clamp(70px,9vw,130px) 0 var(--pad);text-align:center}
+.quote p{font-family:var(--head);font-weight:850;font-stretch:112%;font-size:clamp(40px,7vw,104px);line-height:.98;letter-spacing:-.04em;max-width:14ch;margin-inline:auto}
+.quote .k{color:var(--pick);transition:color .6s}
+
+/* ===== PROJECTEN (donker hoofdstuk) ===== */
+.feature{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);border-radius:var(--r);overflow:hidden;background:var(--cardD);margin-bottom:24px}
+.feature .img{position:relative;min-height:440px}
+.feature .img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.feature .txt{padding:clamp(28px,4vw,52px);display:flex;flex-direction:column;justify-content:center;gap:16px}
+.feature h3{font-size:clamp(30px,3.2vw,44px)}
+.feature p{color:var(--mutedD)}
+.pill{display:inline-flex;align-self:flex-start;padding:6px 12px;border-radius:999px;border:1px solid var(--lineD);font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mutedD)}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--red);margin:6px 8px 0 0}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:44px 0 20px}
+.filters button{padding:9px 18px;min-height:44px;border-radius:999px;border:1px solid var(--lineD);font-weight:600;font-size:15px;color:var(--mutedD);transition:.25s}
+.filters button:hover{color:var(--paper);border-color:var(--mutedD)}
+.filters button[aria-pressed="true"]{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.grid{columns:4 240px;column-gap:12px}
+.gitem{break-inside:avoid;margin-bottom:12px;border-radius:14px;overflow:hidden;display:block;width:100%;background:var(--cardD)}
+.gitem img{width:100%;height:auto;transition:transform .9s var(--ease),opacity .4s}
+.gitem:hover img{transform:scale(1.05)}
+.gitem.hide{display:none}
+.lightbox{position:fixed;inset:0;background:rgba(10,14,18,.94);z-index:100;display:none;place-items:center;padding:20px}
+.lightbox.on{display:grid}
+.lightbox img{max-height:84vh;max-width:min(1100px,100%);border-radius:14px;width:auto}
+.lightbox .cap{color:var(--paper);text-align:center;margin-top:12px;font-weight:500}
+.lb-x,.lb-nav{position:absolute;width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.1);color:#fff;font-size:24px}
+.lb-x{top:16px;right:16px}.lb-nav{top:50%;transform:translateY(-50%)}.lb-prev{left:14px}.lb-next{right:14px}
+@media (max-width:820px){.feature{grid-template-columns:minmax(0,1fr)}.feature .img{min-height:280px}.grid{columns:2 150px;column-gap:10px}.gitem{margin-bottom:10px}}
+
+/* ===== DIENSTEN (zelfde donkere hoofdstuk) ===== */
+.services{padding-top:0}
+.services .inner{border-top:1px solid var(--lineD);padding-top:var(--pad)}
+.srows{border-top:1px solid var(--lineD)}
+.srow{position:relative;border-bottom:1px solid var(--lineD);isolation:isolate}
+.srow::before{content:"";position:absolute;inset:0 -20px;background:var(--cardD);border-radius:18px;transform:scaleY(0);transform-origin:bottom;transition:transform .6s var(--ease);z-index:-1}
+.srow:hover::before,.srow.open::before{transform:scaleY(1)}
+.srow-in{display:grid;grid-template-columns:80px minmax(0,1fr) 210px;gap:28px;align-items:center;padding:34px 0}
+.srow .no{font-family:var(--head);font-weight:700;font-size:14px;color:var(--mutedD);transition:color .4s}
+.srow:hover .no,.srow.open .no{color:var(--red)}
+.srow h3{font-size:clamp(38px,6vw,84px);font-weight:900;font-stretch:115%;letter-spacing:-.04em;line-height:.95;transition:transform .6s var(--ease)}
+.srow:hover h3{transform:translateX(12px)}
+.srow p.s{color:var(--mutedD);max-width:600px;margin:12px 0 18px}
+.more{display:inline-flex;align-items:center;gap:10px;min-height:44px;padding:0 18px;border-radius:999px;border:1px solid var(--lineD);font-weight:600;font-size:15px;transition:.3s}
+.more svg{width:15px;height:15px;transition:transform .4s var(--ease)}
+.srow:hover .more,.srow.open .more{background:var(--red);border-color:var(--red);color:#fff}
+.srow.open .more svg{transform:rotate(45deg)}
+.thumb{width:210px;aspect-ratio:4/3;border-radius:14px;overflow:hidden;transform:rotate(3deg) scale(.9);opacity:.7;transition:transform .7s var(--ease),opacity .4s;background:#fff}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.srow:hover .thumb,.srow.open .thumb{transform:rotate(-2deg) scale(1.02);opacity:1}
+.sdetail{display:grid;grid-template-rows:0fr;transition:grid-template-rows .6s var(--ease)}
+.srow.open .sdetail{grid-template-rows:1fr}
+.sdetail>div{overflow:hidden}
+.sd-in{display:grid;grid-template-columns:80px minmax(0,1fr) minmax(0,1fr);gap:28px;padding:0 0 40px}
+.sd-in ul{list-style:none;display:grid;gap:10px}
+.sd-in li{display:flex;gap:10px}
+.sd-in li::before{content:"";flex:none;width:16px;height:2px;background:var(--red);margin-top:12px}
+.sd-in .full{color:var(--mutedD)}
+.sd-in .btn{margin-top:20px}
+@media (max-width:820px){.srow-in{grid-template-columns:minmax(0,1fr);gap:6px;padding:28px 0}.thumb{display:none}.sd-in{grid-template-columns:minmax(0,1fr);gap:18px}.sd-in .sp{display:none}.srow:hover h3{transform:none}.srow::before{inset:0 -10px}}
+
+/* ===== WERKWIJZE ===== */
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.step{background:var(--card);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;transition:transform .5s var(--ease)}
+.step:hover{transform:translateY(-6px)}
+.step .ph{position:relative;aspect-ratio:4/4.2;overflow:hidden}
+.step .ph img{width:100%;height:100%;object-fit:cover;transition:transform 1s var(--ease)}
+.step:hover .ph img{transform:scale(1.05)}
+.step .n{position:absolute;left:14px;top:14px;height:34px;padding:0 13px;border-radius:999px;background:var(--paper);display:grid;place-items:center;font-family:var(--head);font-weight:800;font-size:14px}
+.step .bd{padding:22px 22px 26px}
+.step h3{margin-bottom:10px}
+.step p{color:var(--muted);font-size:15.5px}
+.step .meta{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:13.5px;font-weight:600}
+.progress{height:2px;background:var(--line);margin-top:36px;overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:var(--red);transition:width .2s linear}
+@media (max-width:1020px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.steps{grid-template-columns:minmax(0,1fr)}.step .ph{aspect-ratio:16/11}}
+
+/* ===== KEURMERKEN + MERKEN ===== */
+.certs{padding-top:0}
+.cgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.cert{background:var(--card);border-radius:var(--r);padding:24px;display:flex;flex-direction:column;gap:14px}
+.cert .lg{height:130px;display:grid;place-items:center;border-radius:16px;background:var(--paper);padding:18px}
+.cert .lg img{max-height:90px;max-width:88%;object-fit:contain;mix-blend-mode:multiply}
+.cert p{font-size:15px;color:var(--muted)}
+.kvk{font-family:var(--head);font-size:32px;font-weight:900;letter-spacing:-.02em;font-stretch:112%;text-align:center;line-height:1}
+.kvk small{display:block;font-size:11px;letter-spacing:.22em;color:var(--muted);font-weight:700;margin-bottom:8px}
+.brands{margin-top:clamp(70px,8vw,110px);padding-top:clamp(40px,5vw,56px);border-top:1px solid var(--line);display:grid;grid-template-columns:minmax(0,.7fr) minmax(0,2fr);gap:40px;align-items:center}
+.brands h3{font-size:clamp(26px,2.4vw,32px)}
+.brands p{color:var(--muted);font-size:15px;margin-top:10px}
+.bgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px}
+.blogo{background:var(--card);border-radius:16px;aspect-ratio:1/.8;display:grid;place-items:center;padding:14px;transition:transform .4s var(--ease)}
+.blogo:hover{transform:translateY(-4px)}
+.blogo img{max-height:50px;max-width:88%;object-fit:contain}
+@media (max-width:1020px){.cgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.brands{grid-template-columns:minmax(0,1fr)}.bgrid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:560px){.cgrid{grid-template-columns:minmax(0,1fr)}.bgrid{grid-template-columns:repeat(3,minmax(0,1fr))}.blogo:last-child{grid-column:span 3;aspect-ratio:auto;padding:22px}}
+
+/* ===== WERKGEBIED ===== */
+.area{padding-top:0}
+.area .inner{border-top:1px solid var(--line);padding-top:var(--pad)}
+.area-grid{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:56px;align-items:center}
+.area h2{margin:18px 0 18px}
+.mapbox{position:relative;border-radius:var(--r);overflow:hidden;aspect-ratio:1600/1216;background:#e9e4dc}
+.mapbox>img{width:100%;height:100%;object-fit:cover}
+.radius{position:absolute;left:47.4%;top:45.6%;width:76%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:rgba(191,32,39,.06);border:1.5px dashed rgba(191,32,39,.5)}
+.pin{position:absolute;left:47.4%;top:45.6%;transform:translate(-50%,-100%);width:46px;filter:drop-shadow(0 8px 10px rgba(0,0,0,.3));animation:drop 1s var(--ease) both}
+@keyframes drop{0%{transform:translate(-50%,-260%);opacity:0}100%{transform:translate(-50%,-100%);opacity:1}}
+.pinpulse{position:absolute;left:47.4%;top:45.6%;width:14px;height:14px;transform:translate(-50%,-50%);border-radius:50%;background:var(--red)}
+.pinpulse::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:2px solid var(--red);animation:pulse 2s infinite}
+.pincard{position:absolute;left:calc(47.4% + 30px);top:calc(45.6% - 80px);background:var(--ink);color:var(--paper);padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.3}
+.pincard b{display:block;font-family:var(--head);font-size:15px}
+.osm{position:absolute;right:8px;bottom:6px;font-size:10.5px;background:rgba(255,255,255,.8);padding:2px 6px;border-radius:4px;color:#333}
+.places{display:flex;flex-wrap:wrap;gap:6px;margin:26px 0}
+.places span{padding:7px 13px;border-radius:999px;border:1px solid var(--line);font-size:14px;font-weight:500}
+.places span:first-child{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.pc{display:flex;gap:8px;max-width:440px}
+.pc input{flex:1;min-width:0;min-height:54px;border-radius:999px;border:1.5px solid var(--line);padding:0 22px;font:inherit;background:var(--card)}
+.pc input:focus{outline:none;border-color:var(--text)}
+.pc-out{margin-top:12px;font-weight:600;min-height:28px}
+@media (max-width:900px){.area-grid{grid-template-columns:minmax(0,1fr)}.pincard{display:none}}
+
+/* ===== REVIEWS (donker) ===== */
+.score{display:flex;align-items:center;gap:16px;justify-self:end}
+.score b{font-family:var(--head);font-size:64px;font-weight:900;line-height:1;font-stretch:112%;letter-spacing:-.03em}
+.score div{font-size:14px;color:var(--mutedD);line-height:1.45}
+@media (max-width:860px){.score{justify-self:start}}
+#reviews{overflow:hidden}.marquee{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
+.track{display:flex;gap:16px;width:max-content;animation:slide 60s linear infinite}
+.track.rev{animation-direction:reverse;animation-duration:72s}
+.marquee:hover .track{animation-play-state:paused}
+@keyframes slide{to{transform:translateX(-50%)}}
+.rcard{width:380px;flex:none;background:var(--cardD);border-radius:20px;padding:26px;display:flex;flex-direction:column;gap:14px}
+.rcard p{font-size:16px;color:rgba(242,238,232,.88)}
+.rcard .who{display:flex;align-items:center;gap:12px;margin-top:auto}
+.av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-family:var(--head);font-weight:800;background:rgba(242,238,232,.08)}
+.rcard.real .av{background:var(--red);color:#fff}
+.rcard .who b{display:block;font-size:15px}
+.rcard .who small{font-size:12px;color:var(--mutedD)}
+@media (max-width:560px){.rcard{width:300px;padding:22px}}
+
+/* ===== OFFERTE ===== */
+.qf-grid{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:64px;align-items:start}
+.qf-side h2{margin:18px 0 0}
+.qf-side ul{list-style:none;margin:30px 0;display:grid;gap:14px}
+.qf-side li{display:flex;gap:12px;font-weight:500}
+.qf-side li::before{content:"";flex:none;width:16px;height:2px;background:var(--red);margin-top:12px}
+.contactcard{background:var(--ink);color:var(--paper);border-radius:20px;padding:20px;display:flex;align-items:center;gap:16px}
+.contactcard img{width:60px;height:60px;border-radius:50%;object-fit:cover;object-position:60% 30%}
+.contactcard b{font-family:var(--head);font-size:19px;display:block;font-stretch:105%}
+.contactcard a{color:var(--paper);font-weight:600}
+form.qf{background:var(--card);border-radius:28px;padding:clamp(24px,4vw,48px)}
+.qf label.big{display:block;font-family:var(--head);font-size:clamp(26px,2.8vw,34px);font-weight:850;font-stretch:108%;line-height:1.05;letter-spacing:-.025em;margin-bottom:14px}
+.qf textarea{width:100%;min-height:150px;border-radius:16px;border:1.5px solid var(--line);padding:18px 20px;font:inherit;font-size:17.5px;resize:vertical;background:var(--paper)}
+.qf textarea:focus,.qf input:focus{outline:none;border-color:var(--text)}
+.qf .lbl{font-weight:600;font-size:15px;margin:22px 0 10px;display:block}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips input{position:absolute;opacity:0;pointer-events:none}
+.chips label{padding:9px 16px;min-height:44px;display:inline-flex;align-items:center;border-radius:999px;border:1.5px solid var(--line);font-weight:500;font-size:15px;cursor:pointer;transition:.2s;user-select:none}
+.chips input:checked+label{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.chips input:focus-visible+label{outline:3px solid var(--red);outline-offset:2px}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+.field{display:flex;flex-direction:column;gap:6px;margin-top:16px}
+.field span{font-weight:600;font-size:14.5px}
+.field input{min-height:54px;border-radius:14px;border:1.5px solid var(--line);padding:0 16px;font:inherit;background:var(--paper)}
+.field.err input,.field.err textarea{border-color:var(--red)}
+.emsg{color:var(--red);font-size:13.5px;font-weight:600}
+.upload{margin-top:16px;display:flex;align-items:center;gap:12px;padding:14px 16px;border:1.5px dashed var(--line);border-radius:14px;cursor:pointer;font-weight:500;font-size:15px}
+.upload svg{width:22px;height:22px;color:var(--red)}
+.upload input{display:none}
+.qf .submit{width:100%;margin-top:24px;min-height:60px;font-size:17.5px}
+.fine{font-size:13px;color:var(--muted);margin-top:12px;text-align:center}
+.done{display:none;text-align:center;padding:30px 0}
+.done.on{display:block}
+.done .big{font-family:var(--head);font-size:40px;font-weight:900;font-stretch:112%;line-height:1;margin:16px 0}
+.done .ck{width:76px;height:76px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;margin:0 auto}
+.done .ck svg{width:36px;height:36px}
+@media (max-width:900px){.qf-grid{grid-template-columns:minmax(0,1fr);gap:40px}}
+@media (max-width:520px){.row2{grid-template-columns:1fr;gap:0}}
+
+/* ===== FAQ ===== */
+.faq{padding-top:0}
+.faq .inner{border-top:1px solid var(--line);padding-top:var(--pad)}
+.faq-grid{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:56px;align-items:start}
+.faq h2{margin:18px 0 18px}
+.phone{background:var(--ink);border-radius:30px;padding:14px}
+.phone-top{display:flex;align-items:center;gap:12px;padding:10px 12px 16px;color:var(--paper);border-bottom:1px solid var(--lineD)}
+.phone-top img{width:42px;height:42px;border-radius:50%;object-fit:cover;object-position:60% 30%}
+.phone-top b{display:block;font-family:var(--head);font-size:16px;line-height:1.1}
+.phone-top small{font-size:12.5px;color:#7DD39C}
+.chat{height:440px;overflow-y:auto;padding:18px 8px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:84%;padding:12px 16px;border-radius:20px;font-size:15.5px;line-height:1.45;animation:pop .4s var(--ease)}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.97)}}
+.msg.j{background:var(--cardD);color:var(--paper);border-bottom-left-radius:6px;align-self:flex-start}
+.msg.u{background:var(--red);color:#fff;border-bottom-right-radius:6px;align-self:flex-end}
+.msg .tag{display:block;margin-top:6px}
+.typing{display:inline-flex;gap:5px;padding:16px 18px}
+.typing i{width:7px;height:7px;border-radius:50%;background:var(--mutedD);animation:bl 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes bl{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+.qs{display:flex;flex-wrap:wrap;gap:8px}
+.qs button{padding:11px 18px;min-height:46px;border-radius:999px;background:var(--card);font-weight:500;font-size:15.5px;text-align:left;transition:.25s;border:1.5px solid transparent}
+.qs button:hover{border-color:var(--text)}
+.qs button.asked{opacity:.45}
+@media (max-width:900px){.faq-grid{grid-template-columns:minmax(0,1fr)}.chat{height:380px}}
+
+/* ===== FOOTER ===== */
+footer{padding:var(--pad) 0 0;overflow:hidden}
+.f-cta{text-align:center}
+.f-kicker{font-family:var(--head);letter-spacing:.32em;text-transform:uppercase;color:var(--mutedD);font-weight:700;font-size:13px}
+.f-name{font-family:var(--head);font-weight:900;font-stretch:120%;font-size:clamp(76px,18vw,250px);letter-spacing:-.05em;line-height:.82;margin:14px 0 34px}
+.f-name i{width:.17em;height:.17em}
+.f-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.f-cols{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:40px;margin-top:90px;padding:56px 0;border-top:1px solid var(--lineD)}
+.f-cols h4{font-family:var(--head);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--mutedD);margin-bottom:18px;font-weight:700}
+.f-cols ul{list-style:none;display:grid;gap:9px}
+.f-cols a{text-decoration:none;transition:color .2s}
+.f-cols a:hover{color:#fff;text-decoration:underline;text-underline-offset:4px}
+.f-cols p,.f-cols li{color:rgba(242,238,232,.86)}
+.f-big{font-family:var(--head);font-size:22px;font-weight:800;letter-spacing:-.01em;font-stretch:105%}
+.f-legal{border-top:1px solid var(--lineD);padding:22px 0 30px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--mutedD)}
+.f-legal b{color:var(--paper);font-weight:600}
+@media (max-width:900px){.f-cols{grid-template-columns:1fr 1fr;gap:34px}}
+@media (max-width:520px){.f-cols{grid-template-columns:1fr;margin-top:60px}.f-legal{padding-bottom:100px}}
+
+/* sticky mobiel */
+.mbar{position:fixed;left:10px;right:10px;bottom:10px;z-index:60;display:none;gap:6px;padding:6px;background:rgba(17,24,31,.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:999px;transform:translateY(140%);transition:transform .5s var(--ease)}
+.mbar.on{transform:none}
+.mbar a{flex:1;min-height:50px;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:8px;font-weight:600;text-decoration:none;font-size:15px;color:#fff}
+.mbar a svg{width:18px;height:18px}
+.mbar .c{background:rgba(242,238,232,.1)}.mbar .w{background:#1FA855}.mbar .o{background:var(--red);flex:1.3}
+@media (max-width:720px){.mbar{display:flex}}
+
+.rv{opacity:0;transform:translateY(30px);transition:opacity 1s var(--ease),transform 1s var(--ease)}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.rv{opacity:1;transform:none}.track{flex-wrap:wrap;width:auto}}
+.cont{padding-top:0}.cont .inner{border-top:1px solid var(--line);padding-top:var(--pad)}.dark.cont .inner{border-color:var(--lineD)}
+#werkgebied h2,#faq h2,.qf-side h2{font-size:clamp(36px,4.2vw,58px);margin:18px 0 20px}
+
+.f-name i{display:inline-block;width:.17em;height:.17em;background:var(--red);margin-left:.05em;vertical-align:baseline}
+.stars{color:#F2B33D;letter-spacing:1px}
+.quote p{max-width:17ch}
+.mbar a{font-weight:700}
+.cert .kvk{font-size:clamp(22px,2.1vw,30px)}
+@media (prefers-reduced-motion:reduce){.rollword .paint{clip-path:none!important}.roller{display:none}.film{animation:none!important}}
+.brand .lg-l{display:none}.nav.scrolled .brand .lg-l{display:block}.nav.scrolled .brand .lg-d{display:none}
+.ph-ic svg{width:18px;height:18px;display:block}
+.brand.plate .lg-d{background:#F4F0E9;padding:6px 12px;border-radius:12px;box-sizing:content-box;height:34px}
+
+/* ===== THEMA'S (donker / licht / merk) - waarden uit build.py ===== */
+:root{--heroBg:#182448;--heroText:#F4F0E9;--heroMuted:rgba(244,240,233,.68);--heroLine:rgba(244,240,233,.14);--heroIcon:#D89C18;
+ --ghost:rgba(244,240,233,.55);--paintFill:#D89C18;--heroBtnBg:#D89C18;--heroBtnText:#182448;--heroGlow:rgba(216,156,24,0.22);
+ --navCtaBg:#D89C18;--navCtaText:#182448;--navScrolledBg:rgba(24,36,72,0.9);--navScrolledText:#F4F0E9}
+/* navigatie zweeft over de hero: één geheel, geen lijn */
+.demobar{display:none}
+.nav{position:fixed;left:0;right:0;top:0;background:transparent;color:var(--heroText);box-shadow:none}
+.nav.scrolled{background:var(--navScrolledBg);color:var(--navScrolledText);box-shadow:0 1px 0 rgba(0,0,0,.06)}
+.nav-cta,.nav.scrolled .nav-cta{background:var(--navCtaBg);color:var(--navCtaText)}
+.nav-cta:hover{filter:brightness(1.08)}
+.hero{background:var(--heroBg);color:var(--heroText);padding-top:calc(76px + clamp(28px,4.5vh,56px))}
+.hero::before{top:-34%;bottom:auto;width:min(1300px,180vw);height:860px;background:radial-gradient(closest-side,var(--heroGlow),transparent 72%)}
+@media (max-width:620px){.hero{padding-top:calc(64px + 30px)}}
+.h-pill{border-color:var(--heroLine);color:var(--heroMuted)}.h-pill b{color:var(--heroText)}
+.h-sub{color:var(--heroText)}.h-sub span{color:var(--heroMuted)}
+.h-usp{color:var(--heroMuted)}.h-usp svg{color:var(--heroIcon)}
+.rollword .ghost{-webkit-text-stroke-color:var(--ghost)}
+.rollword .paint{background-color:var(--paintFill);background-image:linear-gradient(180deg,rgba(255,255,255,.14),rgba(0,0,0,.05))}
+.hero .btn-red{background:var(--heroBtnBg);color:var(--heroBtnText)!important;box-shadow:0 14px 30px -14px rgba(0,0,0,.45)}
+.hero .btn-line{border-color:var(--heroLine);color:var(--heroText)}
+.hero .btn-line:hover{border-color:var(--heroText)}
+.demotag{position:fixed;left:14px;bottom:14px;z-index:70;font-size:11.5px;font-weight:500;background:rgba(20,20,20,.78);color:#fff;padding:6px 12px;border-radius:999px;text-decoration:none;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.demotag b{font-weight:700}
+@media (max-width:720px){.demotag{display:none}}
+/* logo: donker thema = lichte versie, licht/merk = origineel */
+.t-donker .nav.scrolled .brand .lg-d{display:block}.t-donker .nav.scrolled .brand .lg-l{display:none}
+.t-licht .brand .lg-d,.t-merk .brand .lg-d{display:none!important}.t-licht .brand .lg-l,.t-merk .brand .lg-l{display:block!important}
+.t-merk .brand.mplate .lg-l{background:#F4F0E9;padding:6px 12px;border-radius:12px;box-sizing:content-box;height:34px}
+/* licht: navy woord, accent als verfbaan erachter */
+.t-licht .rollword{isolation:isolate}
+.t-licht .rollword .ghost{color:var(--heroText);-webkit-text-stroke:0;position:relative;z-index:1}
+.t-licht .rollword .paint{color:transparent;-webkit-text-fill-color:transparent;background:var(--red);inset:.22em -.12em .02em -.12em;padding:0;border-radius:.08em .14em .1em .16em;z-index:0}
+/* lichte varianten van de projecten/diensten-secties */
+.lightsec{--cardD:#FFFFFF;--lineD:var(--line);--mutedD:var(--muted)}
+.lightsec .filters button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.lightsec .filters button:hover{color:var(--text);border-color:var(--text)}
+.lightsec .gitem{background:#e9e4dc}
+/* accent te licht voor tekst op papier? dan donker woord met verfbaan */
+.lowacc .quote .k{color:var(--ink);background:linear-gradient(transparent 56%,var(--red) 56%,var(--red) 94%,transparent 94%);padding:0 .06em}
+.lowacc .lightsec .srow:hover .no,.lowacc .lightsec .srow.open .no{color:var(--ink)}
+
+/* ===== volledig donker (content.json: "alldark": true) - geen lichte vlakken ===== */
+body.alldark{background:#182448}
+.alldark .sec:not(.dark),.alldark .quote{background:#182448;color:#F2EEE8;
+  --paper:#1D1D1D;--ink:#F2EEE8;--card:#283355;--text:#F2EEE8;--muted:rgba(242,238,232,.66);--line:rgba(242,238,232,.13)}
+.alldark .sec:not(.dark) .blogo{background:#F2EEE8}
+.alldark .sec:not(.dark){--ink:#D89C18;--paper:#182448}
+.alldark .sec:not(.dark) .phone,.alldark .sec:not(.dark) .contactcard{background:#283355;color:#F2EEE8;border:1px solid rgba(242,238,232,.1)}
+.alldark .sec:not(.dark) .phone-top{color:#F2EEE8}
+.alldark .sec:not(.dark) .msg.j{background:#262626;color:#F2EEE8}
+.alldark .sec:not(.dark) .contactcard a{color:#F2EEE8}
+.alldark .sec:not(.dark) .field input,.alldark .sec:not(.dark) .qf textarea,.alldark .sec:not(.dark) .pc input,.alldark .sec:not(.dark) .step .n,.alldark .sec:not(.dark) .cert .lg{background:#1D1D1D}
+.alldark .sec:not(.dark) .step .n{color:#F2EEE8}
+.alldark .sec:not(.dark)+.sec:not(.dark){border-top:1px solid rgba(242,238,232,.08)}
+.alldark .field input,.alldark .qf textarea,.alldark .pc input{color:#F2EEE8}
+.alldark .field input::placeholder,.alldark .qf textarea::placeholder,.alldark .pc input::placeholder{color:rgba(242,238,232,.45)}
+
+
+</style>
+</head>
+
+
+
+<body class="t-donker lowacc">
+
+
+<header class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top" aria-label="R.K Schilderwerken, naar boven"><img class="lg-d" src="logos/logo-licht.png" alt="R.K Schilderwerken"><img class="lg-l" src="logos/logo.png" alt="" aria-hidden="true"></a>
+    <nav aria-label="Hoofdmenu"><ul>
+      <li><a href="#diensten">Schilderwerk</a></li>
+      <li><a href="#voor-wie">Voor wie</a></li>
+      <li><a href="#projecten">Projecten</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul></nav>
+    <div class="nav-r">
+      <a class="nav-tel" href="tel:0611173973" aria-label="Bel 06 11 17 39 73"><span class="live" id="live"></span><span class="n">06 11 17 39 73</span><span class="ph-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></span></a>
+      <a class="nav-cta" href="#offerte">Offerte aanvragen</a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero">
+  <div class="wrap hero-in">
+    <span class="h-pill"><span class="live" id="live2"></span><b>R.K Schilderwerken</b> · Vroomshoop &amp; Overijssel</span>
+    <h1 class="h1"><span class="l1">Schilder in</span>
+      <span class="rollword" aria-label="Vroomshoop"><span class="ghost" aria-hidden="true">Vroomshoop</span><span class="paint" aria-hidden="true">Vroomshoop</span>
+        <span class="roller" aria-hidden="true"><svg viewBox="0 0 60 110"><defs><linearGradient id="cyl" x1="0" x2="1"><stop offset="0" stop-color="#9C7011"/><stop offset=".35" stop-color="#E6BF69"/><stop offset=".6" stop-color="#D89C18"/><stop offset="1" stop-color="#9C7011"/></linearGradient></defs>
+          <rect x="4" y="2" width="26" height="80" rx="9" fill="url(#cyl)"/><rect x="4" y="2" width="26" height="80" rx="9" fill="none" stroke="rgba(0,0,0,.15)"/>
+          <path d="M30 42 H44 V96" fill="none" stroke="#cfc8bf" stroke-width="4" stroke-linecap="round"/>
+          <rect x="38" y="88" width="13" height="40" rx="5" fill="#283355" stroke="rgba(255,255,255,.25)" stroke-width="1.5"/></svg></span>
+      </span>
+    </h1>
+    <p class="h-sub">Binnen- en buitenschilderwerk, wandafwerking en houtrotreparatie. <span>Met meer dan 10 jaar ervaring.</span></p>
+    <div class="hero-ctas">
+      <a class="btn btn-red" href="#offerte">Vraag een offerte aan <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a class="btn btn-line" href="tel:0611173973"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>Bel 06 11 17 39 73</a>
+    </div>
+    <ul class="h-usp"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>Meer dan 10 jaar ervaring</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>Persoonlijke benadering</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>Altijd heldere communicatie</li></ul>
+  </div>
+  <div class="strip-wrap" aria-label="Recent werk van R.K Schilderwerken"><div class="film-row"><div class="film" id="film"></div></div></div>
+</section>
+
+<section class="quote rv" id="spreuk"><div class="wrap"><p>Van kozijn tot complete woning: <span class="k">schilderwerk met echte passie.</span></p></div></section>
+
+<section class="sec dark" id="projecten">
+  <div class="wrap">
+    <div class="shead"><div><span class="eyebrow">Projecten</span><h2>Ons werk in<br>Overijssel.</h2></div><p class="lead">Buitenschilderwerk in Wierden en Hengelo, sauswerk in Zenderen en Almelo, en complete woningen in Holten. Elk project netjes afgewerkt.</p></div>
+    <article class="feature rv">
+      <div class="img"><img class="main" src="img/p13.webp" alt="Vrijstaande woning na het schilderen door R.K Schilderwerken"><span class="badge1935"><span>project<b>Woning</b></span></span></div>
+      <div class="txt">
+        <span class="pill">Vakmanschap · Inspectie</span>
+        <h3>Eerst inspectie, dan pas verf.</h3>
+        <p>Elk project begint met een grondige inspectie van het huidige schilderwerk en het houtwerk eronder. Zo pakken we bestaande problemen aan en voorkomen we nieuwe.</p>
+        <div class="tri"><figure><img src="img/p4.webp" alt="Houtwerk hersteld"><figcaption>Houtwerk hersteld</figcaption></figure><figure><img src="img/p31.webp" alt="Voorbereiden"><figcaption>Voorbereiden</figcaption></figure><figure><img src="img/p30.webp" alt="Afgelakt"><figcaption>Afgelakt</figcaption></figure></div>
+      </div>
+    </article>
+    <div class="filters" role="group" aria-label="Filter projecten"><button aria-pressed="true" data-f="all">Alles</button><button aria-pressed="false" data-f="buiten">Buiten</button><button aria-pressed="false" data-f="binnen">Binnen</button><button aria-pressed="false" data-f="wanden">Wanden</button><button aria-pressed="false" data-f="hout">Houtwerk</button></div>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<section class="sec dark cont" id="diensten">
+  <div class="wrap"><div class="inner">
+    <div class="shead"><div><span class="eyebrow">Wat wij voor u doen</span><h2>Al uw schilderwerk,<br>binnen en buiten.</h2></div><p class="lead">Voor particuliere en zakelijke klanten in Overijssel en Drenthe. Van grote renovaties tot kleinere schilderklussen.</p></div>
+    <div class="srows" id="srows"></div>
+  </div></div>
+</section>
+
+<section class="sec" id="voor-wie">
+  <div class="wrap">
+    <div class="shead"><div><span class="eyebrow">Voor wie werken wij?</span><h2>Voor uw huis<br>of uw bedrijf.</h2></div><p class="lead">Particuliere en zakelijke klanten in Overijssel en Drenthe.</p></div>
+    <div class="who-grid">
+      <a class="who-card rv" href="#offerte" data-u="u1"><img src="img/p37.webp" alt="Particulieren" loading="lazy"><span class="no">01</span><div class="in"><h3>Particulieren</h3><p>Buiten- en binnenschilderwerk voor uw woning, met persoonlijk advies.</p><span class="go">Offerte voor uw woning <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div></a>
+      <a class="who-card rv" href="#offerte" data-u="u2"><img src="img/p9.webp" alt="Bedrijven" loading="lazy"><span class="no">02</span><div class="in"><h3>Bedrijven</h3><p>Onderhoud van uw bedrijfspand, met hoogwaardige materialen.</p><span class="go">Offerte voor uw pand <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div></a>
+      <a class="who-card rv" href="#offerte" data-u="u3"><img src="img/p4.webp" alt="Houtwerk herstellen" loading="lazy"><span class="no">03</span><div class="in"><h3>Houtwerk herstellen</h3><p>Houtrot in kozijnen of deuren? We herstellen het voordat het erger wordt.</p><span class="go">Vraag advies <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div></a>
+    </div>
+  </div>
+</section>
+
+<section class="sec cont" id="werkwijze">
+  <div class="wrap"><div class="inner">
+    <div class="shead"><div><span class="eyebrow">Werkwijze</span><h2>Duidelijk,<br>van begin tot eind.</h2></div><p class="lead">Zo werken we, of het nu een enkele klus is of een complete woning.</p></div>
+    <div class="steps">
+      <article class="step rv"><div class="ph"><img src="img/p0.webp" alt="Woning waarvoor een offerte wordt gemaakt" loading="lazy" style="object-position:50% 50%"><span class="n">01</span></div><div class="bd"><h3>Adviesgesprek</h3><p>We bespreken uw wensen en geven persoonlijk advies. U krijgt een vrijblijvende offerte.</p><div class="meta">Vrijblijvend</div></div></article>
+      <article class="step rv"><div class="ph"><img src="img/p31.webp" alt="Kozijn wordt voorbereid" loading="lazy" style="object-position:50% 50%"><span class="n">02</span></div><div class="bd"><h3>Voorbereiding</h3><p>Grondige inspectie, houtwerk herstellen, kitten en netjes afplakken.</p><div class="meta">Goede ondergrond</div></div></article>
+      <article class="step rv"><div class="ph"><img src="img/p2.webp" alt="Schilder aan het werk aan een gevel" loading="lazy" style="object-position:50% 50%"><span class="n">03</span></div><div class="bd"><h3>Verf</h3><p>Met hoogwaardige verf, niet gehaast en met oog voor detail.</p><div class="meta">Ambachtelijk</div></div></article>
+      <article class="step rv"><div class="ph"><img src="img/p38.webp" alt="Voordeur en erker na het schilderen" loading="lazy" style="object-position:50% 50%"><span class="n">04</span></div><div class="bd"><h3>Oplevering</h3><p>Samen nalopen. We maken het pas af als u tevreden bent.</p><div class="meta">Netjes opgeleverd</div></div></article>
+    </div>
+  </div></div>
+</section>
+
+<section class="sec cont" id="keurmerken">
+  <div class="wrap"><div class="inner">
+    <div class="shead"><div><span class="eyebrow">Zekerheden</span><h2>Vakwerk<br>dat u ziet.</h2></div><p class="lead">Persoonlijk, duidelijk en met oog voor detail.</p></div>
+    <div class="cgrid">
+      <div class="cert rv"><div class="lg"><div class="kvk"><small>ERVARING</small>10 jaar</div></div><h3>Als schilder</h3><p>Meer dan 10 jaar plezier in het werk.</p></div>
+      <div class="cert rv"><div class="lg"><div class="kvk"><small>TEVREDEN</small>100%</div></div><h3>Tevredenheid</h3><p>Ons uitgangspunt bij elk project.</p></div>
+      <div class="cert rv"><div class="lg"><div class="kvk"><small>PERSOONLIJK</small>Aanpak</div></div><h3>Heldere communicatie</h3><p>We luisteren en komen afspraken na.</p></div>
+      <div class="cert rv"><div class="lg"><div class="kvk"><small>REGIO</small>Overijssel</div></div><h3>En Drenthe</h3><p>Particulier en zakelijk.</p></div>
+    </div>
+    <div class="brands" id="merken">
+      <div><span class="eyebrow">Verfmerken</span><h3 style="margin-top:14px">Merken waarmee we werken</h3><p>Alleen professionele kwaliteit. <span class="tag">verfmerken: voorbeeld</span></p></div>
+      <div class="bgrid"><div class="blogo rv"><img src="logos/sikkens.png" alt="Sikkens"></div><div class="blogo rv"><img src="logos/sigma.svg" alt="Sigma"></div><div class="blogo rv"><img src="logos/histor.png" alt="Histor"></div><div class="blogo rv"><img src="logos/flexa-dark.svg" alt="Flexa-dark"></div><div class="blogo rv"><img src="logos/wijzonol.svg" alt="Wijzonol"></div><div class="blogo rv"><img src="logos/repaircare.svg" alt="Repaircare"></div><div class="blogo rv"><img src="logos/graco.svg" alt="Graco"></div></div>
+    </div>
+  </div></div>
+</section>
+
+<section class="sec cont" id="werkgebied">
+  <div class="wrap"><div class="inner area-grid">
+    <div>
+      <span class="eyebrow">Werkgebied</span>
+      <h2>Vroomshoop, Overijssel en Drenthe.</h2>
+      <p class="lead">Vanuit Vroomshoop werken we in Twente, Salland en het zuiden van Drenthe. Een project daarbuiten? Neem gerust contact op.</p>
+      <div class="places"><span>Vroomshoop</span><span>Almelo</span><span>Wierden</span><span>Borne</span><span>Hengelo</span><span>Zenderen</span><span>Holten</span><span>Tubbergen</span><span>Westerhaar</span><span>Den Ham</span><span>Ommen</span><span>Hardenberg</span></div>
+      <form class="pc" id="pcform" novalidate>
+        <label for="pc" style="position:absolute;left:-9999px">Uw postcode</label>
+        <input id="pc" inputmode="numeric" autocomplete="postal-code" placeholder="Uw postcode, bijv. 7681">
+        <button class="btn btn-ink" type="submit">Check</button>
+      </form>
+      <p class="pc-out" id="pcout" aria-live="polite"></p>
+    </div>
+    <div class="mapbox rv">
+      <img src="img/kaart.webp" alt="Kaart van het werkgebied met een pin op Vroomshoop">
+      <div class="radius" aria-hidden="true" style="left:50%;top:50%;width:67.1%;background:rgba(216,156,24,.09);border-color:#D89C18"></div>
+      <div class="pinpulse" aria-hidden="true" style="left:50%;top:50%"></div>
+      <svg class="pin" style="left:50%;top:50%" viewBox="0 0 48 64" aria-hidden="true"><path d="M24 2C12 2 3 11 3 23c0 15 21 37 21 37s21-22 21-37C45 11 36 2 24 2z" fill="#D89C18" stroke="#fff" stroke-width="3"/><circle cx="24" cy="23" r="8" fill="#fff"/></svg>
+      <div class="pincard" style="left:calc(50% + 30px);top:calc(50% - 80px)"><b>R.K Schilderwerken</b>Vroomshoop</div>
+      <span class="osm">© OpenStreetMap-bijdragers</span>
+    </div>
+  </div></div>
+</section>
+
+<section class="sec dark" id="reviews">
+  <div class="wrap shead">
+    <div><span class="eyebrow">Reviews</span><h2>Wat klanten<br>zeggen.</h2></div>
+    <div class="score"><b>100%</b><div><span class="stars">★★★★★</span><br>tevreden klanten in de reviews op de eigen site</div></div>
+  </div>
+  <div class="marquee"><div class="track" id="t1"></div><div class="track rev" id="t2"></div></div>
+</section>
+
+<section class="sec" id="offerte">
+  <div class="wrap qf-grid">
+    <div class="qf-side">
+      <span class="eyebrow">Offerte</span>
+      <h2>Vertel kort wat er geschilderd moet worden.</h2>
+      <ul><li>Vrijblijvend adviesgesprek</li><li>Particulier en zakelijk</li><li>Ook houtrotreparatie</li></ul>
+      <div class="contactcard"><img src="img/p13.webp" alt="R.K Schilderwerken aan het werk"><div><b>Liever bellen?</b><a href="tel:0611173973">06 11 17 39 73</a> · <a href="mailto:info@rk-schilderwerken.nl">Mail</a></div></div>
+    </div>
+    <form class="qf" id="qf" novalidate>
+      <div id="qfFields">
+        <label class="big" for="wat">Vertel kort wat er geschilderd moet worden</label>
+        <div class="field" style="margin-top:0" id="f-wat"><textarea id="wat" placeholder="Bijvoorbeeld: de gevel en boeien buiten schilderen en houtrot in twee kozijnen herstellen."></textarea><span class="emsg" id="e-wat"></span></div>
+        <span class="lbl">Wat moet er gebeuren?</span>
+        <div class="chips"><input type="checkbox" id="c1"><label for="c1">Buitenschilderwerk</label><input type="checkbox" id="c2"><label for="c2">Binnenschilderwerk</label><input type="checkbox" id="c3"><label for="c3">Wandafwerking</label><input type="checkbox" id="c4"><label for="c4">Houtrotreparatie</label><input type="checkbox" id="c5"><label for="c5">Kit- en afkitwerk</label><input type="checkbox" id="c6"><label for="c6">Sauswerk</label></div>
+        <span class="lbl">U bent</span>
+        <div class="chips"><input type="radio" name="wie" id="u1" checked><label for="u1">Particulier</label><input type="radio" name="wie" id="u2"><label for="u2">Bedrijf</label></div>
+        <div class="row2">
+          <label class="field" id="f-naam"><span>Naam</span><input id="naam" autocomplete="name"><span class="emsg" id="e-naam"></span></label>
+          <label class="field" id="f-tel"><span>Telefoonnummer</span><input id="tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="06 12345678"><span class="emsg" id="e-tel"></span></label>
+        </div>
+        <div class="row2">
+          <label class="field"><span>Postcode en plaats</span><input id="plaats" autocomplete="postal-code"></label>
+          <label class="field"><span>E-mail</span><input id="mail" type="email" autocomplete="email"></label>
+        </div>
+        <label class="upload"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="15" rx="3"/><circle cx="12" cy="12.5" r="3.5"/><path d="M8 5l1.5-2h5L16 5"/></svg><span id="upl">Foto's toevoegen (optioneel)</span><input type="file" id="files" accept="image/*" multiple></label>
+        <button class="btn btn-red submit" type="submit">Offerte aanvragen <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <p class="fine">Vrijblijvend. Bellen kan ook: 06 11 17 39 73.</p>
+      </div>
+      <div class="done" id="done" aria-live="polite">
+        <div class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></div>
+        <p class="big" id="doneT">Bedankt!</p>
+        <p>We nemen snel contact op via <b id="doneTel"></b> voor een afspraak.</p>
+        <p class="fine">Dit is een demo: er is niets verzonden.</p>
+        <button class="btn btn-line" type="button" id="again" style="margin-top:18px">Nieuwe aanvraag</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section class="sec cont" id="faq">
+  <div class="wrap"><div class="inner faq-grid">
+    <div><span class="eyebrow">Veelgestelde vragen</span><h2>Vraag het de schilder.</h2><p class="lead" style="margin-bottom:28px">Tik op een vraag. Het antwoord komt meteen, net als in de app.</p><div class="qs" id="qs"></div></div>
+    <div class="phone rv"><div class="phone-top"><img src="img/p13.webp" alt=""><div><b>R.K Schilderwerken</b><small>● online · ma–vr 07.30–17.00</small></div></div><div class="chat" id="chat" aria-live="polite"></div></div>
+  </div></div>
+</section>
+</main>
+
+<footer class="dark" id="contact">
+  <div class="wrap">
+    <div class="f-cta">
+      <p class="f-kicker">Schilderwerken · Vroomshoop</p>
+      <p class="f-name" aria-label="R.K">R.K<i></i></p>
+      <div class="f-btns"><a class="btn btn-red" href="#offerte">Offerte aanvragen</a><a class="btn btn-line" href="tel:0611173973">Bel 06 11 17 39 73</a></div>
+    </div>
+    <div class="f-cols">
+      <div><h4>Schilderwerk</h4><ul><li><a href="#diensten">Buitenschilderwerk</a></li><li><a href="#diensten">Binnenschilderwerk</a></li><li><a href="#diensten">Wandafwerking</a></li><li><a href="#diensten">Houtrotreparatie</a></li><li><a href="#diensten">Kit- en afkitwerk</a></li><li><a href="#diensten">Sauswerk</a></li></ul></div>
+      <div><h4>Contact</h4><ul><li><a class="f-big" href="tel:0611173973">06 11 17 39 73</a></li><li><a href="mailto:info@rk-schilderwerken.nl">info@rk-schilderwerken.nl</a></li><li><a href="#offerte">Offerte aanvragen</a></li></ul></div>
+      <div><h4>Adres</h4><p>R.K Schilderwerken<br> Vroomshoop</p><p style="margin-top:12px">ma–vr 07.30–17.00</p></div>
+      <div><h4>Werkgebied</h4><ul><li><a href="#werkgebied">Vroomshoop</a></li><li><a href="#werkgebied">Almelo</a></li><li><a href="#werkgebied">Wierden</a></li><li><a href="#werkgebied">Borne</a></li><li><a href="#werkgebied">Hengelo</a></li><li><a href="#werkgebied">Zenderen</a></li></ul></div>
+    </div>
+    <div class="f-legal"><span>© 2026 R.K Schilderwerken · Privacyverklaring · Algemene voorwaarden</span><span>Demo-ontwerp door <b>De Website Dokters</b> · openingstijden zijn voorbeeld</span></div>
+  </div>
+</footer>
+
+<nav class="mbar" id="mbar" aria-label="Snel contact"><a class="c" href="tel:0611173973">Bellen</a><a class="o" href="#offerte">Offerte aanvragen</a></nav>
+
+<div class="lightbox" id="lb" role="dialog" aria-modal="true" aria-label="Projectfoto">
+  <button class="lb-x" id="lbx" aria-label="Sluiten">×</button><button class="lb-nav lb-prev" id="lbp" aria-label="Vorige">‹</button>
+  <div><img id="lbimg" alt=""><p class="cap" id="lbcap"></p></div><button class="lb-nav lb-next" id="lbn" aria-label="Volgende">›</button>
+</div>
+<a class="demotag" href="#contact">Demo-ontwerp · <b>De Website Dokters</b></a>
+<script>window.D={"faq": [["Wat is houtrot en moet het gerepareerd worden?", "Houtrot ontstaat als hout langdurig vochtig blijft. Tijdig herstellen voorkomt verdere schade en vervanging van kozijnen of deuren."], ["Welke wandafwerking kan ik kiezen?", "Glasweefsel, glasvlies, renovlies of spachtelputz. We adviseren u graag over de beste optie voor uw ruimte."], ["Hoe lang gaat buitenschilderwerk mee?", "Met de juiste nazorg kan een goed uitgevoerde schilderbeurt tot wel tien jaar meegaan. We geven u graag advies over het onderhoud."], ["Doen jullie ook kleine klussen?", "Ja. Van grote renovaties tot kleinere schilderklussen helpen we u graag."], ["Werken jullie ook voor bedrijven?", "Ja, voor particuliere \u00e9n zakelijke klanten, binnen en buiten."], ["In welke regio werken jullie?", "In Overijssel en Drenthe. Een project daarbuiten? Neem gerust contact met ons op."]], "faqHello": "Goedendag! Tik op een vraag, dan antwoorden we direct.", "film": [["p13", "Vrijstaande woning, buiten geschilderd"], ["p10", "Woonkamer binnen geschilderd"], ["p38", "Voordeur en erker in marineblauw"], ["p2", "Schilderen aan de gevel"], ["p24", "Woning met veranda"], ["p6", "Gang en trapgat gesaust"], ["p37", "Woning in Overijssel"], ["p11", "Ruime woonkeuken"]], "grid": [["p13", "buiten", "Vrijstaande woning"], ["p6", "binnen", "Gang en trapgat"], ["p21", "wanden", "Plafond en wanden"], ["p4", "hout", "Houtwerk hersteld"], ["p2", "buiten", "Gevel schilderen"], ["p10", "binnen", "Woonkamer"], ["p26", "wanden", "Gesausde ruimte"], ["p31", "hout", "Kozijn voorbereid"], ["p24", "buiten", "Woning met veranda"], ["p11", "binnen", "Woonkeuken"], ["p25", "wanden", "Wanden gekit en gesaust"], ["p30", "hout", "Voordeur marineblauw"], ["p37", "buiten", "Woning in Overijssel"], ["p7", "binnen", "Ruime woonkamer"], ["p29", "wanden", "Strakke wanden"], ["p34", "hout", "Deur en kozijn"]], "pc": [[7680, 7689], [7600, 7609], [7620, 7629], [7640, 7649], [7650, 7659], [7690, 7699], [7730, 7739], [7770, 7779], [7440, 7459], [7550, 7559]], "reviews": [["Inge van Berkum", "Reza is betrouwbaar en erg vriendelijk. Levert goed werk."], ["Rutger Cordova", "Mooi en vakkundig werk geleverd! Erg blij mee!"], ["Klant via Google", "Erg vriendelijke jongen, reageert snel, komt afspraken na en werkt alles tot in de puntjes netjes af. Kortom een topper!"], ["Mehmet", "Hij heeft mijn huis geschilderd. Hij komt zijn afspraken na en het resultaat is heel mooi geworden. Zeker een aanrader."]], "reviewsExample": false, "reviewsSource": "Review op eigen website", "services": [["Buiten\u0026shy;schilderwerk", "Buitenschilderwerk", "Gevels, kozijnen en boeien duurzaam beschermd en strak afgewerkt.", "We beginnen met een grondige inspectie van het huidige schilderwerk. Daarna werken we met hoogwaardige, weerbestendige verf voor een langdurig en kleurvast resultaat.", ["Grondige inspectie vooraf", "Hoogglans lak en weerbestendige verf", "Advies over onderhoud"], "p13", "c1"], ["Binnen\u0026shy;schilderwerk", "Binnenschilderwerk", "Muren, plafonds en kozijnen met persoonlijk advies over kleur en afwerking.", "Elk project begint met een gesprek over uw wensen. Daarna werken we met slijtvaste verf en veel oog voor detail.", ["Muren en plafonds", "Kozijnen en deuren", "Advies over kleuren"], "p10", "c2"], ["Wand\u0026shy;afwerking", "Wandafwerking", "Glasweefsel, glasvlies, renovlies of spachtelputz voor een strakke wand.", "Wij adviseren u graag over de beste optie voor uw ruimte. Voor een gladde, naadloze wand of een robuuste structuur, geschikt voor woning en bedrijf.", ["Glasweefsel en glasvlies", "Renovlies", "Spachtelputz"], "p21", "c3"], ["Houtrot\u0026shy;reparatie", "Houtrotreparatie", "Beschadigde kozijnen herstellen voordat de schade groter wordt.", "We beginnen met inspectie en het prepareren van het houtwerk. Zo herstellen we kozijnen en deuren en blijft uw houtwerk jarenlang beschermd.", ["Kozijnen en deuren", "Inspectie en preparatie", "Voorkomt vervangingskosten"], "p4", "c4"], ["Kit- en afkitwerk", "Kit- en afkitwerk", "Naden en aansluitingen netjes afgekit.", "Voor een strakke eindafwerking kitten we naden en aansluitingen netjes af, voordat er geschilderd of gesaust wordt.", ["Naden en aansluitingen", "Netjes afgeplakt", "Strakke eindafwerking"], "p31", "c5"], ["Saus\u0026shy;werk", "Sauswerk", "Muren en plafonds netjes gekit en twee keer gesaust.", "Gangen, trapgaten, woonkamers en ouderenwoningen: wij kitten, plakken af en saus twee keer voor een egaal resultaat.", ["Gangen en trapgaten", "Gekit en afgeplakt", "Twee keer gesaust"], "p26", "c6"]]};</script>
+<script>
+(()=>{
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* bereikbaarheid (Europe/Amsterdam) */
+try{
+  const p=new Intl.DateTimeFormat('nl-NL',{timeZone:'Europe/Amsterdam',weekday:'short',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(new Date());
+  const g=t=>p.find(x=>x.type===t)?.value, wd=g('weekday'), t=+g('hour')*60+ +g('minute'), wk=!/za|zo/i.test(wd);
+  const c=(wk&&t>=450&&t<1020)?'':(wk&&t<1200&&t>=1020)?'o':'r';
+  ['#live','#live2'].forEach(s=>{const e=$(s);if(e)e.className='live '+c});
+}catch(e){}
+
+/* filmstrip hero */
+const F=D.film;
+const film=$('#film');
+const fig=f=>`<figure><img src="img/f_${f[0]}.webp" alt="${f[1]}" loading="lazy"><figcaption>${f[1]}</figcaption></figure>`;
+film.innerHTML=F.map(fig).join('')+F.map(fig).join('');
+if(reduce)film.style.animation='none';
+
+/* reveal */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.15});
+$$('.rv').forEach(el=>io.observe(el));
+
+/* referenties */
+const P=D.grid;
+const grid=$('#grid');
+P.forEach((p,i)=>{const b=document.createElement('button');b.className='gitem';b.type='button';b.dataset.c=p[1];b.dataset.i=i;b.setAttribute('aria-label','Bekijk foto: '+p[2]);
+ b.innerHTML=`<img loading="lazy" src="img/${p[0]}.webp" alt="${p[2]}">`;b.onclick=()=>openLb(i);grid.appendChild(b)});
+$$('.filters button').forEach(b=>b.onclick=()=>{$$('.filters button').forEach(x=>x.setAttribute('aria-pressed',x===b));const f=b.dataset.f;$$('.gitem').forEach(g=>g.classList.toggle('hide',f!=='all'&&g.dataset.c!==f))});
+let cur=0;const lb=$('#lb');
+const vis=()=>$$('.gitem:not(.hide)').map(g=>+g.dataset.i);
+function openLb(i){cur=i;$('#lbimg').src=`img/${P[i][0]}.webp`;$('#lbimg').alt=P[i][2];$('#lbcap').textContent=P[i][2];lb.classList.add('on');$('#lbx').focus()}
+function step(d){const v=vis();let k=v.indexOf(cur);openLb(v[(k+d+v.length)%v.length])}
+$('#lbx').onclick=()=>lb.classList.remove('on');$('#lbp').onclick=()=>step(-1);$('#lbn').onclick=()=>step(1);
+lb.onclick=e=>{if(e.target===lb)lb.classList.remove('on')};
+addEventListener('keydown',e=>{if(!lb.classList.contains('on'))return;if(e.key==='Escape')lb.classList.remove('on');if(e.key==='ArrowRight')step(1);if(e.key==='ArrowLeft')step(-1)});
+
+/* diensten (teksten van smidts-schilders.nl) */
+const S=D.services;
+const sr=$('#srows');
+S.forEach((s,i)=>{const d=document.createElement('div');d.className='srow';
+ d.innerHTML=`<div class="srow-in"><span class="no">0${i+1}</span><div><h3>${s[0]}</h3><p class="s">${s[2]}</p>
+ <button class="more" type="button" aria-expanded="false">Bekijk meer <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></div>
+ <div class="thumb"><img loading="lazy" src="img/${s[5]}.webp" alt="${s[1]}"></div></div>
+ <div class="sdetail"><div><div class="sd-in"><span class="sp"></span><p class="full">${s[3]}</p><div><ul>${s[4].map(x=>`<li>${x}</li>`).join('')}</ul>
+ <a class="btn btn-red" href="#offerte" data-chip="${s[6]}">Offerte voor ${s[1].toLowerCase()}</a></div></div></div></div>`;
+ const btn=d.querySelector('.more');btn.onclick=()=>{const o=d.classList.toggle('open');btn.setAttribute('aria-expanded',o);btn.firstChild.textContent=o?'Minder ':'Bekijk meer '};
+ d.querySelector('[data-chip]').onclick=e=>{$('#'+e.currentTarget.dataset.chip).checked=true};sr.appendChild(d)});
+$$('.who-card').forEach(a=>a.addEventListener('click',()=>{$('#'+a.dataset.u).checked=true}));
+
+/* scroll */
+function onScroll(){$('#mbar').classList.toggle('on',scrollY>500);$('#nav').classList.toggle('scrolled',scrollY>40)}
+addEventListener('scroll',onScroll,{passive:true});onScroll();
+
+/* postcode */
+$('#pcform').onsubmit=e=>{e.preventDefault();const v=$('#pc').value.replace(/\s/g,''),n=parseInt(v.slice(0,4),10),o=$('#pcout');
+ if(!/^\d{4}/.test(v)){o.style.color='#B4471A';o.textContent='Vul de 4 cijfers van uw postcode in.';return}
+ const near=D.pc.some(r=>n>=r[0]&&n<=r[1]);
+ o.style.color=near?'#1E7B45':'var(--text)';o.textContent=near?'✓ Goed nieuws: u valt binnen ons werkgebied.':'Net buiten ons vaste gebied. Bel gerust, vaak kan het toch.'};
+
+/* reviews: voorbeeld (geen reviews op de huidige site) */
+const R=D.reviews;
+const card=r=>`<article class="rcard"><span class="stars">★★★★★</span><p>“${r[1]}”</p><div class="who"><span class="av">${r[0][0]}</span><div><b>${r[0]}</b><small>${D.reviewsExample?'Voorbeeldreview':(D.reviewsSource||'Google-review')}</small></div></div></article>`;
+$('#t1').innerHTML=R.slice(0,4).concat(R.slice(4,6)).map(card).join('').repeat(reduce?1:2);
+$('#t2').innerHTML=R.slice(6).concat(R.slice(0,4)).map(card).join('').repeat(reduce?1:2);
+
+/* formulier */
+function normTel(v){let d=v.replace(/[^\d+]/g,'');if(d.startsWith('+31'))d='0'+d.slice(3);else if(d.startsWith('0031'))d='0'+d.slice(4);d=d.replace(/\D/g,'');return /^0\d{9}$/.test(d)?d:null}
+$('#files').onchange=e=>{const n=e.target.files.length;$('#upl').textContent=n?`${n} foto${n>1?"'s":''} toegevoegd`:"Foto's toevoegen (optioneel)"};
+function err(id,msg){$('#f-'+id).classList.toggle('err',!!msg);$('#e-'+id).textContent=msg||''}
+$('#qf').onsubmit=e=>{e.preventDefault();let ok=true;
+ const w=$('#wat').value.trim(),n=$('#naam').value.trim(),t=normTel($('#tel').value);
+ err('wat',w.length<5?'Vertel in een paar woorden wat er moet gebeuren.':'');if(w.length<5)ok=false;
+ err('naam',!n?'Hoe mogen we u noemen?':'');if(!n)ok=false;
+ err('tel',!t?'Dit nummer klopt nog niet helemaal. Bijvoorbeeld 06 12345678.':'');if(!t)ok=false;
+ if(!ok){($('.field.err textarea')||$('.field.err input')).focus();return}
+ $('#doneT').textContent=`Bedankt, ${n.split(' ')[0]}!`;$('#doneTel').textContent=t.startsWith('06')?t.replace(/^(\d{2})(\d{4})(\d{4})$/,'$1-$2$3'):t.replace(/^(\d{3})(\d{3})(\d{2})(\d{2})$/,'$1 $2 $3 $4');
+ $('#qfFields').style.display='none';$('#done').classList.add('on');$('#offerte').scrollIntoView({behavior:reduce?'auto':'smooth'})};
+$('#again').onclick=()=>{$('#qf').reset();$('#done').classList.remove('on');$('#qfFields').style.display=''};
+
+/* FAQ-chat */
+const Q=D.faq;
+const chat=$('#chat'),qs=$('#qs');
+function add(c,h){const m=document.createElement('div');m.className='msg '+c;m.innerHTML=h;chat.appendChild(m);chat.scrollTop=chat.scrollHeight;return m}
+add('j',D.faqHello);
+let busy=false;
+Q.forEach(q=>{const b=document.createElement('button');b.type='button';b.textContent=q[0];
+ b.onclick=()=>{if(busy)return;busy=true;b.classList.add('asked');add('u',q[0]);const t=add('j','<span class="typing"><i></i><i></i><i></i></span>');t.style.padding='0';
+  setTimeout(()=>{t.style.padding='';t.innerHTML=q[1];chat.scrollTop=chat.scrollHeight;busy=false},reduce?0:900);
+  if(innerWidth<900)$('.phone').scrollIntoView({behavior:reduce?'auto':'smooth',block:'center'})};qs.appendChild(b)});
+})();
+</script>
+</body>
+</html>
