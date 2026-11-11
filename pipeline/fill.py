@@ -14,7 +14,12 @@ HEX = re.compile(r'^#[0-9A-Fa-f]{6}$')
 
 
 def img_block(path):
-    data = base64.b64encode(open(path, 'rb').read()).decode()
+    from PIL import Image
+    import io
+    im = Image.open(path).convert('RGB')
+    if max(im.size) > 2000: im.thumbnail((2000, 2000))   # API-limiet 8000 px; kleiner = sneller en goedkoper
+    buf = io.BytesIO(); im.save(buf, 'JPEG', quality=82)
+    data = base64.b64encode(buf.getvalue()).decode()
     return {'type': 'image', 'source': {'type': 'base64', 'media_type': 'image/jpeg', 'data': data}}
 
 

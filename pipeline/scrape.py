@@ -50,9 +50,13 @@ for u,h in pages.items():
     cands=re.findall(r'(?:src|data-src|data-lazy-src|href)=["\']([^"\']+\.(?:jpe?g|png|webp)(?:\?[^"\']*)?)["\']',hh,re.I)
     for ss in re.findall(r'srcset=["\']([^"\']+)["\']',hh): cands+= [x.strip().split(' ')[0] for x in ss.split(',')]
     cands+=re.findall(r'url\(["\']?([^"\')]+\.(?:jpe?g|png|webp))',hh,re.I)
+    # sitebouwers (o.a. Strato/cm4all) met de extensie midden in het pad: .../foto.jpg/picture-1200?...
+    cands+=re.findall(r'(?:src=["\']|url\(["\']?)([^"\' )]+\.(?:jpe?g|png|webp)/[^"\' )]+)',hh,re.I)
     for c in cands:
-        a=urllib.parse.urljoin(u,c);key=re.sub(r'-\d+x\d+(?=\.\w+$)','',a.split('?')[0].rsplit('/',1)[-1]).replace('-scaled','')
-        w=re.search(r'-(\d+)x\d+\.\w+(\?|$)',a) or re.search(r'[?&]w=(\d+)',a);w=int(w.group(1)) if w else 9999
+        a=urllib.parse.urljoin(u,c);path=a.split('?')[0]
+        base=re.sub(r'(\.(?:jpe?g|png|webp))/[^/]+$',r'\1',path,flags=re.I)
+        key=re.sub(r'-\d+x\d+(?=\.\w+$)','',base.rsplit('/',1)[-1]).replace('-scaled','')
+        w=re.search(r'-(\d+)x\d+\.\w+(\?|$)',a) or re.search(r'[?&]w=(\d+)',a) or re.search(r'/picture-(\d+)',a);w=int(w.group(1)) if w else 9999
         if key not in imgs or w>imgs[key][0]: imgs[key]=(w,a)
 def dl(a):
     bb,_=get(a)
@@ -87,11 +91,15 @@ for a,im,bb in res:
     name='p%d'%len(photos);fn=f'{out}/raw/{name}.img';open(fn,'wb').write(bb)
     photos.append({'id':name,'file':fn,'size':list(im.size),'url':a})
 seen=set()
-for a,im,bb in sorted(lres,key=lambda r:-logo_c.get(r[0],0)):
+for a,im,bb in sorted(lres,key=lambda r:(-logo_c.get(r[0],0),-(r[1].size[0]*r[1].size[1] if r[1] else 0))):   # bij gelijke score: grootste
     if im is None or a in seen: continue
     seen.add(a);fn=f'{out}/raw/logo{len(logos)}.png';open(fn,'wb').write(bb)
     logos.append({'file':fn,'size':list(im.size),'url':a,'score':logo_c.get(a,0)})
 photos.sort(key=lambda p:-p['size'][0]*p['size'][1])
+for p in photos[40:]:   # maximaal de 40 grootste: houdt het contactvel en de demo behapbaar
+    try: os.remove(p['file'])
+    except OSError: pass
+photos=photos[:40]
 for i,p in enumerate(photos):   # hernummeren op grootte
     nf=f'{out}/raw/f{i}.img';os.replace(p['file'],nf);p['file']=nf;p['id']='p%d'%i
 print('afgekeurd:',dict(rejected))
