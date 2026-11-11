@@ -1,5 +1,6 @@
 import { renderPainterV1Certified } from './templates/painter-v1-certified.js';
 import { BackendSupabase } from './backend-supabase.js';
+import { STATIC_DEMOS } from './static-demos.js';
 import {
   buildProspectFromSmartlead,
   extractSmartleadEvent,
@@ -195,6 +196,18 @@ export default {
       }
     }
 
+    {
+      const p = url.pathname.split('/').filter(Boolean);
+      if (p.length === 1 && STATIC_DEMOS.has(p[0].toLowerCase())) {
+        const slug = p[0].toLowerCase();
+        if (url.pathname !== `/${slug}/`) return Response.redirect(`${url.origin}/${slug}/${url.search}`, 301);
+        const asset = await env.ASSETS.fetch(new Request(new URL(`/${slug}/index.html`, url), request));
+        const body = asset.status >= 300 && asset.status < 400
+          ? await env.ASSETS.fetch(new Request(new URL(`/${slug}/`, url), request))
+          : asset;
+        return new Response(body.body, { status: 200, headers: { ...HTML_HEADERS, 'x-robots-tag': 'noindex, nofollow' } });
+      }
+    }
     if (/\.[a-z0-9]{2,8}$/i.test(url.pathname)) return env.ASSETS.fetch(request);
     const slug = cleanSlug(url.pathname);
     if (!slug) return html('<!doctype html><title>Niet gevonden</title><h1>404</h1>', 404);
