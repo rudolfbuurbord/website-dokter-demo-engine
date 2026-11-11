@@ -453,5 +453,21 @@ footer{padding:var(--pad) 0 0;overflow:hidden}
 /* accent te licht voor tekst op papier? dan donker woord met verfbaan */
 .lowacc .quote .k{color:var(--ink);background:linear-gradient(transparent 56%,var(--red) 56%,var(--red) 94%,transparent 94%);padding:0 .06em}
 .lowacc .lightsec .srow:hover .no,.lowacc .lightsec .srow.open .no{color:var(--ink)}
+
+/* ===== volledig donker (content.json: "alldark": true) - geen lichte vlakken ===== */
+body.alldark{background:{{c.ink}}}
+.alldark .sec:not(.dark),.alldark .quote{background:{{c.ink}};color:#F2EEE8;
+  --paper:#1D1D1D;--ink:#F2EEE8;--card:{{c.cardD}};--text:#F2EEE8;--muted:rgba(242,238,232,.66);--line:rgba(242,238,232,.13)}
+.alldark .sec:not(.dark) .blogo{background:#F2EEE8}
+.alldark .sec:not(.dark){--ink:{{c.accent}};--paper:{{c.onAccent}}}
+.alldark .sec:not(.dark) .phone,.alldark .sec:not(.dark) .contactcard{background:{{c.cardD}};color:#F2EEE8;border:1px solid rgba(242,238,232,.1)}
+.alldark .sec:not(.dark) .phone-top{color:#F2EEE8}
+.alldark .sec:not(.dark) .msg.j{background:#262626;color:#F2EEE8}
+.alldark .sec:not(.dark) .contactcard a{color:#F2EEE8}
+.alldark .sec:not(.dark) .field input,.alldark .sec:not(.dark) .qf textarea,.alldark .sec:not(.dark) .pc input,.alldark .sec:not(.dark) .step .n,.alldark .sec:not(.dark) .cert .lg{background:#1D1D1D}
+.alldark .sec:not(.dark) .step .n{color:#F2EEE8}
+.alldark .sec:not(.dark)+.sec:not(.dark){border-top:1px solid rgba(242,238,232,.08)}
+.alldark .field input,.alldark .qf textarea,.alldark .pc input{color:#F2EEE8}
+.alldark .field input::placeholder,.alldark .qf textarea::placeholder,.alldark .pc input::placeholder{color:rgba(242,238,232,.45)}
 </style>
 </head>

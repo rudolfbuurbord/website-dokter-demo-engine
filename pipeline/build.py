@@ -108,7 +108,7 @@ for f in ['sikkens.png','sigma.svg','histor.png','flexa-dark.svg','wijzonol.svg'
 
 # ---------- kaart (cache per locatie) ----------
 lat,lon=C['area']['latlon'];km=C['area']['km'];z=11 if km<=30 else 10
-os.makedirs(f'{P}/cache',exist_ok=True);ck=f'{P}/cache/map_{lat:.3f}_{lon:.3f}_{z}.webp'
+os.makedirs(f'{P}/cache',exist_ok=True);ck=f'{P}/cache/mapgray_{lat:.3f}_{lon:.3f}_{z}.png'
 def px(la,lo,z):
     n=256*2**z;x=(lo+180)/360*n;y=(1-math.log(math.tan(math.radians(la))+1/math.cos(math.radians(la)))/math.pi)/2*n;return x,y
 Wm,Hm=1600,1216;cx,cy=px(lat,lon,z);x0,y0=cx-Wm/2,cy-Hm/2
@@ -119,9 +119,10 @@ if not os.path.exists(ck):
         tx,ty=tt;return tt,Image.open(io.BytesIO(urllib.request.urlopen(urllib.request.Request(f'https://tile.openstreetmap.org/{z}/{tx}/{ty}.png',headers=UA)).read())).convert('RGB')
     with cf.ThreadPoolExecutor(6) as ex:
         for (tx,ty),tim in ex.map(tile,tiles): img.paste(tim,(int(tx*256-x0),int(ty*256-y0)))
-    g=ImageEnhance.Contrast(ImageOps.grayscale(img)).enhance(1.1)
-    ImageOps.colorize(g,black=c['ink'],white='#F4F0E9',mid='#ADA79E').save(ck,'WEBP',quality=74)
-shutil.copy(ck,f'{site}/img/kaart.webp')
+    ImageEnhance.Contrast(ImageOps.grayscale(img)).enhance(1.1).save(ck)
+g=Image.open(ck).convert('L')
+if C.get('alldark'): ImageOps.colorize(ImageOps.invert(g),black=c['ink'],white='#C4C4C4',mid='#3C3C3C').save(f'{site}/img/kaart.webp','WEBP',quality=74)
+else: ImageOps.colorize(g,black=c['ink'],white='#F4F0E9',mid='#ADA79E').save(f'{site}/img/kaart.webp','WEBP',quality=74)
 mpp=156543.03*math.cos(math.radians(lat))/2**z
 C['area']['map']={'x':50,'y':50,'d':round(2*km*1000/mpp/Wm*100,1)}
 
@@ -131,7 +132,7 @@ m=C['meta'];m['phone_href']=''.join(ch for ch in m['phone'] if ch.isdigit() or c
 js={'film':C['film'],'grid':C['grid'],'services':C['services'],'reviews':C['reviews']['items'],'reviewsExample':C['reviews']['example'],'reviewsSource':C['reviews'].get('source','Google-review'),
     'faq':C['faq'],'faqHello':C.get('faq_hello','Goedendag! Tik op een vraag, dan antwoorden we direct.'),'pc':C['area']['pc_ranges']}
 assert isinstance(t,dict) and t.get('heroBg'), 'themawaarden leeg'
-ctx=dict(lowacc=contrast(acc,(244,240,233))<3,theme=theme,t=t,mplate=mplate,plate=plate,c=c,m=m,h=C['hero'],q=C['quote'],p=C['projects'],s=C['services_head'],w=C['who'],ww=C['steps'],z=C['trust'],a=C['area'],r=C['reviews'],o=C['offer'],f=C['footer'],js=js)
+ctx=dict(alldark=bool(C.get('alldark')),lowacc=contrast(acc,(244,240,233))<3 and not C.get('alldark'),theme=theme,t=t,mplate=mplate,plate=plate,c=c,m=m,h=C['hero'],q=C['quote'],p=C['projects'],s=C['services_head'],w=C['who'],ww=C['steps'],z=C['trust'],a=C['area'],r=C['reviews'],o=C['offer'],f=C['footer'],js=js)
 html=env.get_template('head.j2').render(**ctx)+'\n'+env.get_template('body.j2').render(**ctx)+'\n'+open(f'{P}/template/app.js').read()
 open(f'{site}/index.html','w').write(html)
 print(f'gebouwd in {time.time()-T0:.1f}s · {len(used)} foto\'s · accent-contrast {contrast(acc,ink):.1f}')
