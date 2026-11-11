@@ -1,0 +1,532 @@
+{
+ "brand": {
+  "ink": "#111111",
+  "accent": "#08D040",
+  "cta_gradient": [
+   "#208030",
+   "#30B048",
+   "#C0D020"
+  ]
+ },
+ "logo": {
+  "knockout": "#000000",
+  "plate": false
+ },
+ "meta": {
+  "name": "Kuppens Schilderwerken",
+  "city": "Leusden",
+  "street": "",
+  "postcode": "",
+  "phone": "06 57 58 01 10",
+  "email": "info@kuppens-schilderwerken.nl",
+  "hours": "ma–vr 07.30–17.00"
+ },
+ "hero": {
+  "pill": "Leusden & Amersfoort",
+  "line1": "Schilder in",
+  "word": "Leusden",
+  "sub": "Schilderwerk, spuitwerk en beton ciré. <span>Van één kozijn tot een hele straat.</span>",
+  "usps": [
+   "Specialist in beton ciré",
+   "Wanden en plafonds strak gespoten",
+   "Particulier en zakelijk"
+  ]
+ },
+ "film": [
+  [
+   "#p11",
+   "Villa, groot onderhoud"
+  ],
+  [
+   "#p6",
+   "Keukenwand in beton ciré"
+  ],
+  [
+   "#p13",
+   "Voordeur in donkergroen"
+  ],
+  [
+   "#p1",
+   "Badkamer in beton ciré"
+  ],
+  [
+   "#p12",
+   "Vrijstaande woning Leusden"
+  ],
+  [
+   "#p10",
+   "Woonkamer met metallic wand"
+  ],
+  [
+   "#p30",
+   "Garagedeur hoogglans"
+  ],
+  [
+   "#p17",
+   "Nieuwbouwkeuken"
+  ]
+ ],
+ "quote": {
+  "before": "Of het nu gaat om één kozijn of een hele straat:",
+  "mark": "alles strak."
+ },
+ "projects": {
+  "title": "Ons werk in<br>Leusden en omstreken.",
+  "lead": "Groot onderhoud in Leusden, Scherpenzeel en Wageningen, beton ciré in badkamers en keukens, en strak spuitwerk in nieuwbouw.",
+  "feature": {
+   "img": "#p11",
+   "alt": "Villa na groot onderhoud door Kuppens",
+   "badge_small": "project",
+   "badge_big": "Villa",
+   "pill": "Vakmanschap · Voorbereiding",
+   "title": "Schoonmaken, schuren, dan pas verf.",
+   "text": "Goed schilderwerk begint met een schone, goed geschuurde ondergrond. Pas als het houtwerk klaar is, gaat de verf erop. Zo blijft het jaren mooi.",
+   "tri": [
+    [
+     "#p7",
+     "Schuren"
+    ],
+    [
+     "#p9",
+     "Voorbereiden"
+    ],
+    [
+     "#p13",
+     "Gelakt"
+    ]
+   ]
+  },
+  "filters": [
+   [
+    "buiten",
+    "Buiten"
+   ],
+   [
+    "binnen",
+    "Binnen"
+   ],
+   [
+    "beton",
+    "Beton ciré"
+   ],
+   [
+    "spuit",
+    "Spuitwerk"
+   ]
+  ]
+ },
+ "grid": [
+  [
+   "#p11",
+   "buiten",
+   "Villa, groot onderhoud"
+  ],
+  [
+   "#p6",
+   "beton",
+   "Keukenwand beton ciré"
+  ],
+  [
+   "#p18",
+   "spuit",
+   "Woonkamer gespoten"
+  ],
+  [
+   "#p13",
+   "buiten",
+   "Voordeur donkergroen"
+  ],
+  [
+   "#p1",
+   "beton",
+   "Badkamer beton ciré"
+  ],
+  [
+   "#p10",
+   "binnen",
+   "Metallic wand"
+  ],
+  [
+   "#p12",
+   "buiten",
+   "Vrijstaande woning"
+  ],
+  [
+   "#p15",
+   "beton",
+   "Trap in beton ciré"
+  ],
+  [
+   "#p21",
+   "spuit",
+   "Nieuwbouw, wanden en plafond"
+  ],
+  [
+   "#p30",
+   "buiten",
+   "Garagedeur hoogglans"
+  ],
+  [
+   "#p4",
+   "beton",
+   "Wand met metallic afwerking"
+  ],
+  [
+   "#p17",
+   "binnen",
+   "Keuken"
+  ],
+  [
+   "#p32",
+   "buiten",
+   "Openslaande deuren"
+  ],
+  [
+   "#p3",
+   "beton",
+   "Douche in beton ciré"
+  ],
+  [
+   "#p24",
+   "spuit",
+   "Strak gespoten kamer"
+  ],
+  [
+   "#p14",
+   "buiten",
+   "Garagedeur groen"
+  ]
+ ],
+ "services_head": {
+  "title": "Al uw schilderwerk,<br>binnen en buiten.",
+  "lead": "Voor bestaande woningen, renovatie en nieuwbouw. Particulier of bedrijf: u kunt voor al uw schilderwerk bij ons terecht."
+ },
+ "services": [
+  [
+   "Buiten&shy;schilderwerk",
+   "Buitenschilderwerk",
+   "Kozijnen, deuren, goten en dakkapellen. Van één kozijn tot groot onderhoud.",
+   "Eerst maken we het houtwerk schoon en schuren we goed. Daarna lakken we ramen, deuren, goten en dakkapellen. Ook groot onderhoud aan complete woningen.",
+   [
+    "Houtwerk reinigen en schuren",
+    "Ramen, deuren, goten, dakkapellen",
+    "Groot onderhoud"
+   ],
+   "#p12",
+   "c1"
+  ],
+  [
+   "Binnen&shy;schilderwerk",
+   "Binnenschilderwerk",
+   "Wanden, plafonds, deuren en kozijnen in huis.",
+   "Van bewoonde woning tot nieuwbouw. Netjes afgeplakt en strak opgeleverd, met kwast, roller of verfspuit.",
+   [
+    "Wanden en plafonds",
+    "Deuren en kozijnen",
+    "Nieuwbouw en renovatie"
+   ],
+   "#p18",
+   "c2"
+  ],
+  [
+   "Spuit&shy;werk",
+   "Spuitwerk",
+   "Wanden, plafonds, deuren en kozijnen strak gespoten. Ook spackspuiten.",
+   "Spuiten geeft een egaal resultaat zonder rolstructuur. We spuiten wanden, plafonds, deuren en kozijnen, en spackspuiten wanden en plafonds.",
+   [
+    "Wanden en plafonds",
+    "Deuren en kozijnen",
+    "Spackspuiten"
+   ],
+   "#p21",
+   "c3"
+  ],
+  [
+   "Beton ciré",
+   "Beton ciré",
+   "Naadloze minerale afwerking voor vloeren, wanden, badkamers en keukens.",
+   "Beton ciré is een sterke, kant-en-klare minerale afwerking met een hoge decoratieve waarde. Geschikt voor vloeren, wanden, badkamers, meubels, keukens, trappen en aanrechtbladen.",
+   [
+    "Badkamers en douches",
+    "Vloeren, trappen en wanden",
+    "Keukens en aanrechtbladen"
+   ],
+   "#p6",
+   "c4"
+  ],
+  [
+   "Behang en coatings",
+   "Behang en vloercoatings",
+   "Glasvlies of papierbehang, en vloercoatings voor binnen en buiten.",
+   "We plakken glasvliesbehang en normaal papierbehang. Daarnaast brengen we vloercoatings aan, binnen en buiten.",
+   [
+    "Glasvliesbehang",
+    "Papierbehang",
+    "Vloercoatings"
+   ],
+   "#p24",
+   "c5"
+  ],
+  [
+   "Glas en kitwerk",
+   "Glas en kitwerk",
+   "Nieuw glas plaatsen en kitwerk in natte ruimtes.",
+   "We plaatsen nieuw glas en verzorgen kitwerk in wc's, badkamers en keukens. Netjes en waterdicht.",
+   [
+    "Glas plaatsen",
+    "Kitwerk badkamer en keuken",
+    "Waterdicht afgewerkt"
+   ],
+   "#p35",
+   "c6"
+  ]
+ ],
+ "who": {
+  "title": "Voor uw huis<br>of uw bedrijf.",
+  "lead": "Particulieren, bedrijven en nieuwbouwprojecten in Leusden, Amersfoort en omgeving.",
+  "cards": [
+   {
+    "img": "#p12",
+    "title": "Particulieren",
+    "text": "Buitenonderhoud, binnenschilderwerk en beton ciré in uw woning.",
+    "cta": "Offerte voor uw woning"
+   },
+   {
+    "img": "#p17",
+    "title": "Nieuwbouw",
+    "text": "Spuitwerk en afwerking van één woning tot een groot aantal woningen.",
+    "cta": "Offerte voor nieuwbouw"
+   },
+   {
+    "img": "#p0",
+    "title": "Bedrijven",
+    "text": "Bedrijfspanden, binnen en buiten, met zo min mogelijk overlast.",
+    "cta": "Offerte voor uw pand"
+   }
+  ]
+ },
+ "steps": {
+  "title": "Duidelijk,<br>van begin tot eind.",
+  "lead": "Zo werken we, of het nu één kozijn is of een hele woning.",
+  "steps": [
+   {
+    "img": "#p0",
+    "alt": "De bus van Kuppens Schilderwerken",
+    "title": "Prijs",
+    "text": "We komen langs, bekijken het werk en geven advies. U krijgt een duidelijke, vrijblijvende offerte.",
+    "meta": "Vrijblijvend"
+   },
+   {
+    "img": "#p7",
+    "alt": "Houtwerk wordt geschuurd",
+    "title": "Voorbereiding",
+    "text": "Houtwerk schoonmaken, schuren en waar nodig herstellen. Binnen alles netjes afplakken.",
+    "meta": "Goede ondergrond"
+   },
+   {
+    "img": "#p2",
+    "alt": "Schilder aan het werk aan een gevel",
+    "title": "Verf",
+    "text": "Met kwast, roller of verfspuit, afhankelijk van wat het mooiste resultaat geeft.",
+    "meta": "Strak resultaat"
+   },
+   {
+    "img": "#p13",
+    "alt": "Voordeur na het schilderen",
+    "title": "Oplevering",
+    "text": "Samen nalopen en schoon achterlaten. Pas als u tevreden bent, is het klaar.",
+    "meta": "Netjes opgeleverd"
+   }
+  ]
+ },
+ "trust": {
+  "title": "Vakwerk<br>dat u ziet.",
+  "lead": "Van een enkel kozijn tot een groot aantal woningen.",
+  "cards": [
+   {
+    "small": "SPECIALIST",
+    "big": "Beton ciré",
+    "title": "Naadloze afwerking",
+    "text": "Badkamers, keukens, vloeren en trappen."
+   },
+   {
+    "small": "STRAK",
+    "big": "Spuitwerk",
+    "title": "Spuiten en spackspuiten",
+    "text": "Wanden, plafonds, deuren en kozijnen."
+   },
+   {
+    "small": "VOOR",
+    "big": "Iedereen",
+    "title": "Particulier en zakelijk",
+    "text": "Bestaande woningen, renovatie en nieuwbouw."
+   },
+   {
+    "small": "REGIO",
+    "big": "Leusden",
+    "title": "En omgeving",
+    "text": "Amersfoort, Woudenberg, Scherpenzeel, Wageningen."
+   }
+  ]
+ },
+ "area": {
+  "title": "Leusden, Amersfoort en de hele regio.",
+  "lead": "Vanuit Leusden werken we in Amersfoort, op de Utrechtse Heuvelrug en in de Gelderse Vallei.",
+  "places": [
+   "Leusden",
+   "Amersfoort",
+   "Woudenberg",
+   "Scherpenzeel",
+   "Wageningen",
+   "Hoevelaken",
+   "Soest",
+   "Barneveld",
+   "Nijkerk",
+   "Maarn",
+   "Achterveld",
+   "Stoutenburg"
+  ],
+  "latlon": [
+   52.1326,
+   5.4291
+  ],
+  "km": 25,
+  "pc_example": "3831",
+  "pc_ranges": [
+   [
+    3800,
+    3839
+   ],
+   [
+    3920,
+    3939
+   ],
+   [
+    6700,
+    6709
+   ],
+   [
+    3760,
+    3779
+   ],
+   [
+    3860,
+    3869
+   ],
+   [
+    3940,
+    3949
+   ]
+  ]
+ },
+ "reviews": {
+  "score": "5,0",
+  "label": "Google-reviews",
+  "example": true,
+  "items": [
+   [
+    "Fam. Visser, Leusden",
+    "De badkamer in beton ciré is prachtig geworden. Precies wat we zochten."
+   ],
+   [
+    "Marieke, Amersfoort",
+    "Alle plafonds strak gespoten, en het huis netjes achtergelaten."
+   ],
+   [
+    "Henk, Scherpenzeel",
+    "Groot onderhoud aan onze bungalow. Ramen, deuren en goten zien er weer als nieuw uit."
+   ],
+   [
+    "Sander, Woudenberg",
+    "Snel, netjes en goede afspraken. Een echte vakman."
+   ],
+   [
+    "Ilse, Wageningen",
+    "De dakkapel en kozijnen weer helemaal in orde. Mooi werk."
+   ],
+   [
+    "Projectontwikkelaar",
+    "Zes nieuwbouwwoningen gespoten, op tijd en zonder gedoe."
+   ],
+   [
+    "Tom, Leusden",
+    "De keukenwand in beton ciré is echt de blikvanger van ons huis."
+   ],
+   [
+    "Petra, Hoevelaken",
+    "Goed advies gekregen en een strak resultaat. Aanrader!"
+   ]
+  ]
+ },
+ "offer": {
+  "title": "Vertel kort wat er geschilderd moet worden.",
+  "bullets": [
+   "Vrijblijvende offerte",
+   "Van één kozijn tot een hele woning",
+   "Ook beton ciré"
+  ],
+  "placeholder": "Bijvoorbeeld: alle kozijnen en de voordeur buiten, en de badkamer in beton ciré.",
+  "work": [
+   "Buitenschilderwerk",
+   "Binnenschilderwerk",
+   "Spuitwerk",
+   "Beton ciré",
+   "Behang en coatings",
+   "Glas en kitwerk"
+  ],
+  "who": [
+   "Particulier",
+   "Bedrijf",
+   "Nieuwbouw"
+  ],
+  "photo": "#p6",
+  "fine": "Vrijblijvend. Bellen kan ook: 06 57 58 01 10."
+ },
+ "faq_hello": "Goedendag! Tik op een vraag, dan antwoorden we direct.",
+ "faq": [
+  [
+   "Wat is beton ciré?",
+   "Een sterke, naadloze minerale afwerking met een decoratieve uitstraling. Geschikt voor vloeren, wanden, badkamers, keukens, trappen en meubels."
+  ],
+  [
+   "Spuiten of rollen?",
+   "Spuiten geeft een egaal resultaat zonder rolstructuur, ideaal voor wanden, plafonds, deuren en kozijnen."
+  ],
+  [
+   "Doen jullie ook kleine klussen?",
+   "Ja. Of het nu gaat om één kozijn of een groot aantal woningen, u kunt bij ons terecht."
+  ],
+  [
+   "Werken jullie voor bedrijven?",
+   "Ja, voor particulieren én bedrijven, binnen en buiten, ook bij renovatie en nieuwbouw."
+  ],
+  [
+   "Plaatsen jullie ook glas?",
+   "Ja, we plaatsen nieuw glas en doen kitwerk in badkamers, keukens en toiletten."
+  ],
+  [
+   "In welke regio werken jullie?",
+   "Leusden, Amersfoort en omgeving: Woudenberg, Scherpenzeel, Wageningen en verder."
+  ]
+ ],
+ "footer": {
+  "kicker": "Schilderwerken · Leusden",
+  "name": "Kuppens",
+  "services": [
+   "Buitenschilderwerk",
+   "Binnenschilderwerk",
+   "Spuitwerk",
+   "Beton ciré",
+   "Behang en coatings",
+   "Glas en kitwerk"
+  ],
+  "example_note": "reviews, openingstijden en verfmerken zijn voorbeeld"
+ },
+ "theme": "donker",
+ "alldark": true,
+ "hero_glow": false,
+ "_check": [
+  "openingstijden verzonnen",
+  "reviews zijn voorbeeld"
+ ]
+}
