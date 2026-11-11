@@ -33,7 +33,7 @@ if problems:
     if not C['brand'].get('override'): sys.exit(2)
     print('Doorgezet met override, reden:',C['brand']['override'])
 h,l,s=colorsys.rgb_to_hls(*[v/255 for v in ink])
-if l>.2: ink=tuple(v*255 for v in colorsys.hls_to_rgb(h,.13,min(s,.55)))   # inkt altijd diep
+if contrast(ink,(244,240,233))<12: ink=tuple(v*255 for v in colorsys.hls_to_rgb(h,.13,min(s,.55)))   # inkt alleen verdiepen als contrast te laag is; echte merkkleur blijft anders staan
 cardD=tint(ink,.07);paper=tint(tint(ink,.0),.955) ;paper=tuple(v for v in tint((244,240,233),0))
 onAcc=ink if contrast(acc,ink)>=contrast(acc,(255,255,255)) else (255,255,255)
 c={'ink':tohex(ink),'cardD':tohex(cardD),'paper':tohex(paper),'accent':tohex(acc),'accentH':tohex(tint(acc,.15)),
