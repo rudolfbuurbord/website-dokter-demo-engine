@@ -1,0 +1,52 @@
+name: Read approved call review field names
+on:
+  push:
+    branches: [repair/lead-finalization-access-20261111]
+    paths: [.github/workflows/read-call-review-fields.yml]
+permissions: {}
+jobs:
+  read-field-names:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Read only approved function input field names
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        shell: python
+        run: |
+          import json, os, re, urllib.request, urllib.error
+          token = os.environ.get("SUPABASE_ACCESS_TOKEN", "")
+          if not token:
+              raise SystemExit("Required configured credential is unavailable")
+          query = r"""
+          select distinct matches[1] as input_field
+          from pg_proc proc
+          join pg_namespace ns on ns.oid = proc.pronamespace
+          cross join lateral regexp_matches(
+            pg_get_functiondef(proc.oid),
+            '\mp[[:space:]]*->>?[[:space:]]*''([^'']+)''',
+            'g'
+          ) as matches
+          where ns.nspname = 'public'
+            and proc.proname = 'le_finalize_call_review'
+          order by input_field
+          """
+          request = urllib.request.Request(
+              "https://api.supabase.com/v1/projects/skdjbifmtleiogbkqwid/database/query",
+              data=json.dumps({"query": query}).encode(),
+              headers={"Authorization": "Bearer " + token, "Content-Type": "application/json"},
+              method="POST")
+          try:
+              with urllib.request.urlopen(request, timeout=60) as response:
+                  rows = json.load(response)
+          except urllib.error.HTTPError as exc:
+              raise SystemExit("Read-only field-name query failed: HTTP " + str(exc.code))
+          if not isinstance(rows, list):
+              raise SystemExit("Unexpected response format")
+          fields = []
+          for row in rows:
+              field = row.get("input_field")
+              if not isinstance(field, str) or not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]{0,100}", field):
+                  raise SystemExit("Unexpected field-name format")
+              fields.append(field)
+          print(json.dumps({"function": "le_finalize_call_review", "input_fields": fields}))
