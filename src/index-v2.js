@@ -179,19 +179,14 @@ async function demoStatus(url, env) {
   let host = '';
   try { host = new URL(raw.includes('://') ? raw : 'https://' + raw).hostname.replace(/^www\./, ''); } catch {}
   if (!host || !/^[a-z0-9.-]{3,253}$/.test(host)) return new Response(JSON.stringify({ status: 'unknown' }), { status: 400, headers: STATUS_CORS });
-  const key = env.SUPABASE_SERVICE_ROLE_KEY;
+  const key = keyFor(env);
   if (!env.SUPABASE_URL || !key) return new Response(JSON.stringify({ status: 'unknown' }), { status: 503, headers: STATUS_CORS });
-  const q = new URL(`${env.SUPABASE_URL.replace(/\/$/, '')}/rest/v1/dwd_funnel_leads`);
-  q.searchParams.set('select', 'demo_status,demo_url,created_at');
-  q.searchParams.set('website', `ilike.*${host}*`);
-  q.searchParams.set('demo_status', 'not.is.null');
-  q.searchParams.set('order', 'created_at.desc');
-  q.searchParams.set('limit', '1');
-  const h = { apikey: key }; if (!key.startsWith('sb_')) h.authorization = `Bearer ${key}`;
-  const r = await fetch(q, { headers: h });
+  // veilige databasefunctie: geeft alleen status + publieke demo-link terug (publieke sleutel volstaat)
+  const r = await fetch(`${env.SUPABASE_URL.replace(/\/$/, '')}/rest/v1/rpc/dwd_demo_status`, {
+    method: 'POST', headers: { apikey: key, 'content-type': 'application/json' }, body: JSON.stringify({ p_site: host }) });
   if (!r.ok) return new Response(JSON.stringify({ status: 'unknown', code: r.status }), { status: 502, headers: STATUS_CORS });
-  const rows = r.ok ? await r.json() : [];
-  const row = rows[0];
+  const rows = await r.json();
+  const row = rows[0] && { demo_status: rows[0].status, demo_url: rows[0].url };
   const body = row ? { status: row.demo_status, url: row.demo_status === 'ready' ? row.demo_url : null } : { status: 'none' };
   return new Response(JSON.stringify(body), { status: 200, headers: STATUS_CORS });
 }
