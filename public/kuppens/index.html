@@ -415,7 +415,7 @@ footer{padding:var(--pad) 0 0;overflow:hidden}
 
 /* ===== THEMA'S (donker / licht / merk) - waarden uit build.py ===== */
 :root{--heroBg:#111111;--heroText:#F4F0E9;--heroMuted:rgba(244,240,233,.68);--heroLine:rgba(244,240,233,.14);--heroIcon:#08D040;
- --ghost:rgba(244,240,233,.55);--paintFill:#08D040;--heroBtnBg:#08D040;--heroBtnText:#111111;--heroGlow:rgba(8,208,64,0.22);
+ --ghost:rgba(244,240,233,.55);--paintFill:#08D040;--heroBtnBg:#08D040;--heroBtnText:#111111;--heroGlow:transparent;
  --navCtaBg:#08D040;--navCtaText:#111111;--navScrolledBg:rgba(17,17,17,0.9);--navScrolledText:#F4F0E9}
 /* navigatie zweeft over de hero: één geheel, geen lijn */
 .demobar{display:none}
@@ -469,6 +469,26 @@ body.alldark{background:#111111}
 .alldark .sec:not(.dark)+.sec:not(.dark){border-top:1px solid rgba(242,238,232,.08)}
 .alldark .field input,.alldark .qf textarea,.alldark .pc input{color:#F2EEE8}
 .alldark .field input::placeholder,.alldark .qf textarea::placeholder,.alldark .pc input::placeholder{color:rgba(242,238,232,.45)}
+
+
+/* ===== CTA's in het logoverloop, vloeiend als natte verf (content.json: brand.cta_gradient) ===== */
+@property --pf{syntax:'<percentage>';inherits:false;initial-value:0%}
+.btn-red,.hero .btn-red,.nav-cta,.nav.scrolled .nav-cta{
+  background:linear-gradient(105deg,#208030 0%,#30B048 22%,#C0D020 45%,#30B048 68%,#208030 90%,#30B048 100%)!important;
+  background-size:260% 100%!important;color:#0B0B0B!important;position:relative;overflow:hidden;isolation:isolate;
+  animation:paintflow 7s cubic-bezier(.45,.05,.55,.95) infinite alternate;box-shadow:0 14px 34px -14px #30B048aa!important}
+.btn-red::before,.nav-cta::before{content:"";position:absolute;inset:-40% -10%;z-index:-1;pointer-events:none;
+  background:radial-gradient(40% 60% at 20% 50%,#C0D020cc,transparent 70%),radial-gradient(35% 55% at 75% 40%,#208030bb,transparent 70%);
+  filter:blur(6px);animation:paintblob 9s ease-in-out infinite alternate;mix-blend-mode:soft-light}
+.btn-red::after,.nav-cta::after{content:"";position:absolute;top:0;bottom:0;width:38%;left:-45%;z-index:-1;pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.38) 45%,rgba(255,255,255,.08) 60%,transparent);transform:skewX(-18deg);
+  animation:paintsheen 4.8s ease-in-out infinite}
+.btn-red:hover,.nav-cta:hover{filter:saturate(1.15) brightness(1.06);animation-duration:2.4s}
+@keyframes paintflow{0%{background-position:0% 50%}100%{background-position:100% 50%}}
+@keyframes paintblob{0%{transform:translate(-8%,4%) scale(1)}50%{transform:translate(6%,-6%) scale(1.15)}100%{transform:translate(12%,5%) scale(.95)}}
+@keyframes paintsheen{0%,55%{left:-45%}100%{left:120%}}
+@media (prefers-reduced-motion:reduce){.btn-red,.nav-cta,.btn-red::before,.nav-cta::before,.btn-red::after,.nav-cta::after{animation:none!important}}
+
 </style>
 </head>
 
