@@ -61,6 +61,7 @@ else:
     t=dict(heroBg=tohex(ink),heroText=tohex(PAPER),heroMuted='rgba(244,240,233,.68)',heroLine='rgba(244,240,233,.14)',heroIcon=tohex(acc),
            ghost='rgba(244,240,233,.55)',paintFill=tohex(acc),heroBtnBg=tohex(acc),heroBtnText=tohex(onAcc),heroGlow=rgba(acc,.22),
            navCtaBg=tohex(acc),navCtaText=tohex(onAcc),navScrolledBg=rgba(ink,.9),navScrolledText=tohex(PAPER))
+if C.get('hero_glow') is False: t['heroGlow']='transparent'
 print('thema:',theme,'| accent op papier',round(contrast(acc,(244,240,233)),1))
 
 # ---------- foto's ----------
@@ -132,7 +133,7 @@ m=C['meta'];m['phone_href']=''.join(ch for ch in m['phone'] if ch.isdigit() or c
 js={'film':C['film'],'grid':C['grid'],'services':C['services'],'reviews':C['reviews']['items'],'reviewsExample':C['reviews']['example'],'reviewsSource':C['reviews'].get('source','Google-review'),
     'faq':C['faq'],'faqHello':C.get('faq_hello','Goedendag! Tik op een vraag, dan antwoorden we direct.'),'pc':C['area']['pc_ranges']}
 assert isinstance(t,dict) and t.get('heroBg'), 'themawaarden leeg'
-ctx=dict(alldark=bool(C.get('alldark')),lowacc=contrast(acc,(244,240,233))<3 and not C.get('alldark'),theme=theme,t=t,mplate=mplate,plate=plate,c=c,m=m,h=C['hero'],q=C['quote'],p=C['projects'],s=C['services_head'],w=C['who'],ww=C['steps'],z=C['trust'],a=C['area'],r=C['reviews'],o=C['offer'],f=C['footer'],js=js)
+ctx=dict(ctaGrad=C['brand'].get('cta_gradient'),alldark=bool(C.get('alldark')),lowacc=contrast(acc,(244,240,233))<3 and not C.get('alldark'),theme=theme,t=t,mplate=mplate,plate=plate,c=c,m=m,h=C['hero'],q=C['quote'],p=C['projects'],s=C['services_head'],w=C['who'],ww=C['steps'],z=C['trust'],a=C['area'],r=C['reviews'],o=C['offer'],f=C['footer'],js=js)
 html=env.get_template('head.j2').render(**ctx)+'\n'+env.get_template('body.j2').render(**ctx)+'\n'+open(f'{P}/template/app.js').read()
 open(f'{site}/index.html','w').write(html)
 print(f'gebouwd in {time.time()-T0:.1f}s · {len(used)} foto\'s · accent-contrast {contrast(acc,ink):.1f}')
