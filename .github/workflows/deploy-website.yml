@@ -1,0 +1,36 @@
+name: Deploy dewebsitedokters.nl
+
+# Zet de repo rudolfbuurbord/dwd-website online op de Worker hidden-tree-a7ec (dewebsitedokters.nl).
+# Draait hier omdat deze repo de Cloudflare-sleutel heeft.
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [deploy-website]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-website
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: rudolfbuurbord/dwd-website
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Deploy naar Cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: npx --yes wrangler@4.130.0 deploy
+      - name: Live controleren
+        run: |
+          sleep 5
+          curl -s -A "Mozilla/5.0 (DWD check)" https://dewebsitedokters.nl/jouw-nieuwe-website/ | grep -q 'id="demobox"' && echo "LIVE: funnel bijgewerkt" || { echo "::warning::demobox niet gevonden op live funnel"; }
