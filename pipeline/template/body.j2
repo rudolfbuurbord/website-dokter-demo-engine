@@ -25,7 +25,7 @@
   <div class="wrap hero-in">
     <span class="h-pill"><span class="live" id="live2"></span><b>{{m.name}}</b> · {{h.pill}}</span>
     <h1 class="h1"><span class="l1">{{h.line1}}</span>
-      <span class="rollword" aria-label="{{h.word}}"><span class="ghost" aria-hidden="true">{{h.word}}</span><span class="paint" aria-hidden="true">{{h.word}}</span>
+      <span class="rollword" style="--wl:{{h.word|length}}" aria-label="{{h.word}}"><span class="ghost" aria-hidden="true">{{h.word}}</span><span class="paint" aria-hidden="true">{{h.word}}</span>
         <span class="roller" aria-hidden="true"><svg viewBox="0 0 60 110"><defs><linearGradient id="cyl" x1="0" x2="1"><stop offset="0" stop-color="{{c.rollerDark}}"/><stop offset=".35" stop-color="{{c.rollerLight}}"/><stop offset=".6" stop-color="{{c.accent}}"/><stop offset="1" stop-color="{{c.rollerDark}}"/></linearGradient></defs>
           <rect x="4" y="2" width="26" height="80" rx="9" fill="url(#cyl)"/><rect x="4" y="2" width="26" height="80" rx="9" fill="none" stroke="rgba(0,0,0,.15)"/>
           <path d="M30 42 H44 V96" fill="none" stroke="#cfc8bf" stroke-width="4" stroke-linecap="round"/>

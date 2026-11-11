@@ -489,5 +489,8 @@ body.alldark{background:{{c.ink}}}
 @keyframes paintsheen{0%,55%{left:-45%}100%{left:120%}}
 @media (prefers-reduced-motion:reduce){.btn-red,.nav-cta,.btn-red::before,.nav-cta::before,.btn-red::after,.nav-cta::after{animation:none!important}}
 {% endif %}
+
+/* lange plaatsnamen passen altijd: verklein het woord naar de beschikbare breedte */
+.rollword{font-size:min(1em,calc((100vw - 40px) / (var(--wl,6) * .74)))}
 </style>
 </head>

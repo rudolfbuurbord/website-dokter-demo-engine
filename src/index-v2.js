@@ -170,6 +170,30 @@ async function handleSmartleadWebhook(request, env) {
   }
 }
 
+
+// Status van een automatische funnel-demo, opgevraagd door de funnel op dewebsitedokters.nl.
+// Geeft alleen status + publieke demo-link terug, nooit leadgegevens.
+const STATUS_CORS = { 'access-control-allow-origin': '*', 'access-control-allow-methods': 'GET', 'cache-control': 'no-store', 'content-type': 'application/json; charset=UTF-8' };
+async function demoStatus(url, env) {
+  const raw = (url.searchParams.get('site') || '').trim().toLowerCase();
+  let host = '';
+  try { host = new URL(raw.includes('://') ? raw : 'https://' + raw).hostname.replace(/^www\./, ''); } catch {}
+  if (!host || !/^[a-z0-9.-]{3,253}$/.test(host)) return new Response(JSON.stringify({ status: 'unknown' }), { status: 400, headers: STATUS_CORS });
+  const key = env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!env.SUPABASE_URL || !key) return new Response(JSON.stringify({ status: 'unknown' }), { status: 503, headers: STATUS_CORS });
+  const q = new URL(`${env.SUPABASE_URL.replace(/\/$/, '')}/rest/v1/dwd_funnel_leads`);
+  q.searchParams.set('select', 'demo_status,demo_url,created_at');
+  q.searchParams.set('website', `ilike.*${host}*`);
+  q.searchParams.set('demo_status', 'not.is.null');
+  q.searchParams.set('order', 'created_at.desc');
+  q.searchParams.set('limit', '1');
+  const r = await fetch(q, { headers: { apikey: key, authorization: `Bearer ${key}` } });
+  const rows = r.ok ? await r.json() : [];
+  const row = rows[0];
+  const body = row ? { status: row.demo_status, url: row.demo_status === 'ready' ? row.demo_url : null } : { status: 'none' };
+  return new Response(JSON.stringify(body), { status: 200, headers: STATUS_CORS });
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -182,6 +206,7 @@ export default {
       smartleadBridgeConfigured:Boolean(env.SMARTLEAD_WEBHOOK_SECRET && env.SUPABASE_SERVICE_ROLE_KEY)
     });
     if (url.pathname === '/api/webhooks/smartlead') return handleSmartleadWebhook(request, env);
+    if (url.pathname === '/api/demo-status') return demoStatus(url, env);
     if (url.pathname === '/') return html(home());
 
     if (url.pathname.startsWith('/api/demo/')) {
