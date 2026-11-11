@@ -5,13 +5,14 @@
   python3 queue_worker.py claim --site URL # handmatige test zonder lead
   python3 queue_worker.py finish ok|fail   # na deploy: zet leads op ready (met link) of failed
 
-Env: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ANTHROPIC_API_KEY.
+Env: DEMO_JOB_TOKEN (kortlevende code uit het Supabase-startsein), ANTHROPIC_API_KEY.
 """
 import datetime as dt, json, os, re, subprocess, sys, urllib.parse, urllib.request
 
 P = os.path.dirname(os.path.abspath(__file__))
 SB = os.environ.get('SUPABASE_URL', 'https://skdjbifmtleiogbkqwid.supabase.co').rstrip('/')
-KEY = os.environ.get('SUPABASE_SERVICE_ROLE_KEY', '')
+KEY = os.environ.get('SUPABASE_PUBLISHABLE_KEY', 'sb_publishable_wRV-K66gO8VckzyoJeJwSw_ARrSpiKS')
+JOB = os.environ.get('DEMO_JOB_TOKEN', '')
 RES = '/tmp/demo_results.json'
 MAX = int(os.environ.get('DEMO_MAX_PER_RUN', '4'))
 
@@ -46,20 +47,14 @@ def claim(site=None):
         res, err = build(site)
         results.append({'lead': None, 'site': site, 'result': res, 'error': err})
     else:
-        if not KEY: sys.exit('STOP: SUPABASE_SERVICE_ROLE_KEY ontbreekt')
-        # vastgelopen builds (> 40 min) terug in de wachtrij
-        old = (dt.datetime.now(dt.timezone.utc) - dt.timedelta(minutes=40)).isoformat()
-        sb('PATCH', f'dwd_funnel_leads?demo_status=eq.building&demo_started_at=lt.{urllib.parse.quote(old)}', {'demo_status': 'queued'})
-        rows = sb('GET', f'dwd_funnel_leads?select=id,website,bedrijfsnaam&demo_status=eq.queued&order=created_at.asc&limit={MAX}') or []
+        if not JOB: sys.exit('STOP: geen DEMO_JOB_TOKEN (alleen een startsein vanuit Supabase heeft er een)')
+        rows = sb('POST', 'rpc/dwd_demo_claim', {'p_token': JOB, 'p_max': MAX}) or []
         for row in rows:
-            got = sb('PATCH', f'dwd_funnel_leads?id=eq.{row["id"]}&demo_status=eq.queued',
-                     {'demo_status': 'building', 'demo_started_at': now(), 'demo_error': None}, prefer='return=representation')
-            if not got: continue  # al door een andere run gepakt
             print(f'== lead {row["id"]}: {row["website"]}', flush=True)
             res, err = build(row['website'])
             results.append({'lead': row['id'], 'site': row['website'], 'result': res, 'error': err})
-            if err:  # meteen als mislukt markeren; geslaagde pas na deploy
-                sb('PATCH', f'dwd_funnel_leads?id=eq.{row["id"]}', {'demo_status': 'failed', 'demo_error': err})
+            if err:
+                sb('POST', 'rpc/dwd_demo_finish', {'p_token': JOB, 'p_id': row['id'], 'p_status': 'failed', 'p_error': err})
     json.dump(results, open(RES, 'w'))
     ok = [r for r in results if r['result'] and not r['result'].get('existing')]
     print(f'klaar: {len(ok)} nieuw gebouwd, {sum(1 for r in results if r["error"])} mislukt, {len(results)} totaal')
@@ -72,10 +67,10 @@ def finish(state):
     for r in json.load(open(RES)):
         if not r['lead'] or not r['result']: continue
         if state == 'ok':
-            sb('PATCH', f'dwd_funnel_leads?id=eq.{r["lead"]}', {'demo_status': 'ready', 'demo_slug': r['result']['slug'],
-                                                                'demo_url': r['result']['url'], 'demo_ready_at': now()})
+            sb('POST', 'rpc/dwd_demo_finish', {'p_token': JOB, 'p_id': r['lead'], 'p_status': 'ready',
+                                              'p_slug': r['result']['slug'], 'p_url': r['result']['url']})
         else:
-            sb('PATCH', f'dwd_funnel_leads?id=eq.{r["lead"]}', {'demo_status': 'failed', 'demo_error': 'deploy mislukt'})
+            sb('POST', 'rpc/dwd_demo_finish', {'p_token': JOB, 'p_id': r['lead'], 'p_status': 'failed', 'p_error': 'deploy mislukt'})
     print('leads bijgewerkt:', state)
 
 

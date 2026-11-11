@@ -1,12 +1,10 @@
 name: Auto demo (funnel)
 
 # Bouwt automatisch demo's voor nieuwe funnel-leads met een website.
-# Start: direct via Supabase (repository_dispatch), elke 10 min als vangnet (cron), of handmatig.
+# Start: via Supabase (trigger bij nieuwe lead + pg_cron-vangnet elke 3 min), of handmatig met een testsite.
 on:
   repository_dispatch:
     types: [auto-demo]
-  schedule:
-    - cron: '*/10 * * * *'
   workflow_dispatch:
     inputs:
       website:
@@ -27,52 +25,37 @@ jobs:
     timeout-minutes: 30
     env:
       SUPABASE_URL: https://skdjbifmtleiogbkqwid.supabase.co
-      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      DEMO_JOB_TOKEN: ${{ github.event.client_payload.token }}
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       DEMO_WORK: /tmp/demos
     steps:
-      - name: Snel kijken of er werk is
-        id: peek
-        if: github.event_name == 'schedule'
-        run: |
-          n=$(curl -s "$SUPABASE_URL/rest/v1/dwd_funnel_leads?select=id&demo_status=in.(queued,building)&limit=1" \
-            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" | grep -c '"id"' || true)
-          echo "work=$n" >> "$GITHUB_OUTPUT"
-
       - uses: actions/checkout@v4
-        if: github.event_name != 'schedule' || steps.peek.outputs.work != '0'
         with:
           fetch-depth: 1
 
       - uses: actions/setup-python@v5
-        if: github.event_name != 'schedule' || steps.peek.outputs.work != '0'
         with:
           python-version: '3.12'
           cache: pip
           cache-dependency-path: pipeline/requirements.txt
 
       - name: Playwright-cache
-        if: github.event_name != 'schedule' || steps.peek.outputs.work != '0'
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
           key: pw-${{ runner.os }}-1
 
       - name: Installeren
-        if: github.event_name != 'schedule' || steps.peek.outputs.work != '0'
         run: |
           pip install -q -r pipeline/requirements.txt
           python -m playwright install --with-deps chromium > /dev/null
 
       - name: Controle geheime sleutels
-        if: github.event_name != 'schedule' || steps.peek.outputs.work != '0'
         run: |
           [ -n "$ANTHROPIC_API_KEY" ] || { echo "::error::ANTHROPIC_API_KEY ontbreekt in de repo-secrets"; exit 1; }
-          [ -n "$SUPABASE_SERVICE_ROLE_KEY" ] || { echo "::error::SUPABASE_SERVICE_ROLE_KEY ontbreekt"; exit 1; }
 
       - name: Demo's bouwen
         id: claim
-        if: github.event_name != 'schedule' || steps.peek.outputs.work != '0'
         run: python3 pipeline/queue_worker.py claim ${{ inputs.website != '' && format('--site {0}', inputs.website) || '' }}
 
       - name: Opslaan in de repo
