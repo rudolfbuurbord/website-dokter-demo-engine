@@ -8,7 +8,7 @@
   <div class="wrap nav-in">
     <a class="brand{% if plate %} plate{% endif %}{% if mplate %} mplate{% endif %}" href="#top" aria-label="{{m.name}}, naar boven"><img class="lg-d" src="logos/logo-licht.png" alt="{{m.name}}"><img class="lg-l" src="logos/logo.png" alt="" aria-hidden="true"></a>
     <nav aria-label="Hoofdmenu"><ul>
-      <li><a href="#diensten">Schilderwerk</a></li>
+      <li><a href="#diensten">{{ 'Stucwerk' if trade=='stukadoor' else 'Schilderwerk' }}</a></li>
       <li><a href="#voor-wie">Voor wie</a></li>
       <li><a href="#projecten">Projecten</a></li>
       <li><a href="#contact">Contact</a></li>
@@ -25,11 +25,20 @@
   <div class="wrap hero-in">
     <span class="h-pill"><span class="live" id="live2"></span><b>{{m.name}}</b> · {{h.pill}}</span>
     <h1 class="h1"><span class="l1">{{h.line1}}</span>
-      <span class="rollword" style="--wl:{{h.word|length}}" aria-label="{{h.word}}"><span class="ghost" aria-hidden="true">{{h.word}}</span><span class="paint" aria-hidden="true">{{h.word}}</span>
+      <span class="rollword{% if trade=='stukadoor' %} plaster{% endif %}" style="--wl:{{h.word|length}}" aria-label="{{h.word}}"><span class="ghost" aria-hidden="true">{{h.word}}</span><span class="paint" aria-hidden="true">{{h.word}}</span>
+{% if trade=='stukadoor' %}
+        <span class="roller trowel" aria-hidden="true"><svg viewBox="0 0 70 110"><defs><linearGradient id="steel" x1="0" x2="1"><stop offset="0" stop-color="#8E959C"/><stop offset=".35" stop-color="#F4F6F8"/><stop offset=".55" stop-color="#C9CED3"/><stop offset="1" stop-color="#7A8188"/></linearGradient><linearGradient id="grip" x1="0" x2="1"><stop offset="0" stop-color="#1A1A1A"/><stop offset=".45" stop-color="#3A3A3A"/><stop offset="1" stop-color="#111"/></linearGradient></defs>
+          <path d="M6 4 L24 9 L24 101 L6 106 Z" fill="url(#steel)" stroke="rgba(0,0,0,.25)" stroke-width="1"/>
+          <path d="M6 4 L9 5 L9 105 L6 106 Z" fill="{{c.accent}}" opacity=".9"/>
+          <path d="M24 46 H34 V64 H24" fill="#B7BDC3" stroke="rgba(0,0,0,.25)" stroke-width="1"/>
+          <rect x="34" y="30" width="15" height="50" rx="7" fill="url(#grip)" stroke="rgba(255,255,255,.18)" stroke-width="1.2"/>
+          <rect x="38" y="34" width="3" height="42" rx="1.5" fill="rgba(255,255,255,.12)"/></svg></span>
+{% else %}
         <span class="roller" aria-hidden="true"><svg viewBox="0 0 60 110"><defs><linearGradient id="cyl" x1="0" x2="1"><stop offset="0" stop-color="{{c.rollerDark}}"/><stop offset=".35" stop-color="{{c.rollerLight}}"/><stop offset=".6" stop-color="{{c.accent}}"/><stop offset="1" stop-color="{{c.rollerDark}}"/></linearGradient></defs>
           <rect x="4" y="2" width="26" height="80" rx="9" fill="url(#cyl)"/><rect x="4" y="2" width="26" height="80" rx="9" fill="none" stroke="rgba(0,0,0,.15)"/>
           <path d="M30 42 H44 V96" fill="none" stroke="#cfc8bf" stroke-width="4" stroke-linecap="round"/>
           <rect x="38" y="88" width="13" height="40" rx="5" fill="{{c.cardD}}" stroke="rgba(255,255,255,.25)" stroke-width="1.5"/></svg></span>
+{% endif %}
       </span>
     </h1>
     <p class="h-sub">{{h.sub|safe}}</p>
@@ -92,10 +101,10 @@
     <div class="cgrid">{% for k in z.cards %}
       <div class="cert rv"><div class="lg"><div class="kvk"><small>{{k.small}}</small>{{k.big}}</div></div><h3>{{k.title}}{% if k.example %} <span class="tag">voorbeeld</span>{% endif %}</h3><p>{{k.text}}</p></div>{% endfor %}
     </div>
-    <div class="brands" id="merken">
+    {% if trade!='stukadoor' %}<div class="brands" id="merken">
       <div><span class="eyebrow">Verfmerken</span><h3 style="margin-top:14px">Merken waarmee we werken</h3><p>Alleen professionele kwaliteit. <span class="tag">verfmerken: voorbeeld</span></p></div>
       <div class="bgrid">{% for b in ['sikkens.png','sigma.svg','histor.png','flexa-dark.svg','wijzonol.svg','repaircare.svg','graco.svg'] %}<div class="blogo rv"><img src="logos/{{b}}" alt="{{b.split('.')[0]|capitalize}}"></div>{% endfor %}</div>
-    </div>
+    {% endif %}</div>
   </div></div>
 </section>
 
@@ -142,7 +151,7 @@
     </div>
     <form class="qf" id="qf" novalidate>
       <div id="qfFields">
-        <label class="big" for="wat">Vertel kort wat er geschilderd moet worden</label>
+        <label class="big" for="wat">Vertel kort wat er {{ 'gestuct' if trade=='stukadoor' else 'geschilderd' }} moet worden</label>
         <div class="field" style="margin-top:0" id="f-wat"><textarea id="wat" placeholder="{{o.placeholder}}"></textarea><span class="emsg" id="e-wat"></span></div>
         <span class="lbl">Wat moet er gebeuren?</span>
         <div class="chips">{% for x in o.work %}<input type="checkbox" id="c{{loop.index}}"><label for="c{{loop.index}}">{{x}}</label>{% endfor %}</div>
@@ -173,7 +182,7 @@
 
 <section class="sec cont" id="faq">
   <div class="wrap"><div class="inner faq-grid">
-    <div><span class="eyebrow">Veelgestelde vragen</span><h2>Vraag het de schilder.</h2><p class="lead" style="margin-bottom:28px">Tik op een vraag. Het antwoord komt meteen, net als in de app.</p><div class="qs" id="qs"></div></div>
+    <div><span class="eyebrow">Veelgestelde vragen</span><h2>Vraag het de {{ 'stukadoor' if trade=='stukadoor' else 'schilder' }}.</h2><p class="lead" style="margin-bottom:28px">Tik op een vraag. Het antwoord komt meteen, net als in de app.</p><div class="qs" id="qs"></div></div>
     <div class="phone rv"><div class="phone-top"><img src="img/{{o.photo}}.webp" alt=""><div><b>{{m.name}}</b><small>● online · {{m.hours}}</small></div></div><div class="chat" id="chat" aria-live="polite"></div></div>
   </div></div>
 </section>
@@ -187,7 +196,7 @@
       <div class="f-btns"><a class="btn btn-red" href="#offerte">Offerte aanvragen</a><a class="btn btn-line" href="tel:{{m.phone_href}}">Bel {{m.phone}}</a></div>
     </div>
     <div class="f-cols">
-      <div><h4>Schilderwerk</h4><ul>{% for x in f.services %}<li><a href="#diensten">{{x}}</a></li>{% endfor %}</ul></div>
+      <div><h4>{{ 'Stucwerk' if trade=='stukadoor' else 'Schilderwerk' }}</h4><ul>{% for x in f.services %}<li><a href="#diensten">{{x}}</a></li>{% endfor %}</ul></div>
       <div><h4>Contact</h4><ul><li><a class="f-big" href="tel:{{m.phone_href}}">{{m.phone}}</a></li>{% if m.email %}<li><a href="mailto:{{m.email}}">{{m.email}}</a></li>{% endif %}<li><a href="#offerte">Offerte aanvragen</a></li></ul></div>
       <div><h4>Adres</h4><p>{{m.name}}<br>{% if m.street %}{{m.street}}<br>{% endif %}{{m.postcode}} {{m.city}}</p><p style="margin-top:12px">{{m.hours}}</p></div>
       <div><h4>Werkgebied</h4><ul>{% for x in a.places[:6] %}<li><a href="#werkgebied">{{x}}</a></li>{% endfor %}</ul></div>
