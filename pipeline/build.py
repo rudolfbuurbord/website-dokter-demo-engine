@@ -133,7 +133,7 @@ m=C['meta'];m['phone_href']=''.join(ch for ch in m['phone'] if ch.isdigit() or c
 js={'film':C['film'],'grid':C['grid'],'services':C['services'],'reviews':C['reviews']['items'],'reviewsExample':C['reviews']['example'],'reviewsSource':C['reviews'].get('source','Google-review'),
     'faq':C['faq'],'faqHello':C.get('faq_hello','Goedendag! Tik op een vraag, dan antwoorden we direct.'),'pc':C['area']['pc_ranges']}
 assert isinstance(t,dict) and t.get('heroBg'), 'themawaarden leeg'
-ctx=dict(trade=C.get('trade','schilder'),ctaGrad=C['brand'].get('cta_gradient'),alldark=bool(C.get('alldark')),lowacc=contrast(acc,(244,240,233))<3 and not C.get('alldark'),theme=theme,t=t,mplate=mplate,plate=plate,c=c,m=m,h=C['hero'],q=C['quote'],p=C['projects'],s=C['services_head'],w=C['who'],ww=C['steps'],z=C['trust'],a=C['area'],r=C['reviews'],o=C['offer'],f=C['footer'],js=js)
+ctx=dict(logo_h=C['logo'].get('height'),trade=C.get('trade','schilder'),ctaGrad=C['brand'].get('cta_gradient'),alldark=bool(C.get('alldark')),lowacc=contrast(acc,(244,240,233))<3 and not C.get('alldark'),theme=theme,t=t,mplate=mplate,plate=plate,c=c,m=m,h=C['hero'],q=C['quote'],p=C['projects'],s=C['services_head'],w=C['who'],ww=C['steps'],z=C['trust'],a=C['area'],r=C['reviews'],o=C['offer'],f=C['footer'],js=js)
 html=env.get_template('head.j2').render(**ctx)+'\n'+env.get_template('body.j2').render(**ctx)+'\n'+open(f'{P}/template/app.js').read()
 open(f'{site}/index.html','w').write(html)
 print(f'gebouwd in {time.time()-T0:.1f}s · {len(used)} foto\'s · accent-contrast {contrast(acc,ink):.1f}')

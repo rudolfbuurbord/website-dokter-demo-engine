@@ -6,7 +6,7 @@
 
 <header class="nav" id="nav">
   <div class="wrap nav-in">
-    <a class="brand{% if plate %} plate{% endif %}{% if mplate %} mplate{% endif %}" href="#top" aria-label="{{m.name}}, naar boven"><img class="lg-d" src="logos/logo-licht.png" alt="{{m.name}}"><img class="lg-l" src="logos/logo.png" alt="" aria-hidden="true"></a>
+    <a class="brand{% if plate %} plate{% endif %}{% if mplate %} mplate{% endif %}" href="#top"{% if logo_h %} style="--logoH:{{logo_h}}px"{% endif %} aria-label="{{m.name}}, naar boven"><img class="lg-d" src="logos/logo-licht.png" alt="{{m.name}}"><img class="lg-l" src="logos/logo.png" alt="" aria-hidden="true"></a>
     <nav aria-label="Hoofdmenu"><ul>
       <li><a href="#diensten">{{ 'Stucwerk' if trade=='stukadoor' else 'Schilderwerk' }}</a></li>
       <li><a href="#voor-wie">Voor wie</a></li>
