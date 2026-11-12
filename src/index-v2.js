@@ -227,7 +227,11 @@ export default {
         const body = asset.status >= 300 && asset.status < 400
           ? await env.ASSETS.fetch(new Request(new URL(`/${slug}/`, url), request))
           : asset;
-        return new Response(body.body, { status: 200, headers: { ...HTML_HEADERS, 'x-robots-tag': 'noindex, nofollow' } });
+        const hdr = { ...HTML_HEADERS, 'x-robots-tag': 'noindex, nofollow',
+          // mag alleen in de funnel op dewebsitedokters.nl in een kader getoond worden
+          'content-security-policy': "frame-ancestors 'self' https://dewebsitedokters.nl https://www.dewebsitedokters.nl" };
+        delete hdr['x-frame-options'];
+        return new Response(body.body, { status: 200, headers: hdr });
       }
     }
     if (/\.[a-z0-9]{2,8}$/i.test(url.pathname)) return env.ASSETS.fetch(request);
