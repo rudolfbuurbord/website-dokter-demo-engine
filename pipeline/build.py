@@ -51,6 +51,8 @@ if theme=='licht':
     t=dict(heroBg=tohex(hb),heroText=tohex(ht),heroMuted=rgba(ink,.68),heroLine=rgba(ink,.16),heroIcon=tohex(ink),ghost='transparent',
            paintFill=tohex(acc),heroBtnBg=tohex(ink),heroBtnText='#FFFFFF',heroGlow='transparent',navCtaBg=tohex(ink),navCtaText='#FFFFFF',
            navScrolledBg='rgba(250,248,244,.92)',navScrolledText=tohex(ink))
+    if contrast(acc,hb)>=4.5 and contrast(acc,W_)>=4.5:   # donker accent (bijv. wijnrood): knoppen in accent, woord in accentkleur i.p.v. band
+        t.update(heroBtnBg=tohex(acc),navCtaBg=tohex(acc))
 elif theme=='merk':
     on=onAcc;onIsInk=on==ink
     t=dict(heroBg=tohex(acc),heroText=tohex(on),heroMuted=rgba(on,.74),heroLine=rgba(on,.24),heroIcon=tohex(on),ghost=rgba(on,.38),
@@ -133,7 +135,7 @@ m=C['meta'];m['phone_href']=''.join(ch for ch in m['phone'] if ch.isdigit() or c
 js={'film':C['film'],'grid':C['grid'],'services':C['services'],'reviews':C['reviews']['items'],'reviewsExample':C['reviews']['example'],'reviewsSource':C['reviews'].get('source','Google-review'),
     'faq':C['faq'],'faqHello':C.get('faq_hello','Goedendag! Tik op een vraag, dan antwoorden we direct.'),'pc':C['area']['pc_ranges']}
 assert isinstance(t,dict) and t.get('heroBg'), 'themawaarden leeg'
-ctx=dict(logo_h=C['logo'].get('height'),trade=C.get('trade','schilder'),ctaGrad=C['brand'].get('cta_gradient'),alldark=bool(C.get('alldark')),lowacc=contrast(acc,(244,240,233))<3 and not C.get('alldark'),theme=theme,t=t,mplate=mplate,plate=plate,c=c,m=m,h=C['hero'],q=C['quote'],p=C['projects'],s=C['services_head'],w=C['who'],ww=C['steps'],z=C['trust'],a=C['area'],r=C['reviews'],o=C['offer'],f=C['footer'],js=js)
+ctx=dict(darkacc=theme=='licht' and contrast(acc,(250,248,244))>=4.5 and contrast(acc,(255,255,255))>=4.5,logo_h=C['logo'].get('height'),trade=C.get('trade','schilder'),ctaGrad=C['brand'].get('cta_gradient'),alldark=bool(C.get('alldark')),lowacc=contrast(acc,(244,240,233))<3 and not C.get('alldark'),theme=theme,t=t,mplate=mplate,plate=plate,c=c,m=m,h=C['hero'],q=C['quote'],p=C['projects'],s=C['services_head'],w=C['who'],ww=C['steps'],z=C['trust'],a=C['area'],r=C['reviews'],o=C['offer'],f=C['footer'],js=js)
 html=env.get_template('head.j2').render(**ctx)+'\n'+env.get_template('body.j2').render(**ctx)+'\n'+open(f'{P}/template/app.js').read()
 open(f'{site}/index.html','w').write(html)
 print(f'gebouwd in {time.time()-T0:.1f}s · {len(used)} foto\'s · accent-contrast {contrast(acc,ink):.1f}')

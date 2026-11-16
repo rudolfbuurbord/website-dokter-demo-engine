@@ -497,5 +497,9 @@ body.alldark{background:{{c.ink}}}
 
 /* lange plaatsnamen passen altijd: verklein het woord naar de beschikbare breedte */
 .rollword{font-size:min(1em,calc((100vw - 40px) / (var(--wl,6) * .74)))}
+
+/* licht thema met donker accent (bijv. wijnrood): het woord zelf in accentkleur verven, geen band */
+.t-licht.darkacc .rollword .ghost{color:transparent;-webkit-text-stroke:1.6px {{c.inkRgba}}.22)}
+.t-licht.darkacc .rollword .paint{inset:0 0 -.3em 0;padding:0 0 .3em;border-radius:0;z-index:2;color:var(--red);background-color:var(--red);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 </style>
 </head>
