@@ -7,6 +7,8 @@ function $(s,r){return (r||document).querySelector(s)}
 function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 var ICO=K.icons||{};
+/* per_dag-waarde: [van,tot] in minuten, 'afspraak', of {"eerste":[van,tot]} = alleen de eerste van de maand (anders op afspraak) */
+function dag(pd,w,date){var r=pd[w];if(r&&r.eerste)return date.getDate()<=7?r.eerste:'afspraak';return r}
 
 /* ---------- Kachelkiezer: vragen volgen uit wat het bedrijf verkoopt ---------- */
 (function(){
@@ -49,7 +51,7 @@ var ICO=K.icons||{};
     return '<article class="card"><div class="im">'+(p.badge?'<span class="badge">'+esc(p.badge)+'</span>':'')+pimg(p)+'</div><div class="bd"><h3>'+esc(p.naam)+'</h3>'+(p.waarom?'<p class="why">'+esc(p.waarom)+'</p>':'')+'<div class="specs">'+specs.map(function(s){return '<span>'+esc(s)+'</span>'}).join('')+'</div>'+(p.prijs?'<div class="pr"><b>€ '+esc(p.prijs)+'</b><span class="vat">incl. btw</span></div>':'')+btn+(webshop?'<p class="alt">Twijfelt u? <a href="#bezoek">Laat '+esc(K.mensen_kort||'ons')+' u adviseren</a></p>':'')+'</div></article>'}
   function result(t,m){var list=of(t).slice().sort(function(a,b){return score(b,m)-score(a,m)}).slice(0,2);
     var as=(K.zekerheden||[]).map(function(z){return '<span>'+(ICO[z[0]]||'')+' '+esc(z[1])+'</span>'}).join('');
-    panel.innerHTML='<div class="q on"><div class="res-head"><div><span class="q-no">Ons advies</span><h3 style="margin-bottom:22px">'+TYPES[t].titel+'</h3></div><button class="again" id="again">'+(ICO.back||'')+' Opnieuw kiezen</button></div><div class="res" style="grid-template-columns:repeat('+Math.min(list.length,2)+',1fr)">'+list.map(card).join('')+'</div>'+(as?'<div class="assure res-assure">'+as+'</div>':'')+'</div>';bars(total);
+    panel.innerHTML='<div class="q on"><div class="res-head"><div><span class="q-no">Ons advies</span><h3 style="margin-bottom:22px">'+TYPES[t].titel+'</h3></div><button class="again" id="again">'+(ICO.back||'')+' Opnieuw kiezen</button></div><div class="res'+(list.length<2?' one':'')+'">'+list.map(card).join('')+'</div>'+(as?'<div class="assure res-assure">'+as+'</div>':'')+'</div>';bars(total);
     $('#again').onclick=start}
   panel.addEventListener('click',function(e){var o=e.target.closest('.opt');if(!o)return;var a=o.dataset.a;
     if(a==='binnen'||a==='buiten')soort(a);else if(TYPES[a])na(a);else result(st.t,+a);
@@ -60,7 +62,7 @@ var ICO=K.icons||{};
 /* ---------- winkelstatus uit openingstijden.per_dag ---------- */
 (function(){
   var pd=(K.openingstijden||{}).per_dag||{};
-  function status(){var n=new Date(),d=n.getDay(),m=n.getHours()*60+n.getMinutes(),r=pd[d],txt,cl;
+  function status(){var n=new Date(),d=n.getDay(),m=n.getHours()*60+n.getMinutes(),r=dag(pd,d,n),txt,cl;
     if(Array.isArray(r)&&m>=r[0]&&m<r[1]){cl=r[1]-m<=30?'soon':'open';txt=cl==='soon'?'Nu open · sluit binnenkort':'Nu open'}
     else if(r==='afspraak'){cl='soon';txt='Vandaag op afspraak'}else{cl='closed';txt='Nu gesloten'}
     $$('[data-status]').forEach(function(el){el.querySelector('.dot').className='dot '+cl;el.querySelector('.st').textContent=txt})}
@@ -101,13 +103,13 @@ var ICO=K.icons||{};
   var D=$('#days'),S=$('#slots'),sum=$('#sum'),pd=(K.openingstijden||{}).per_dag||{};
   if(D){
     var names=['zo','ma','di','wo','do','vr','za'],full=['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'],mon=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'],sel={},c=0,dt=new Date();
-    while(c<10){dt.setDate(dt.getDate()+1);var w=dt.getDay(),r=pd[w];if(!r)continue;
-      var b=document.createElement('button');b.type='button';b.setAttribute('aria-pressed','false');b.dataset.w=w;b.dataset.l=full[w]+' '+dt.getDate()+' '+mon[dt.getMonth()];
+    while(c<10){dt.setDate(dt.getDate()+1);var w=dt.getDay(),r=dag(pd,w,dt);if(!r)continue;
+      var b=document.createElement('button');b.type='button';b.setAttribute('aria-pressed','false');b.dataset.w=w;b.dataset.r=JSON.stringify(r);b.dataset.l=full[w]+' '+dt.getDate()+' '+mon[dt.getMonth()];
       b.innerHTML='<small>'+names[w]+'</small><b>'+dt.getDate()+'</b><i>'+(r==='afspraak'?'afspraak':mon[dt.getMonth()])+'</i>';D.appendChild(b);c++}
-    function slots(w){var r=pd[w],a=[];if(Array.isArray(r)){for(var m=r[0];m<=r[1]-60;m+=60)a.push(('0'+Math.floor(m/60)).slice(-2)+':'+('0'+m%60).slice(-2))}else a=['10:00','13:00','15:00','19:00'];
+    function slots(w,rr){var r=rr,a=[];if(Array.isArray(r)){for(var m=r[0];m<=r[1]-60;m+=60)a.push(('0'+Math.floor(m/60)).slice(-2)+':'+('0'+m%60).slice(-2))}else a=['10:00','13:00','15:00','19:00'];
       S.innerHTML=a.map(function(t){return '<button type="button" aria-pressed="false">'+t+'</button>'}).join('')}
     function upd(){sum.textContent=sel.d?(sel.t?'Uw bezoek: '+sel.d+' om '+sel.t+' uur.':'Kies nog een tijd op '+sel.d+'.'):'Kies een dag en tijd.'}
-    D.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;$$('button',D).forEach(function(x){x.setAttribute('aria-pressed',x===b)});sel.d=b.dataset.l;sel.t=null;slots(+b.dataset.w);upd()});
+    D.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;$$('button',D).forEach(function(x){x.setAttribute('aria-pressed',x===b)});sel.d=b.dataset.l;sel.t=null;slots(+b.dataset.w,JSON.parse(b.dataset.r));upd()});
     S.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;$$('button',S).forEach(function(x){x.setAttribute('aria-pressed',x===b)});sel.t=b.textContent;upd()});
     if(D.querySelector('button'))D.querySelector('button').click();
     $('#bform').addEventListener('submit',function(e){e.preventDefault();var m=this.querySelector('.pmsg');if(!sel.t){m.textContent='Kies nog een tijd.';return}

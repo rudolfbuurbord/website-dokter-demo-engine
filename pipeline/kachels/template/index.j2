@@ -46,7 +46,7 @@
     <p>{{ c.hero.zin }}</p>
     <div class="hcta">
       {% if 'kiezer' in c.secties %}<a class="btn btn-shop" href="#kiezer">{{ PR.knop_hero or 'Vind uw kachel' }} {{ ico('arrow') }}</a>{% else %}<a class="btn btn-shop" href="#bezoek">{{ PR.knop_hero or 'Plan een bezoek' }} {{ ico('arrow') }}</a>{% endif %}
-      {% if webshop %}<a class="link" href="{{ PR.link_assortiment }}" target="_blank" rel="noopener">Direct naar de webshop</a>{% else %}<a class="link" href="tel:{{ B.telefoon_link }}">Bel {{ B.telefoon }}</a>{% endif %}
+      {% if webshop %}<a class="link" href="{{ PR.link_assortiment }}" target="_blank" rel="noopener">{{ PR.label_assortiment or "Direct naar de webshop" }}</a>{% else %}<a class="link" href="tel:{{ B.telefoon_link }}">Bel {{ B.telefoon }}</a>{% endif %}
     </div>
   </div>
 </section>
@@ -174,10 +174,10 @@
   <div class="e-grid">
     <div class="reveal"><span class="kicker">Maak het compleet</span><h2 class="title">{{ S.titel }}</h2><p class="lead">{{ S.lead }}</p>{% if S.noot %}<p class="note" style="margin-top:18px">{{ S.noot }}</p>{% endif %}</div>
     <form class="chk reveal" id="chk" onsubmit="event.preventDefault()">
-      <h3>Uw startpakket</h3><p>Prijzen incl. btw{% if webshop %}, rechtstreeks uit de webshop{% endif %}.</p>
+      <h3>Uw startpakket</h3><p>Prijzen incl. btw{% if PR.webshop %}, rechtstreeks uit de webshop{% endif %}.</p>
       {% for i in S['items'] %}<label class="it"><input type="checkbox" data-p="{{i.prijs}}" {% if i.aan %}checked{% endif %}><img class="{{ 'c' if i.uitgesneden }}" src="img/{{i.foto}}" alt=""><span><b>{{i.naam}}</b><small>{{i.sub}}{% if webshop and i.url %} · <a href="{{i.url}}" target="_blank" rel="noopener">bekijk</a>{% endif %}</small></span><span class="price">€ {{i.prijs}}</span></label>{% endfor %}
       <div class="tot"><span>Totaal startpakket</span><b class="price" id="chkTot">€ 0</b></div>
-      {{ cta(S.knop_url, 'Naar de webshop' if webshop else 'Vraag dit pakket aan') }}
+      {{ cta(S.knop_url, (PR.label_assortiment or 'Naar de webshop') if webshop else 'Vraag dit pakket aan') }}
       {% if S.zekerheden %}{{ assure(S.zekerheden) }}{% endif %}
     </form>
   </div>
@@ -293,7 +293,7 @@
 {# ================= FOOTER ================= #}
 {% set F = c.footer %}
 <footer class="foot"><div class="wrap">
-  <div class="fbrand reveal"><div class="nm">{{ F.merk or B.naam }}</div><p>{{ B.slogan }}</p>{% if webshop %}<a class="btn btn-shop" href="{{ PR.link_assortiment }}" target="_blank" rel="noopener">Naar de webshop {{ ico('arrow') }}</a>{% else %}<a class="btn btn-shop" href="#bezoek">Plan een bezoek {{ ico('arrow') }}</a>{% endif %}</div>
+  <div class="fbrand reveal"><div class="nm">{{ F.merk or B.naam }}</div><p>{{ B.slogan }}</p>{% if webshop %}<a class="btn btn-shop" href="{{ PR.link_assortiment }}" target="_blank" rel="noopener">{{ PR.label_assortiment or "Naar de webshop" }} {{ ico('arrow') }}</a>{% else %}<a class="btn btn-shop" href="#bezoek">Plan een bezoek {{ ico('arrow') }}</a>{% endif %}</div>
   <div class="fcols">
     {% if F.winkel %}<div><h4>{{ 'Winkel' if PR.webshop else 'Aanbod' }}</h4><ul>{% for l,h in F.winkel %}<li><a href="{{h}}" {% if h.startswith('http') %}target="_blank" rel="noopener"{% endif %}>{{l}}</a></li>{% endfor %}</ul></div>{% endif %}
     {% if F.service %}<div><h4>Klantenservice</h4><ul>{% for l,h in F.service %}<li><a href="{{h}}" {% if h.startswith('http') %}target="_blank" rel="noopener"{% endif %}>{{l}}</a></li>{% endfor %}</ul></div>{% endif %}
@@ -303,7 +303,7 @@
   <div class="flegal"><span>© 2026 {{B.naam}}{% if B.kvk %} · KvK {{B.kvk}}{% endif %}{% if B.btw %} · btw {{B.btw}}{% endif %}{% if PR.webshop %} · alle prijzen incl. btw{% endif %}{% for l,h in F.juridisch or [] %} · <a href="{{h}}" target="_blank" rel="noopener">{{l}}</a>{% endfor %}</span><span class="demo">Voorbeeldontwerp door De Website Dokters</span></div>
 </div></footer>
 
-<div class="sticky" id="sticky"><a class="btn call" href="tel:{{B.telefoon_link}}" aria-label="Bel {{B.naam}}">{{ ico('phone') }}</a><a class="btn btn-shop" id="stickyBtn" href="{{ PR.link_assortiment if webshop else '#bezoek' }}" {% if webshop %}target="_blank" rel="noopener"{% endif %}>{{ 'Naar de webshop' if webshop else 'Plan een bezoek' }}</a></div>
+<div class="sticky" id="sticky"><a class="btn call" href="tel:{{B.telefoon_link}}" aria-label="Bel {{B.naam}}">{{ ico('phone') }}</a><a class="btn btn-shop" id="stickyBtn" href="{{ PR.link_assortiment if webshop else '#bezoek' }}" {% if webshop %}target="_blank" rel="noopener"{% endif %}>{{ (PR.label_assortiment or 'Naar de webshop') if webshop else 'Plan een bezoek' }}</a></div>
 
 <script>window.KACHEL={{ data_json }};</script>
 <script src="app.js"></script>

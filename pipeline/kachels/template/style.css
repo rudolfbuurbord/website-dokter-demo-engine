@@ -579,3 +579,4 @@ section .kicker{text-align:center}
 .hrs span:nth-child(even){white-space:nowrap}
 .tabs button{padding:0 10px;line-height:1.2}
 @media (max-width:520px){.tabs button{font-size:13.5px}}
+.res.one{grid-template-columns:1fr;max-width:420px;margin:0 auto}
