@@ -1,0 +1,188 @@
+{
+ "_uitleg": "Voorbeeld-invulbestand voor de kachel-template. Kopieer naar /home/claude/demos/<naam>/content.json en pas aan. Zie kachels/README.md.",
+ "bedrijf": {
+  "naam": "De Kachelerij",
+  "naam_kort": "Kachelerij",
+  "slogan": "Laat onze kennis u verwarmen",
+  "plaats": "Noordscheschut",
+  "sinds": "2018",
+  "straat": "Coevorderstraatweg 63",
+  "postcode": "7914 TL",
+  "telefoon": "0528 522 153",
+  "telefoon_link": "+31528522153",
+  "whatsapp": "",
+  "email": "info@dekachelerij.nl",
+  "kvk": "66822718",
+  "btw": "NL856711664B01",
+  "website": "https://www.dekachelerij.nl",
+  "mensen": "Pia & Janice",
+  "mensen_kort": "Pia of Janice",
+  "logo": "logo.png"
+ },
+ "profiel": {
+  "webshop": true,
+  "hoofdactie": "webshop",
+  "knop_product": "Bekijk in de webshop",
+  "knop_hero": "Vind uw kachel",
+  "link_assortiment": "https://www.dekachelerij.nl/kachels",
+  "zekerheden": [
+   ["truck", "Kachel bezorgd voor € 69,50"],
+   ["store", "Gratis afhalen in de winkel"],
+   ["shield", "Minimaal 1 jaar garantie"],
+   ["back", "14 dagen retour"]
+  ],
+  "betalen": "iDEAL · Bancontact · overboeking"
+ },
+ "openingstijden": {
+  "regels": [["Woensdag t/m vrijdag", "10:00 – 18:00"], ["Zaterdag", "10:00 – 17:00"], ["Maandag en dinsdag", "op afspraak"]],
+  "per_dag": {"1": "afspraak", "2": "afspraak", "3": [600, 1080], "4": [600, 1080], "5": [600, 1080], "6": [600, 1020]}
+ },
+ "secties": ["snelbalk", "intro", "kiezer", "soorten", "uitgelicht", "koken", "buiten", "startpakket", "over", "faq", "verhalen", "bezoek"],
+ "hero": {
+  "variant": "warmte",
+  "zin": "Gietijzeren kachels die mooi zijn én schoon branden. Persoonlijk uitgezocht door Pia & Janice."
+ },
+ "snelbalk": [["Kachelpijpen", "https://www.dekachelerij.nl/kachelpijpen"], ["Onderdelen", "https://www.dekachelerij.nl/kachel-onderdelen"], ["Houtbriketten", "https://www.dekachelerij.nl/houtbriketten"], ["Aanbiedingen", "https://www.dekachelerij.nl/aanbiedingen"]],
+ "intro": {
+  "kicker": "De Kachelerij · sinds 2018 in Noordscheschut",
+  "zin": "Een kachel moet <em>mooi</em> zijn, <em>schoon</em> branden en jaren <em>meegaan</em>.",
+  "feiten": [["11 topmerken", "Van Globe Fire en Lacunza tot Dovre"], ["ECO 2022", "Elke kachel voldoet aan de strengste eisen"], ["Persoonlijk advies", "Van Pia & Janice, in de winkel of online"]]
+ },
+ "producten": [
+  {"id": "adventure", "naam": "C&J Adventure Go 5", "type": "hout", "prijs": "1.465", "url": "https://www.dekachelerij.nl/cenj-adventure-go-5-houtkachel-oven-fornuis", "foto": "adventure.jpg", "kw": "3,4–5,3 kW", "m2": [20, 60], "kenmerk": "Kookplaat", "waarom": "Compact en zuinig, ideaal voor een kleinere ruimte. Met 86% rendement."},
+  {"id": "charon", "naam": "Charon II", "type": "hout", "prijs": "899", "url": "https://www.dekachelerij.nl/hout-kachel-charonii-globe-fire", "foto": "charon.png", "uitgesneden": true, "kw": "5–8 kW", "m2": [30, 130], "kenmerk": "Gietijzer", "waarom": "Massief gietijzer met extra zijruit, voor lang hout.", "badge": "Aanbieding"},
+  {"id": "heritage", "naam": "C&J Purevision Heritage", "type": "hout", "prijs": "2.389", "url": "https://www.dekachelerij.nl/cenj-purevision-heritage-recht-getoogd", "foto": "heritage.jpg", "kw": "4–7,5 kW", "m2": [30, 130], "kenmerk": "Grote ruit", "waarom": "Authentiek model met een grote ruit, voor maximaal vlammenspel."},
+  {"id": "alberta", "naam": "Alberta", "type": "hout", "prijs": "3.150", "url": "https://www.dekachelerij.nl/houtkachel-alberta-evacalor", "foto": "alberta.png", "uitgesneden": true, "kw": "6–9,5 kW", "m2": [60, 140], "kenmerk": "Dik staal", "waarom": "Een chique blikvanger met genoeg vermogen voor een flinke woonkamer.", "badge": "Keuze van Pia"},
+  {"id": "bergen", "naam": "Bergen", "type": "hout", "prijs": "3.239", "url": "https://www.dekachelerij.nl/houtkachel-bergen", "foto": "bergen.jpg", "kw": "8–15 kW", "m2": [80, 180], "kenmerk": "Met oven", "waarom": "Veel vermogen voor grote ruimtes, met een oven om in te bakken."},
+  {"id": "atlantic", "naam": "Atlantic 603", "type": "hout", "prijs": "1.279", "url": "https://www.dekachelerij.nl/atlantic-603-houtkachel", "foto": "atlantic.png", "uitgesneden": true, "kw": "8,5–12 kW", "m2": [80, 150], "kenmerk": "Houtvak", "waarom": "Strak en modern, met veel vermogen voor een scherpe prijs."},
+  {"id": "atlas", "naam": "Houtfornuis Atlas", "type": "fornuis", "prijs": "1.599", "url": "https://www.dekachelerij.nl/houtfornuis-atlas", "foto": "atlas.png", "uitgesneden": true, "kw": "5–8 kW", "m2": [30, 130], "kenmerk": "RVS bakoven", "waarom": "Gietijzeren fornuis om op te koken, bakken en braden. Ook geschikt onder een overkapping.", "merk": "Globe Fire"},
+  {"id": "klaretta", "naam": "Houtfornuis Klaretta Evo", "type": "fornuis", "prijs": "2.490", "url": "https://www.dekachelerij.nl/Houtfornuis-Klaretta-Evo", "foto": "klaretta.png", "uitgesneden": true, "kw": "6–9,4 kW", "m2": [50, 140], "kenmerk": "87% rendement", "waarom": "Hoogwaardig Thermorossi-fornuis van gietijzer, met ruime bakoven.", "merk": "Thermorossi"},
+  {"id": "etna", "naam": "Houtfornuis Etna Bordeaux", "type": "fornuis", "prijs": "3.285", "url": "https://www.dekachelerij.nl/etna-lacunza-hout-fornuis-bordeaux", "foto": "etna.png", "uitgesneden": true, "kw": "6–10 kW", "m2": [40, 120], "kenmerk": "Grootste oven", "waarom": "Strak en kleurrijk, met de grootste oven.", "merk": "Lacunza"},
+  {"id": "carl", "naam": "Bio-ethanolkachel Carl", "type": "sfeer", "prijs": "1.397", "url": "https://www.dekachelerij.nl/bio-ethanol-gietijzer-kachel-carl", "foto": "carl.jpg", "kw": "2 kW", "kenmerk": "Geen schoorsteen", "waarom": "Echte vlammen zonder rookkanaal. Ook als elektrische versie."},
+  {"id": "westbo", "naam": "Westbo Classic elektrisch", "type": "sfeer", "prijs": "3.099", "url": "https://www.dekachelerij.nl/elektrische-gietijzer-kachel-classic", "foto": "westbo.jpg", "kw": "Elektrisch", "kenmerk": "Westbo of Sweden", "waarom": "Klassieke Zweedse gietijzeren kachel met een realistisch vlammenbeeld."},
+  {"id": "vulture", "naam": "Buitenkachel Vulture set", "type": "buiten-koken", "prijs": "695", "url": "https://www.dekachelerij.nl/vulture-buiten-kachel-set", "foto": "vulture.png", "uitgesneden": true, "kenmerk": "Grillplaten", "waarom": "Compleet om meteen te bakken en te braden, met grillplaten erbij."},
+  {"id": "krakatau", "naam": "Krakatau set", "type": "buiten-koken", "prijs": "595", "url": "https://www.dekachelerij.nl/buitenkachel-set-aanbieding", "foto": "krakatau.jpg", "kenmerk": "Gietijzer"},
+  {"id": "plancha", "naam": "Plancha Blokland", "type": "buiten-koken", "prijs": "398", "url": "https://www.dekachelerij.nl/bbq-plancha-blokland", "foto": "plancha.jpg"},
+  {"id": "quercus", "naam": "Buitenkachel Quercus", "type": "buiten-warm", "prijs": "2.650", "url": "https://www.dekachelerij.nl/buitenkachel-quercus", "foto": "quercus.jpg", "kenmerk": "Pizzaoven", "waarom": "Warmte, vlammenspel én een oven met pizzasteen."},
+  {"id": "fennek", "naam": "Buitenkachel Fennek 50", "type": "buiten-warm", "prijs": "1.890", "url": "https://www.dekachelerij.nl/buitenkachel-fennek-50", "foto": "fennek.jpg", "kenmerk": "Glas rondom", "waarom": "Het vuur van alle kanten zien, ideaal midden op het terras."},
+  {"id": "quaruba", "naam": "Buitenkachel Quaruba L", "type": "buiten-warm", "prijs": "1.195", "url": "https://www.dekachelerij.nl/buitenkachel-quaruba-l-cortenstaal", "foto": "quaruba.jpg", "kenmerk": "Modulair", "waarom": "Robuust en naar wens samen te stellen met glazen zijkanten."},
+  {"id": "driepoot", "naam": "Driepoot met Dutch oven", "type": "buiten-sfeer", "prijs": "239", "url": "https://www.dekachelerij.nl/driepoot-set", "foto": "driepoot.png", "uitgesneden": true},
+  {"id": "sluus", "naam": "Vuurschaal Sluus", "type": "buiten-sfeer", "prijs": "139", "url": "https://www.dekachelerij.nl/vuurschaal-sluus-staal-modern", "foto": "vuurschaal.png", "uitgesneden": true},
+  {"id": "vuurschalen", "naam": "Vuurschalen", "type": "buiten-sfeer", "prijs": "vanaf 49", "url": "https://www.dekachelerij.nl/vuurschaal", "foto": "vuurschaal.png", "uitgesneden": true}
+ ],
+ "soorten": {
+  "titel": "Vier soorten <em>warmte</em>",
+  "lead": "Niet zeker wat u zoekt? Zo verschillen ze. Per soort ziet u voor wie hij bedoeld is en wat hij kan.",
+  "items": [
+   {"titel": "Houtkachels", "foto": "acturus.png", "uitgesneden": true, "wat": "Echt vuur en het knisperen van hout. De warmste en meest sfeervolle keuze.", "rijen": [["Ideaal als", "u een rookkanaal heeft of laat plaatsen"], ["Verwarmt", "20 tot 180 m², per model"], ["Merken", "Globe Fire, Lacunza, BK, Dovre en meer"]], "vanaf": "899", "knop": "Shop houtkachels", "url": "https://www.dekachelerij.nl/kachels"},
+   {"titel": "Houtfornuizen", "foto": "etna.png", "uitgesneden": true, "wat": "Een kachel en fornuis in één. Verwarmen, koken, bakken en braden op hetzelfde vuur.", "rijen": [["Ideaal als", "u graag kookt, of in de keuken stookt"], ["Verwarmt", "30 tot 140 m²"], ["Met", "kookplaat, bakoven en vaak een warmhoudvak"]], "vanaf": "1.559", "knop": "Shop houtfornuizen", "url": "https://www.dekachelerij.nl/houtfornuis"},
+   {"titel": "Sfeerhaarden", "foto": "carl.jpg", "wat": "Bio-ethanol of elektrisch. Het vlammenbeeld van een gietijzeren kachel, zonder rookkanaal.", "rijen": [["Ideaal als", "u geen schoorsteen heeft, bijvoorbeeld in een appartement"], ["Plaatsing", "vrijwel overal"], ["Merk", "Westbo of Sweden"]], "vanaf": "1.397", "knop": "Shop sfeerhaarden", "url": "https://www.dekachelerij.nl/sfeerhaarden"},
+   {"titel": "Buitenkachels", "foto": "fennek.jpg", "wat": "Warmte, vuur en koken in de tuin. In cortenstaal en gietijzer dat jaren buiten kan staan.", "rijen": [["Ideaal als", "u graag buiten zit of buiten kookt"], ["Soorten", "met glas, met oven of om op te koken"], ["Merken", "Globe Fire, Reny, Valhal Outdoor"]], "vanaf": "195", "knop": "Shop buitenkachels", "url": "https://www.dekachelerij.nl/buitenkachel"}
+  ],
+  "extra": [
+   {"titel": "Pelletfornuis", "tekst": "Automatisch stoken op pellets, vanaf € 2.679", "foto": "pasquale.jpg", "url": "https://www.dekachelerij.nl/houtfornuis"},
+   {"titel": "Tweedehands & showroom", "tekst": "Topkwaliteit met korting, vanaf € 945", "foto": "ilaria.jpg", "url": "https://www.dekachelerij.nl/tweedehands-houtkachels"}
+  ]
+ },
+ "uitgelicht": {
+  "product": "alberta",
+  "titel": "Alberta, <em>sierlijk staal</em>",
+  "tekst": "Een chique zwarte houtkachel met een beetje kleur. Dik staal, sierlijk gevormd en genoeg vermogen voor een flinke woonkamer.",
+  "specs": [["6–9,5 kW", "Vermogen"], ["86%", "Rendement"], ["147 kg", "Dik staal"], ["150 mm", "Rookkanaal"]],
+  "favorieten": [
+   {"product": "charon", "ideaal": "wie lang hout stookt en het vuur ook van opzij wil zien. 5–8 kW, 30–130 m²."},
+   {"product": "klaretta", "ideaal": "wie wil koken én verwarmen. Ruime bakoven, 87% rendement, 50–140 m²."},
+   {"product": "heritage", "ideaal": "wie van vlammenspel houdt. Grote ruit, met houtvak eronder. 4–7,5 kW."}
+  ],
+  "showroom": [
+   {"naam": "Acturus II", "label": "1 stuk", "tekst": "nu € 945 · was € 1.259", "foto": "acturus.png", "uitgesneden": true, "url": "https://www.dekachelerij.nl/houtkachel-acturus-ii-showroommodel"},
+   {"naam": "Ilaria Bordeaux", "label": "aanbieding", "tekst": "nu € 1.950 · keramiek & gietijzer", "foto": "ilaria.jpg", "url": "https://www.dekachelerij.nl/houtkachel-ilaria-bordeaux"}
+  ],
+  "link_aanbiedingen": "https://www.dekachelerij.nl/aanbiedingen"
+ },
+ "koken": {
+  "titel": "Een dag met<br><em>een houtfornuis</em>",
+  "hoofdfoto": "atlas.png",
+  "dag": [["07:30", "Koffie en warm water", "De ketel staat al te pruttelen op de kookplaat."], ["12:30", "Brood uit de oven", "De bakoven gebruikt de warmte die er toch al is."], ["18:00", "Stoofpot op het vuur", "Uren zacht garen, terwijl het hele huis warm blijft."]],
+  "producten": ["atlas", "klaretta", "etna"],
+  "link": ["Alle houtfornuizen, vanaf € 1.559", "https://www.dekachelerij.nl/houtfornuis"]
+ },
+ "buiten": {
+  "titel": "Wat wilt u <em>buiten doen?</em>",
+  "lead": "Kies op gebruik, niet op productnaam. Alles is van cortenstaal of gietijzer en kan jaren buiten staan.",
+  "groepen": [
+   {"k": "01 · Koken", "titel": "Koken op vuur", "tekst": "Bakken, braden en grillen op een gietijzeren kachel of plancha.", "foto": "krakatau.jpg", "producten": ["vulture", "krakatau", "plancha"], "knop": "Shop koken buiten", "url": "https://www.dekachelerij.nl/buitenkachel"},
+   {"k": "02 · Warmte", "titel": "Warmte op het terras", "tekst": "Gesloten kachels met glas: veel warmte en vlammenspel, ook op koude avonden.", "foto": "fennek.jpg", "producten": ["quercus", "fennek", "quaruba"], "knop": "Shop terraskachels", "url": "https://www.dekachelerij.nl/buitenkachel"},
+   {"k": "03 · Sfeer", "titel": "Vuur & gezelligheid", "tekst": "Open vuur om omheen te zitten. Met een driepoot kookt u er zelfs op.", "foto": "plancha.jpg", "producten": ["driepoot", "sluus", "vuurschalen"], "knop": "Shop vuurschalen", "url": "https://www.dekachelerij.nl/vuurschaal"}
+  ],
+  "extra": "<b>Ook:</b> overkappingssets met houtkachel vanaf € 1.199, barbecues, vuurkorven en Petromax.",
+  "extra_link": ["Alles voor buiten", "https://www.dekachelerij.nl/outdoor"]
+ },
+ "startpakket": {
+  "titel": "Alles voor uw <em>eerste vuur</em>",
+  "lead": "Een kachel alleen is niet genoeg. Dit heeft u ook nodig om veilig en meteen te kunnen stoken. Vink aan wat u nog mist.",
+  "noot": "De juiste diameter van de kachelpijp hangt af van uw kachel. Twijfelt u? Vraag het in de chat of in de winkel.",
+  "items": [
+   {"naam": "Kachelpijp 1 m, Ø 120 mm", "sub": "2 mm staal, zwart", "prijs": 54, "foto": "pijp.png", "uitgesneden": true, "url": "https://www.dekachelerij.nl/1-meter-kachelpijp-120-mm", "aan": true},
+   {"naam": "Haardset Modern Zwart", "sub": "Schep, borstel en pook", "prijs": 159, "foto": "haardset.png", "uitgesneden": true, "url": "https://www.dekachelerij.nl/kachel-bestek-modern", "aan": true},
+   {"naam": "Houtmand Kruul Bakkie", "sub": "Voor hout naast de kachel", "prijs": 69, "foto": "houtmand.png", "uitgesneden": true, "url": "https://www.dekachelerij.nl/houtmand-kruul-bakkie", "aan": true},
+   {"naam": "Houtbriketten, ¼ pallet", "sub": "Beukenhout, schoon en droog", "prijs": 174, "foto": "briket.jpg", "url": "https://www.dekachelerij.nl/houtbriketten-beukenhout-kwart-pallet", "aan": true},
+   {"naam": "Waterketel Lago", "sub": "Voor op de kachel", "prijs": 72, "foto": "ketel.jpg", "url": "https://www.dekachelerij.nl/lago-waterketel", "aan": false}
+  ],
+  "knop_url": "https://www.dekachelerij.nl/kachel-accessoires",
+  "zekerheden": [["truck", "Pakket € 6,95 of gratis afhalen"], ["clock", "Vaak binnen 1–3 werkdagen"]],
+  "tegels": [
+   {"naam": "Dutch oven 6 L", "prijs": "78", "foto": "dutch.png", "uitgesneden": true, "url": "https://www.dekachelerij.nl/dutch-oven-6l-valhal-outdoor"},
+   {"naam": "Theeketel Acqua", "prijs": "74", "foto": "theepot.png", "uitgesneden": true, "url": "https://www.dekachelerij.nl/theeketel-acqua"},
+   {"naam": "Skillets Valhal", "prijs": "vanaf 24", "foto": "skillet_ph.jpg", "url": "https://www.dekachelerij.nl/kookgerei/gietijzeren-pan"},
+   {"naam": "Driepoot set", "prijs": "239", "foto": "driepoot.png", "uitgesneden": true, "url": "https://www.dekachelerij.nl/driepoot-set"}
+  ],
+  "categorieen": [["Kookgerei", "https://www.dekachelerij.nl/kookgerei"], ["Accessoires", "https://www.dekachelerij.nl/kachel-accessoires"], ["Bodemplaten", "https://www.dekachelerij.nl/bodemplaat"], ["Kachelventilatoren", "https://www.dekachelerij.nl/kachel-accessoires/kachelventilator"], ["Kachelpijpen Ø 100 · 120 · 150", "https://www.dekachelerij.nl/kachelpijpen"], ["Onderdelen", "https://www.dekachelerij.nl/kachel-onderdelen"], ["Houtbriketten", "https://www.dekachelerij.nl/houtbriketten"]]
+ },
+ "diensten": null,
+ "over": {
+  "titel": "Laat onze kennis<br>u <em>verwarmen.</em>",
+  "foto": "pia.jpg",
+  "foto_tekst": "Pia & Janice in onze winkel in Noordscheschut",
+  "blokken": [
+   ["Ons verhaal", "De Kachelerij is ontstaan uit passie voor houtkachels. De juiste kachel vinden voor elk interieur, die ook voldoet aan de nieuwste technieken en milieueisen, bleek een uitdaging.<br><br>Met onze generatielange ervaring in de kachelbranche zijn we zelf begonnen: eerst online, sinds 2018 ook met een fysieke winkel."],
+   ["Pia", "Pia zorgt ervoor dat iedere kachel optimaal brandt, zodat iedereen de sfeer en warmte van een houtkachel kan ervaren. Een kachel moet ook mooi in het interieur passen. Buiten de winkel: familie, toneel en jeep rijden."],
+   ["Janice", "Janice vertelt u alles over de nieuwste gadgets en technieken, waaronder pelletkachels. Gebruiksgemak vindt ze erg belangrijk. In haar vrije tijd: reizen, skiën en koken."]
+  ],
+  "stookgids": true,
+  "blog": "https://www.dekachelerij.nl/blog"
+ },
+ "faq": [
+  {"q": "Wat zijn de verzendkosten?", "k": "verzend kosten bezorg prijs verzending", "a": "Binnen Nederland kost een postpakket € 6,95. Een houtkachel, pelletkachel of buitenkachel bezorgen we voor € 69,50. Naar België en Luxemburg is dat € 15 en € 79,50. Afhalen in de winkel is gratis."},
+  {"q": "Hoe snel wordt het geleverd?", "k": "snel lever levertijd wanneer dagen voorraad", "a": "We hebben veel op voorraad. Pakketten gaan meestal binnen 24 uur na uw betaling de deur uit en zijn vaak binnen 1 à 3 werkdagen bij u. U krijgt een track & trace-code."},
+  {"q": "Kan ik mijn bestelling afhalen?", "k": "afhalen ophalen winkel zelf", "a": "Zeker, in onze winkel in Noordscheschut. U betaalt dan geen verzendkosten, en betalen kan ook met pin of contant."},
+  {"q": "Hoe kan ik betalen?", "k": "betalen betaal ideal bancontact overmaken pin contant", "a": "Online met iDEAL, Bancontact (België) of door vooraf over te maken. Haalt u op in de winkel, dan kan het ook met pin of contant."},
+  {"q": "Kan ik iets retourneren?", "k": "retour terug ruilen terugsturen", "a": "Ja, binnen 14 dagen na ontvangst. Meld het per e-mail of telefoon en stuur het artikel onbeschadigd terug in de originele verpakking, met de factuur. Het aankoopbedrag inclusief onze verzendkosten krijgt u binnen 30 dagen terug."},
+  {"q": "Hoeveel garantie krijg ik?", "k": "garantie kapot defect fabrieksgarantie", "a": "Op al onze producten zit minimaal 1 jaar garantie, vaak langer dankzij de fabrieksgarantie. Bewaar uw factuur goed, dat is uw garantiebewijs."},
+  {"q": "Voldoen de kachels aan de milieueisen?", "k": "milieu eco 2022 uitstoot eisen label certificaat", "a": "Ja. Al onze kachels voldoen aan ECO 2022 en aan de strengste eisen uit Duitsland en Oostenrijk, met de benodigde certificaten en energielabels."},
+  {"q": "Kan ik een offerte aanvragen?", "k": "offerte prijsopgave advies", "a": "Natuurlijk. Vul het <a href=\"#bezoek\">offerteformulier</a> onderaan de pagina in, dan nemen we persoonlijk contact met u op."}
+ ],
+ "verhalen": {
+  "voorbeeld": true,
+  "score": "4,9",
+  "items": [
+   {"wie": "Anouk & Tim", "waar": "Hoogeveen · woonkamer 45 m²", "foto": "heritage.jpg", "quote": "Pia nam echt de tijd voor onze woonkamer. Nu zitten we elke avond voor het vuur.", "product": "heritage", "koos": "Zij kozen"},
+   {"wie": "Erik & Linda", "waar": "Coevorden · keuken", "foto": "st_titan.jpg", "quote": "Het fornuis is het hart van de keuken geworden. We bakken er zelfs ons eigen brood in.", "productnaam": "Houtfornuis Titan", "url": "https://www.dekachelerij.nl/titan-hout-kachel-globe-fire", "koos": "Zij kozen"},
+   {"wie": "Jeroen", "waar": "Emmen · steiger aan het water", "foto": "quercus.jpg", "quote": "Pizza uit de oven en het vuur erbij. Onze zomeravonden zijn nooit meer hetzelfde.", "product": "quercus", "koos": "Hij koos"},
+   {"wie": "Marieke", "waar": "Hardenberg · nieuwbouw", "foto": "st_bk.jpg", "quote": "Janice legde precies uit hoe ik schoon stook. Het speksteen houdt de warmte uren vast.", "productnaam": "BK 7/2 Exklusiv", "url": "https://www.dekachelerij.nl/kachels", "koos": "Zij koos"},
+   {"wie": "Henk", "waar": "Dalen · boerderij", "foto": "st_wera.jpg", "quote": "Robuust gietijzer met een kookplaat. Precies wat bij onze oude boerderij past.", "productnaam": "Houtkachel WeRa", "url": "https://www.dekachelerij.nl/houtkachel-gietijzer-wera", "koos": "Hij koos"}
+  ]
+ },
+ "bezoek": {
+  "titel": "Kom het vuur <em>zelf zien</em>",
+  "lead": "Voel het gietijzer, zie het vlammenspel en laat u persoonlijk adviseren in onze winkel.",
+  "tabs": ["bezoek", "offerte"],
+  "interesses": ["Een houtkachel", "Een houtfornuis", "Een sfeerhaard", "Een buitenkachel", "Ik weet het nog niet"]
+ },
+ "footer": {
+  "winkel": [["Houtkachels", "https://www.dekachelerij.nl/kachels"], ["Houtfornuizen", "https://www.dekachelerij.nl/houtfornuis"], ["Sfeerhaarden", "https://www.dekachelerij.nl/sfeerhaarden"], ["Buitenkachels", "https://www.dekachelerij.nl/buitenkachel"], ["Kookgerei", "https://www.dekachelerij.nl/kookgerei"], ["Accessoires", "https://www.dekachelerij.nl/kachel-accessoires"], ["Aanbiedingen", "https://www.dekachelerij.nl/aanbiedingen"]],
+  "service": [["Verzendkosten & levertijd", "#faq"], ["Retourneren & garantie", "#faq"], ["Betaalmogelijkheden", "#faq"], ["Offerte aanvragen", "#bezoek"], ["Blog & stooktips", "https://www.dekachelerij.nl/blog"], ["Cadeautips", "https://www.dekachelerij.nl/december-cadeau-tips"]],
+  "juridisch": [["Voorwaarden", "https://www.dekachelerij.nl/algemene-voorwaarden"], ["Privacy", "https://www.dekachelerij.nl/privacyverklaring"], ["Disclaimer", "https://www.dekachelerij.nl/disclaimer"]],
+  "nieuwsbrief": "Als eerste de aanbiedingen en nieuwe showroommodellen, plus stooktips voor de winter."
+ }
+}

@@ -1,0 +1,310 @@
+{%- set B = c.bedrijf -%}{%- set PR = c.profiel -%}
+{%- set webshop = PR.hoofdactie == 'webshop' -%}
+{%- macro img(f) -%}img/{{ f }}{%- endmacro -%}
+{%- macro pimg(p, cls='') -%}<img class="{{ 'c' if p.uitgesneden else 'ph-warm' }} {{ cls }}" src="img/{{ p.foto }}" alt="{{ p.naam|e }}">{%- endmacro -%}
+{%- macro cta(url, label, cls='btn btn-shop') -%}
+{%- if webshop and url -%}<a class="{{ cls }}" href="{{ url }}" target="_blank" rel="noopener">{{ label }}</a>
+{%- else -%}<a class="{{ cls }}" href="#bezoek">{{ label if not webshop else 'Vraag advies' }}</a>{%- endif -%}
+{%- endmacro -%}
+{%- macro assure(items) -%}<div class="assure">{% for i,t in items %}<span>{{ ico(i) }} {{ t }}</span>{% endfor %}</div>{%- endmacro -%}
+<!DOCTYPE html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ B.naam }} — voorbeeldontwerp</title>
+<meta name="description" content="Voorbeeldontwerp voor {{ B.naam }} door De Website Dokters.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+{% if c.kleur %}<style>:root{ {% for k,v in c.kleur.items() %}--{{k}}:{{v}};{% endfor %} }</style>{% endif %}
+</head><body>
+
+{# ================= HERO ================= #}
+<section class="hero" id="top">
+  <h1 class="sr">{{ c.hero.h1 or ('Warmte. Kachels van ' ~ B.naam ~ ' in ' ~ B.plaats ~ '.') }}</h1>
+  {% if c.hero.variant == 'foto' %}
+  <div class="scene-foto" aria-hidden="true"><img src="img/{{ c.hero.foto }}" alt=""></div>
+  <div class="hfoto-word">{{ c.hero.woord or 'Warmte.' }}</div>
+  {% else %}
+  <div class="scene" aria-hidden="true">
+    <img class="bg" src="img/wide.jpg" alt="">
+    <div class="word"><span class="l">WAR</span><span class="r">MTE.</span></div>
+    <img class="stv" src="img/stove.png" alt="">
+  </div>
+  <div class="tall" aria-hidden="true"><img src="img/tall.jpg" alt=""></div>
+  {% endif %}
+  <div class="hshade"></div>
+  <header class="nav">
+    <a class="logo" href="#top"><img src="img/{{ B.logo }}" alt="{{ B.naam }}"></a>
+    <nav class="links" aria-label="Hoofdmenu">{% for l,h in c.menu or [] %}<a href="{{h}}">{{l}}</a>{% endfor %}</nav>
+    <div class="icons">
+      {% if PR.webshop %}<button aria-label="Zoeken" onclick="openMenu()">{{ ico('search') }}</button>
+      <a href="{{ B.website }}" target="_blank" rel="noopener" aria-label="Winkelwagen">{{ ico('cart') }}<span class="cnt">0</span></a>{% else %}<a href="tel:{{ B.telefoon_link }}" aria-label="Bel {{ B.naam }}">{{ ico('phone') }}</a>{% endif %}
+      <button aria-label="Menu" onclick="openMenu()">{{ ico('menu') }}</button>
+    </div>
+  </header>
+  <div class="hbottom">
+    <p>{{ c.hero.zin }}</p>
+    <div class="hcta">
+      {% if 'kiezer' in c.secties %}<a class="btn btn-shop" href="#kiezer">{{ PR.knop_hero or 'Vind uw kachel' }} {{ ico('arrow') }}</a>{% else %}<a class="btn btn-shop" href="#bezoek">{{ PR.knop_hero or 'Plan een bezoek' }} {{ ico('arrow') }}</a>{% endif %}
+      {% if webshop %}<a class="link" href="{{ PR.link_assortiment }}" target="_blank" rel="noopener">Direct naar de webshop</a>{% else %}<a class="link" href="tel:{{ B.telefoon_link }}">Bel {{ B.telefoon }}</a>{% endif %}
+    </div>
+  </div>
+</section>
+
+<div class="menu" id="menu" role="dialog" aria-label="Menu">
+  <div class="menu-top"><img src="img/{{ B.logo }}" alt="{{ B.naam }}"><button class="btn btn-ghost" style="min-height:44px;padding:0 18px" onclick="closeMenu()">Sluiten</button></div>
+  {% if PR.webshop %}<form class="search" onsubmit="event.preventDefault()"><input placeholder="Zoek een kachel, pan of onderdeel" aria-label="Zoeken">{{ ico('search') }}</form>{% endif %}
+  <div class="menu-grid" onclick="if(event.target.tagName==='A')closeMenu()">
+    <div class="big">{% for l,h in c.menu or [] %}<a href="{{h}}">{{l}}</a>{% endfor %}</div>
+    {% if c.footer.winkel %}<div><h4>Assortiment</h4><ul>{% for l,h in c.footer.winkel %}<li><a href="{{h}}" target="_blank" rel="noopener">{{l}}</a></li>{% endfor %}</ul></div>{% endif %}
+    <div><h4>Contact</h4><ul><li><a href="tel:{{ B.telefoon_link }}">{{ B.telefoon }}</a></li><li><a href="mailto:{{ B.email }}">{{ B.email }}</a></li><li>{{ B.straat }}, {{ B.plaats }}</li></ul></div>
+  </div>
+</div>
+
+{% for sec in c.secties %}
+
+{# ================= SNELBALK ================= #}
+{% if sec == 'snelbalk' and c.snelbalk %}
+<div class="quick"><div class="wrap qk">
+  {% if PR.webshop %}<form class="qsearch" onsubmit="event.preventDefault()" role="search">{{ ico('search') }}<input placeholder="Zoek een kachel, pan of onderdeel" aria-label="Zoek in de webshop"><button class="btn btn-shop">Zoeken</button></form>{% endif %}
+  <div class="qlinks"><span>Snel naar</span>{% for l,h in c.snelbalk %}<a href="{{h}}" {% if h.startswith('http') %}target="_blank" rel="noopener"{% endif %}>{{l}}</a>{% endfor %}</div>
+</div></div>
+
+{# ================= INTRO ================= #}
+{% elif sec == 'intro' and c.intro %}
+<section class="intro"><div class="wrap">
+  <span class="kicker">{{ c.intro.kicker }}</span>
+  <p class="m reveal" style="margin-top:22px">{{ c.intro.zin }}</p>
+  <div class="facts reveal">{% for t,s in c.intro.feiten %}<div><b>{{t}}</b><span>{{s}}</span></div>{% endfor %}</div>
+</div></section>
+
+{# ================= KIEZER ================= #}
+{% elif sec == 'kiezer' %}
+<section class="kz" id="kiezer"><div class="wrap kz-grid">
+  <div class="kz-side">
+    <span class="kicker">Kachelkiezer</span>
+    <h2 class="title">Welke kachel<br><em>past bij u?</em></h2>
+    <p class="lead">Een paar korte vragen. Daarna laten we twee kachels zien die echt bij uw huis passen, met de reden waarom.</p>
+    <div class="steps" aria-hidden="true"><i class="on"></i><i></i><i></i></div>
+    <p class="kz-help">Liever even overleggen? <a href="#bezoek">Plan een bezoek</a>{% if 'faq' in c.secties %} of stel uw vraag in de <a href="#faq">chat</a>{% endif %}.</p>
+  </div>
+  <div class="panel" id="kzp" aria-live="polite"></div>
+</div></section>
+
+{# ================= SOORTEN ================= #}
+{% elif sec == 'soorten' and c.soorten %}
+<section class="soorten" id="soorten"><div class="wrap">
+  <div class="s-head"><div><span class="kicker">Collectie</span><h2 class="title">{{ c.soorten.titel }}</h2></div><p class="lead">{{ c.soorten.lead }}</p></div>
+  <div class="kinds">
+  {% for k in c.soorten['items'] %}
+    <article class="kind reveal"><div class="im"><img class="{{ 'c' if k.uitgesneden else 'ph-warm' }}" src="img/{{k.foto}}" alt="{{k.titel}}"></div>
+      <div class="bd"><h3>{{k.titel}}</h3><p class="what">{{k.wat}}</p>
+        <dl>{% for a,b in k.rijen %}<dt>{{a}}</dt><dd>{{b}}</dd>{% endfor %}</dl>
+        <div class="ft">{% if k.vanaf %}<span class="from">vanaf<b class="price">€ {{k.vanaf}}</b></span>{% else %}<span></span>{% endif %}{{ cta(k.url, k.knop or ('Bekijk ' ~ k.titel|lower)) }}</div></div></article>
+  {% endfor %}
+  </div>
+  {% if c.soorten.extra %}<div class="more">{% for e in c.soorten.extra %}<a class="mini reveal" href="{{ e.url if webshop else '#bezoek' }}" {% if webshop %}target="_blank" rel="noopener"{% endif %}><img class="ph-warm" src="img/{{e.foto}}" alt=""><div><b>{{e.titel}}</b><span>{{e.tekst}}</span></div>{{ ico('arrow') }}</a>{% endfor %}</div>{% endif %}
+</div></section>
+
+{# ================= UITGELICHT ================= #}
+{% elif sec == 'uitgelicht' and c.uitgelicht %}
+{% set U = c.uitgelicht %}{% set P = prod[U.product] %}
+<section class="sel" id="selectie"><div class="wrap">
+  <div class="spot">
+    <div class="stage reveal">{% if P.badge %}<span class="badge">{{P.badge}}</span>{% endif %}
+      {% if P.uitgesneden %}<div class="studio"><img class="obj" src="img/{{P.foto}}" alt="{{P.naam}}"><div class="plinth" style="--pt:40px"><div class="top"></div><div class="side"></div></div></div>{% else %}<img class="ph-warm" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" src="img/{{P.foto}}" alt="{{P.naam}}">{% endif %}</div>
+    <div class="reveal">
+      <span class="kicker">Uitgelicht</span>
+      <h2 class="title">{{ U.titel }}</h2>
+      <p class="why" style="margin-top:22px">{{ U.tekst }}</p>
+      {% if U.specs %}<div class="spec">{% for a,b in U.specs %}<div><b>{{a}}</b><span>{{b}}</span></div>{% endfor %}</div>{% endif %}
+      <div class="buy">{% if P.prijs %}<span class="pr"><b class="price">€ {{P.prijs}}</b> <span class="vat">incl. btw</span></span>{% endif %}{{ cta(P.url, PR.knop_product) }}</div>
+      {% if PR.zekerheden %}{{ assure(PR.zekerheden[:3]) }}{% endif %}
+      {% if 'startpakket' in c.secties %}<p style="margin-top:22px"><a class="link" href="#eerste">Maak het compleet {{ ico('arrow') }}</a></p>{% endif %}
+    </div>
+  </div>
+  {% if U.favorieten %}<div class="picks">{% for f in U.favorieten %}{% set q = prod[f.product] %}
+    <article class="pk reveal"><div class="im">{% if q.badge and q.badge != P.badge %}<span class="tag">{{q.badge}}</span>{% endif %}{{ pimg(q) }}</div><div class="bd"><h3>{{ q.naam }}</h3><p class="ideal"><em>Ideaal voor</em> {{ f.ideaal }}</p><div class="row"><b class="price">{% if q.prijs %}€ {{q.prijs}}{% endif %}</b>{{ cta(q.url, 'Bekijk' if webshop else 'Advies') }}</div></div></article>{% endfor %}</div>{% endif %}
+  {% if U.showroom %}<div class="deals reveal"><h3>Showroom&shy;modellen</h3>{% for d in U.showroom %}<a class="deal" href="{{ d.url if webshop else '#bezoek' }}" {% if webshop %}target="_blank" rel="noopener"{% endif %}><img class="{{ 'c' if d.uitgesneden }}" src="img/{{d.foto}}" alt=""><div><b>{{d.naam}} <span class="one">{{d.label}}</span></b><span>{{d.tekst}}</span></div></a>{% endfor %}{% if U.link_aanbiedingen %}<a class="link" href="{{U.link_aanbiedingen}}" target="_blank" rel="noopener">Alle aanbiedingen {{ ico('arrow') }}</a>{% endif %}</div>{% endif %}
+</div></section>
+
+{# ================= KOKEN ================= #}
+{% elif sec == 'koken' and c.koken %}
+{% set K = c.koken %}
+<section class="koken" id="koken"><div class="wrap">
+  <div class="k-top">
+    <div class="stage reveal"><div class="studio"><img class="obj" src="img/{{K.hoofdfoto}}" alt=""><div class="plinth" style="--pt:42px"><div class="top"></div><div class="side"></div></div></div></div>
+    <div class="reveal"><span class="kicker">Koken op vuur</span><h2 class="title">{{ K.titel }}</h2>
+      <ul class="day">{% for t,a,b in K.dag %}<li><time>{{t}}</time><div><b>{{a}}</b><span>{{b}}</span></div></li>{% endfor %}</ul></div>
+  </div>
+  <div class="cmp"><h3 class="reveal">{{ K.vergelijk_titel or 'Drie fornuizen, drie karakters' }}</h3>
+    <div class="cmp-grid">{% for id in K.producten %}{% set q = prod[id] %}
+      <article class="cf reveal"><div class="im">{{ pimg(q) }}</div><div class="bd"><h3>{{ q.naam|replace('Houtfornuis ','') }}</h3><p class="best">{{ q.waarom }}</p><ul>{% if q.kw %}<li>{{q.kw}}{% if q.m2 %}, {{q.m2[0]}}–{{q.m2[1]}} m²{% endif %}</li>{% endif %}{% if q.kenmerk %}<li>{{q.kenmerk}}</li>{% endif %}{% if q.merk %}<li>{{q.merk}}</li>{% endif %}</ul><div class="row"><b class="price">{% if q.prijs %}€ {{q.prijs}}{% endif %}</b>{{ cta(q.url, 'Bekijk' if webshop else 'Advies') }}</div></div></article>{% endfor %}</div>
+    {% if K.link %}<p style="margin-top:22px"><a class="link" href="{{K.link[1]}}" target="_blank" rel="noopener">{{K.link[0]}} {{ ico('arrow') }}</a></p>{% endif %}
+  </div>
+</div></section>
+
+{# ================= DIENSTEN (voor installateurs) ================= #}
+{% elif sec == 'diensten' and c.diensten %}
+{% set D = c.diensten %}
+<section class="diensten light" id="diensten"><div class="wrap">
+  <div class="s-head"><div><span class="kicker">{{ D.kicker or 'Wij regelen het' }}</span><h2 class="title">{{ D.titel }}</h2></div><p class="lead">{{ D.lead }}</p></div>
+  <div class="dgrid">{% for d in D['items'] %}<article class="dcard reveal"><div class="dico">{{ ico(d.icoon or 'wrench') }}</div><h3>{{d.titel}}</h3><p>{{d.tekst}}</p>{% if d.prijs %}<span class="dprijs">{{d.prijs}}</span>{% endif %}</article>{% endfor %}</div>
+  {% if D.stappen %}<ol class="dsteps reveal">{% for t,s in D.stappen %}<li><b>{{t}}</b><span>{{s}}</span></li>{% endfor %}</ol>{% endif %}
+  {% if D.knop %}<p style="text-align:center;margin-top:36px"><a class="btn btn-shop" href="{{ D.knop[1] }}">{{ D.knop[0] }} {{ ico('arrow') }}</a></p>{% endif %}
+</div></section>
+
+{# ================= BUITEN ================= #}
+{% elif sec == 'buiten' and c.buiten %}
+{% set Z = c.buiten %}
+<section class="buiten" id="buiten"><div class="wrap">
+  <div class="b-head"><div><span class="kicker">Buiten</span><h2 class="title">{{ Z.titel }}</h2></div><p class="lead">{{ Z.lead }}</p></div>
+  <div class="uses">{% for g in Z.groepen %}
+    <article class="use reveal"><img class="ph-warm" src="img/{{g.foto}}" alt="">
+      <div class="bd"><span class="k">{{g.k}}</span><h3>{{g.titel}}</h3><p>{{g.tekst}}</p>
+        <ul>{% for id in g.producten %}{% set q = prod[id] %}<li><a href="{{ q.url if webshop else '#bezoek' }}" {% if webshop %}target="_blank" rel="noopener"{% endif %}><span>{{ q.naam|replace('Buitenkachel ','') }}</span><span class="price">{% if q.prijs %}{{ '' if q.prijs.startswith('vanaf') else '€ ' }}{{ q.prijs|replace('vanaf ','vanaf € ') }}{% endif %}</span></a></li>{% endfor %}</ul>
+        {{ cta(g.url, g.knop) }}</div></article>{% endfor %}</div>
+  {% if Z.extra %}<p class="b-more reveal">{{ Z.extra }} {% if Z.extra_link %}<a class="link" href="{{Z.extra_link[1]}}" target="_blank" rel="noopener">{{Z.extra_link[0]}} {{ ico('arrow') }}</a>{% endif %}</p>{% endif %}
+</div></section>
+
+{# ================= STARTPAKKET ================= #}
+{% elif sec == 'startpakket' and c.startpakket %}
+{% set S = c.startpakket %}
+<section class="eerste light" id="eerste"><div class="wrap">
+  <div class="e-grid">
+    <div class="reveal"><span class="kicker">Maak het compleet</span><h2 class="title">{{ S.titel }}</h2><p class="lead">{{ S.lead }}</p>{% if S.noot %}<p class="note" style="margin-top:18px">{{ S.noot }}</p>{% endif %}</div>
+    <form class="chk reveal" id="chk" onsubmit="event.preventDefault()">
+      <h3>Uw startpakket</h3><p>Prijzen incl. btw{% if webshop %}, rechtstreeks uit de webshop{% endif %}.</p>
+      {% for i in S['items'] %}<label class="it"><input type="checkbox" data-p="{{i.prijs}}" {% if i.aan %}checked{% endif %}><img class="{{ 'c' if i.uitgesneden }}" src="img/{{i.foto}}" alt=""><span><b>{{i.naam}}</b><small>{{i.sub}}{% if webshop and i.url %} · <a href="{{i.url}}" target="_blank" rel="noopener">bekijk</a>{% endif %}</small></span><span class="price">€ {{i.prijs}}</span></label>{% endfor %}
+      <div class="tot"><span>Totaal startpakket</span><b class="price" id="chkTot">€ 0</b></div>
+      {{ cta(S.knop_url, 'Naar de webshop' if webshop else 'Vraag dit pakket aan') }}
+      {% if S.zekerheden %}{{ assure(S.zekerheden) }}{% endif %}
+    </form>
+  </div>
+  {% if S.tegels %}<div class="cook">{% for t in S.tegels %}<a class="ck reveal" href="{{ t.url if webshop else '#bezoek' }}" {% if webshop %}target="_blank" rel="noopener"{% endif %}><div class="im"><img class="{{ 'c' if t.uitgesneden else 'ph-warm' }}" src="img/{{t.foto}}" alt="{{t.naam}}"></div><div class="t"><b>{{t.naam}}</b><span class="price">{{ '€ ' ~ t.prijs if not t.prijs.startswith('vanaf') else t.prijs|replace('vanaf ','vanaf € ') }}</span></div></a>{% endfor %}</div>{% endif %}
+  {% if S.categorieen %}<div class="cats reveal">{% for l,h in S.categorieen %}<a href="{{h}}" target="_blank" rel="noopener">{{l}}</a>{% endfor %}</div>{% endif %}
+</div></section>
+
+{# ================= OVER ONS ================= #}
+{% elif sec == 'over' and c.over %}
+{% set O = c.over %}
+<section class="over light" id="over"><div class="wrap">
+  <span class="kicker reveal">Over ons</span>
+  <div class="ov-top" style="margin-top:24px">
+    <p class="ov-quote reveal">{{ O.titel }}</p>
+    {% if O.foto %}<figure class="duo reveal"><div class="ph"><img src="img/{{O.foto}}" alt="{{ O.foto_tekst }}"></div><p>{{ O.foto_tekst }}</p></figure>{% endif %}
+  </div>
+  <div class="ov-body">{% for t,p in O.blokken %}<div class="reveal"><h3>{{t}}</h3><p>{{p}}</p></div>{% endfor %}</div>
+  {% if O.stookgids %}
+  <div class="guide">
+    <div class="reveal"><span class="kicker">Stookgids</span><h2 class="title" style="font-size:clamp(36px,4.4vw,60px)">Schoon stoken, <em>zo doet u dat</em></h2><p class="lead" style="margin:20px 0 26px">Door op de juiste manier te stoken brandt uw kachel schoner. Beter voor het milieu en voor uw kachel.</p>{% if O.blog %}<a class="link" href="{{O.blog}}" target="_blank" rel="noopener">Meer tips in onze blog {{ ico('arrow') }}</a>{% endif %}</div>
+    <ol class="reveal">
+      <li><div><b>Stook droog hout</b><span>Gebruik hout dat goed gedroogd is of houtbriketten. Nat hout rookt en vervuilt uw ruit en rookkanaal.</span></div></li>
+      <li><div><b>Steek van bovenaf aan</b><span>Grof hout onderop, aanmaakhout en een aanmaakblokje bovenop. Zo brandt het vuur rustig en schoon naar beneden.</span></div></li>
+      <li><div><b>Geef het vuur lucht</b><span>Laat het vuur niet smeulen. Een heldere, levendige vlam betekent een schone verbranding.</span></div></li>
+    </ol>
+  </div>{% endif %}
+</div></section>
+
+{# ================= FAQ-CHAT ================= #}
+{% elif sec == 'faq' and c.faq %}
+<section class="faq" id="faq"><div class="wrap fq">
+  <div>
+    <span class="kicker reveal">Veelgestelde vragen</span>
+    <h2 class="title reveal">Vraag het<br><em>gewoon</em></h2>
+    <p class="lead reveal" style="margin-top:20px">Tik een vraag aan en u krijgt meteen antwoord. Staat uw vraag er niet tussen? Typ hem gerust.</p>
+    {% if PR.zekerheden %}<div class="reveal" style="margin-top:26px">{{ assure(PR.zekerheden) }}</div>{% endif %}
+  </div>
+  <div class="chat reveal" id="chat">
+    <div class="chat-h"><div class="av"><img src="img/{{ c.over.foto if c.over and c.over.foto else B.logo }}" alt=""></div><div><b>{{ B.naam }}</b><small>{{ B.mensen or 'Ons team' }} · antwoord direct</small></div></div>
+    <div class="chat-b" id="chatb" aria-live="polite"><span class="day">Vandaag</span></div>
+    <div class="quick" id="quick"></div>
+    <form class="chat-f" id="chatf"><input id="chati" placeholder="Typ uw vraag…" aria-label="Typ uw vraag" autocomplete="off"><button aria-label="Verstuur">{{ ico('send') }}</button></form>
+  </div>
+</div></section>
+
+{# ================= VERHALEN ================= #}
+{% elif sec == 'verhalen' and c.verhalen %}
+{% set V = c.verhalen %}
+<section class="stories" id="verhalen">
+  <div class="wrap st-head"><div><span class="kicker">Bij klanten thuis</span><h2 class="title">Verhalen <em>bij het vuur</em></h2></div><div class="st-nav"><button class="prev" aria-label="Vorige" data-st="-1">{{ ico('arrow') }}</button><button aria-label="Volgende" data-st="1">{{ ico('arrow') }}</button></div></div>
+  <div class="track" id="track">{% for v in V['items'] %}{% set q = prod.get(v.product) if v.product else none %}
+    <article class="story reveal"><img src="img/{{v.foto}}" alt=""><div class="bars"><i></i><i></i><i></i></div>
+      <div class="who"><span class="av">{{ v.wie[0] }}</span><div><b>{{v.wie}}</b><small>{{v.waar}}</small></div></div>
+      <div class="bd"><div class="stars">{% for _ in range(5) %}{{ ico('star') }}{% endfor %}</div><q>{{v.quote}}</q>
+      {% if q or v.productnaam %}<a class="bought" href="{{ (q.url if q else v.url) if webshop else '#bezoek' }}" {% if webshop %}target="_blank" rel="noopener"{% endif %}><img src="img/{{ v.foto }}" alt=""><div><span>{{ v.koos or 'Gekozen' }}</span><b>{{ q.naam if q else v.productnaam }}</b></div>{{ ico('arrow') }}</a>{% endif %}</div></article>{% endfor %}
+  </div>
+  <div class="wrap st-foot">{% if V.score %}<span class="score"><b>{{V.score}}</b> {{ ico('star') }} gemiddeld op Google</span>{% endif %}<span>{% if V.voorbeeld %}Voorbeeldverhalen. In de echte site komen hier uw eigen klanten en Google-reviews.{% endif %}</span></div>
+</section>
+
+{# ================= BEZOEK & CONTACT ================= #}
+{% elif sec == 'bezoek' %}
+{% set Z = c.bezoek %}
+<section class="visit light" id="bezoek"><div class="wrap vg">
+  <div class="reveal">
+    <span class="kicker">Bezoek &amp; contact</span>
+    <h2 class="title">{{ Z.titel }}</h2>
+    <p class="lead" style="margin-top:18px">{{ Z.lead }}</p>
+    <dl class="dl">
+      <div><dt>{{ Z.adres_label or 'Winkel' }}</dt><dd>{{B.straat}}<br>{{B.postcode}} {{B.plaats}}<br><a href="https://www.google.com/maps/dir/?api=1&amp;destination={{ (B.straat ~ ' ' ~ B.plaats)|urlencode }}" target="_blank" rel="noopener" style="display:inline-block;margin-top:8px;font-size:15px">Plan uw route</a></dd></div>
+      <div><dt>Open</dt><dd><span class="live" data-status><span class="dot"></span><span class="st">Winkel</span></span><span class="hrs">{% for a,b in c.openingstijden.regels %}<span>{{a}}</span><span>{{b}}</span>{% endfor %}</span></dd></div>
+      <div><dt>Bel</dt><dd><a class="big" href="tel:{{B.telefoon_link}}">{{B.telefoon}}</a></dd></div>
+      {% if B.whatsapp %}<div><dt>WhatsApp</dt><dd><a href="https://wa.me/{{B.whatsapp}}" target="_blank" rel="noopener">Stuur een bericht</a></dd></div>{% endif %}
+      <div><dt>Mail</dt><dd><a href="mailto:{{B.email}}">{{B.email}}</a></dd></div>
+    </dl>
+  </div>
+  <div class="planner reveal" id="planner">
+    {% if Z.tabs|length > 1 %}<div class="tabs" role="tablist" style="grid-template-columns:repeat({{ Z.tabs|length }},1fr)">{% for t in Z.tabs %}<button role="tab" aria-selected="{{ 'true' if loop.first else 'false' }}" data-tab="{{ t[0] }}">{{ {'bezoek':'Plan een bezoek','offerte':'Offerte aanvragen','thuis':'Advies aan huis'}[t] }}</button>{% endfor %}</div>{% endif %}
+    {% for t in Z.tabs %}
+    {% if t in ['bezoek','thuis'] %}
+    <form class="pane {{ 'on' if loop.first }}" data-pane="{{ t[0] }}" id="{{ 'bform' if t=='bezoek' else 'tform' }}" novalidate>
+      <h3>{{ 'Kies een moment' if t=='bezoek' else 'Gratis advies aan huis' }}</h3>
+      <p class="sub">{{ ('Dan staat de koffie klaar en heeft ' ~ (B.mensen_kort or 'een van ons') ~ ' alle tijd voor u.') if t=='bezoek' else 'We komen vrijblijvend bij u kijken wat bij uw huis past.' }}</p>
+      {% if t=='bezoek' %}<div class="lbl">Dag</div><div class="days" id="days"></div><div class="lbl">Tijd</div><div class="slots" id="slots"></div>{% endif %}
+      <div class="f2" style="margin-top:18px">
+        <div class="fld"><label>Naam</label><input autocomplete="name"></div>
+        <div class="fld"><label>Telefoon</label><input type="tel" inputmode="tel" autocomplete="tel"></div>
+        {% if t=='thuis' %}<div class="fld full"><label>Postcode en huisnummer</label><input autocomplete="postal-code"></div>{% endif %}
+        <div class="fld full"><label>Interesse in</label><select>{% for o in Z.interesses %}<option>{{o}}</option>{% endfor %}</select></div>
+      </div>
+      {% if t=='bezoek' %}<div class="summary" id="sum">Kies een dag en tijd.</div>{% endif %}
+      <button class="btn btn-shop" type="submit">{{ 'Bevestig mijn bezoek' if t=='bezoek' else 'Plan mijn adviesgesprek' }} {{ ico('arrow') }}</button>
+      <div class="pmsg" aria-live="polite"></div>
+    </form>
+    {% else %}
+    <form class="pane {{ 'on' if loop.first }}" data-pane="o" id="cform" novalidate>
+      <h3>Vrijblijvende offerte</h3><p class="sub">{{ B.mensen_kort or 'We' }} {{ 'neemt' if B.mensen_kort else 'nemen' }} persoonlijk contact met u op.</p>
+      <div class="f2">
+        <div class="fld"><label for="cn">Naam</label><input id="cn" autocomplete="name"></div>
+        <div class="fld"><label for="ct">Telefoon</label><input id="ct" type="tel" inputmode="tel" autocomplete="tel"></div>
+        <div class="fld full"><label for="ce">E-mail</label><input id="ce" type="email" autocomplete="email"></div>
+        <div class="fld full"><label for="cs">Ik zoek</label><select id="cs">{% for o in Z.interesses %}<option>{{o}}</option>{% endfor %}</select></div>
+        <div class="fld full"><label for="cm">Bericht</label><textarea id="cm" placeholder="Bijvoorbeeld: een kachel voor een woonkamer van 35 m²."></textarea></div>
+      </div>
+      <button class="btn btn-shop" type="submit">Vraag offerte aan {{ ico('arrow') }}</button>
+      <div class="cmsg pmsg" aria-live="polite"></div>
+    </form>
+    {% endif %}{% endfor %}
+  </div>
+</div></section>
+{% endif %}
+{% endfor %}
+
+{# ================= FOOTER ================= #}
+{% set F = c.footer %}
+<footer class="foot"><div class="wrap">
+  <div class="fbrand reveal"><div class="nm">{{ F.merk or B.naam }}</div><p>{{ B.slogan }}</p>{% if webshop %}<a class="btn btn-shop" href="{{ PR.link_assortiment }}" target="_blank" rel="noopener">Naar de webshop {{ ico('arrow') }}</a>{% else %}<a class="btn btn-shop" href="#bezoek">Plan een bezoek {{ ico('arrow') }}</a>{% endif %}</div>
+  <div class="fcols">
+    {% if F.winkel %}<div><h4>{{ 'Winkel' if PR.webshop else 'Aanbod' }}</h4><ul>{% for l,h in F.winkel %}<li><a href="{{h}}" {% if h.startswith('http') %}target="_blank" rel="noopener"{% endif %}>{{l}}</a></li>{% endfor %}</ul></div>{% endif %}
+    {% if F.service %}<div><h4>Klantenservice</h4><ul>{% for l,h in F.service %}<li><a href="{{h}}" {% if h.startswith('http') %}target="_blank" rel="noopener"{% endif %}>{{l}}</a></li>{% endfor %}</ul></div>{% endif %}
+    <div><h4>Contact</h4><ul class="fcontact"><li><a href="tel:{{B.telefoon_link}}">{{B.telefoon}}</a></li><li><a href="mailto:{{B.email}}">{{B.email}}</a></li><li>{{B.straat}}<br>{{B.postcode}} {{B.plaats}}</li></ul></div>
+    <div class="news"><h4>Nieuwsbrief</h4><p>{{ F.nieuwsbrief or 'Aanbiedingen en stooktips, af en toe in uw inbox.' }}</p><form id="nform"><input type="email" placeholder="Uw e-mailadres" aria-label="Uw e-mailadres"><button aria-label="Aanmelden">{{ ico('arrow') }}</button></form><div class="nmsg" aria-live="polite"></div>{% if PR.betalen %}<div class="assure" style="margin-top:18px"><span>{{ ico('card') }} {{ PR.betalen }}</span></div>{% endif %}</div>
+  </div>
+  <div class="flegal"><span>© 2026 {{B.naam}}{% if B.kvk %} · KvK {{B.kvk}}{% endif %}{% if B.btw %} · btw {{B.btw}}{% endif %}{% if PR.webshop %} · alle prijzen incl. btw{% endif %}{% for l,h in F.juridisch or [] %} · <a href="{{h}}" target="_blank" rel="noopener">{{l}}</a>{% endfor %}</span><span class="demo">Voorbeeldontwerp door De Website Dokters</span></div>
+</div></footer>
+
+<div class="sticky" id="sticky"><a class="btn call" href="tel:{{B.telefoon_link}}" aria-label="Bel {{B.naam}}">{{ ico('phone') }}</a><a class="btn btn-shop" id="stickyBtn" href="{{ PR.link_assortiment if webshop else '#bezoek' }}" {% if webshop %}target="_blank" rel="noopener"{% endif %}>{{ 'Naar de webshop' if webshop else 'Plan een bezoek' }}</a></div>
+
+<script>window.KACHEL={{ data_json }};</script>
+<script src="app.js"></script>
+</body></html>
